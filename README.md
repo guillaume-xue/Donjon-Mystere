@@ -6,7 +6,7 @@ Cette application a pour but d’organiser et de permettre à l’utilisateur de
 
 L’objectif est de faire en sorte que l’utilisateur puisse rester concentré sur son travail en restant sur l’application, sans l’éteindre ni passer à une autre. Elle propose également un calendrier pour s’organiser à long terme, ainsi qu’une liste de tâches (to-do list) pour les tâches à accomplir dans la semaine. L’utilisateur peut également utiliser un minuteur pour fixer le temps de travail, Il recevra des notifications personnalisées en fonction des fonctionnalités citées précédemment.
 
-Après chaque tâche accomplie ou chaque session de travail, l’utilisateur gagne de “l'argent” virtuel, qu’il peut utiliser pour acheter des cosmétiques pour l’application ou même débloquer des fonctionnalités supplémentaires (notes manuscrites, flashcards, etc.).
+Après chaque tâche accomplie ou chaque fin session de travail (minuteur), l’utilisateur gagne de “l'argent” virtuel, qu’il peut utiliser pour acheter des cosmétiques pour l’application ou même débloquer des fonctionnalités supplémentaires (notes manuscrites, flashcards, etc.).
 Dans le cas où il n’accomplit pas les tâches ou quitte l’application pendant le temps de travail fixé, il ne gagnera pas "d’argent" virtuel, voire même en perdre.
 
 ## Testabilité du Projet
