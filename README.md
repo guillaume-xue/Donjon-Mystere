@@ -32,3 +32,12 @@ Tester les notifications pour encourager l'utilisateur à rester concentré.
 On va utiliser des APIs pour des tâches précises (comme vérifier si l’utilisateur ne quitte pas l’application), mais toutes les autres fonctionnalités seront codées.
 
 ## Calandrier/Jalons
+
+- Mois/Jalon 1 :
+  Planification, architecture, et mise en place de l'environement.
+- Mois/Jalon 2 :
+  Developpement des comptes, to-do list, calandrier, et minuteur.
+- Mois/Jalon 3 :
+  Notifications, systeme de recompenses, tests unitaire, debogage.
+- Mois/Jalon 4 :
+  fonctionnalités avancées.
