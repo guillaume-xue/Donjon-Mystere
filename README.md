@@ -11,7 +11,7 @@ Dans le cas où il n’accomplit pas les tâches ou quitte l’application penda
 
 ## Testabilité du Projet
 
-Testes unitaire pour verifier que chaque fonctionnaliter fonctionne isolament.
+Testes unitaire pour verifier que chaque fonctionnaliter fonctionne isolément.
 
 S’assurer que les tâches terminées sont correctement comptabilisées pour l’attribution de l’argent virtuel.
 
