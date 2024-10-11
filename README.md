@@ -1,93 +1,30 @@
-# XUE-YU-pprog-2024
+# Projet de Programmation - Application Smartphone
 
+## Thème du Projet
 
+Cette application a pour but d’organiser et de permettre à l’utilisateur de se concentrer sur son travail.
 
-## Getting started
+L’objectif est de faire en sorte que l’utilisateur puisse rester concentré sur son travail en restant sur l’application, sans l’éteindre ni passer à une autre. Elle propose également un calendrier pour s’organiser à long terme, ainsi qu’une liste de tâches (to-do list) pour les tâches à accomplir dans la semaine. L’utilisateur peut également utiliser un minuteur pour fixer le temps de travail, Il recevra des notifications personnalisées en fonction des fonctionnalités citées précédemment.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Après chaque tâche accomplie ou chaque session de travail, l’utilisateur gagne de “l'argent” virtuel, qu’il peut utiliser pour acheter des cosmétiques pour l’application ou même débloquer des fonctionnalités supplémentaires (notes manuscrites, flashcards, etc.).
+Dans le cas où il n’accomplit pas les tâches ou quitte l’application pendant le temps de travail fixé, il ne gagnera pas "d’argent" virtuel, voire même en perdre.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Testabilité du Projet
 
-## Add your files
+Testes unitaire pour verifier que chaque fonctionnaliter fonctionne isolament.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+S’assurer que les tâches terminées sont correctement comptabilisées pour l’attribution de l’argent virtuel.
 
-```
-cd existing_repo
-git remote add origin https://moule.informatique.univ-paris-diderot.fr/yu/xue-yu-pprog-2024.git
-git branch -M main
-git push -uf origin main
-```
+Vérifier que les boutons fonctionnent correctement (démarrer le minuteur, ajouter une tâche, etc.).
 
-## Integrate with your tools
+Tester l’affichage des données dans le calendrier
 
-- [ ] [Set up project integrations](https://moule.informatique.univ-paris-diderot.fr/yu/xue-yu-pprog-2024/-/settings/integrations)
+Vérifier que l’application ouvre un pop-up pour l’utilisateur quand il essaie de quitter l’application sans finir une tâche
 
-## Collaborate with your team
+Tester les notifications pour encourager l'utilisateur à rester concentré.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## Autre
 
-## Test and Deploy
+On va utiliser des APIs pour des tâches précises (comme vérifier si l’utilisateur ne quitte pas l’application), mais toutes les autres fonctionnalités seront codées.
 
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## Calandrier/Jalons
