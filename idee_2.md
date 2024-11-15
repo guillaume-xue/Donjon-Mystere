@@ -1,8 +1,8 @@
-#WuKong : Quête de l’Arme Ultime
+# WuKong : Quête de l’Arme Ultime
 
 C’est un jeu d’action et de plateforme en 2D inspiré de la légende du Roi Singe, Sun Wukong, en quête d’une arme légendaire. Le jeu combine un style de combat intense avec une progression narrative captivante. À travers des arènes et des niveaux variés, le joueur affronte des ennemis et des boss redoutables, dont chacun possède ses propres attaques et patterns, offrant ainsi des défis de plus en plus complexes.
 
-##Points Clés du Jeu :
+## Points Clés du Jeu :
 
 Mécaniques de Combat et Phases de Boss :
 Chaque boss possède des phases d’attaque qui deviennent plus puissantes et variées au fur et à mesure du combat. Par exemple, le Roi-Dragon de la Mer de l’Est attaque avec des vagues d'eau, des projectiles et des invocations de créatures aquatiques, tandis que les Dragons des Quatre Mers coordonnent leurs attaques élémentaires.
@@ -14,7 +14,7 @@ Stratégie et Adaptation : \* Le joueur doit apprendre et adapter ses stratégie
 
 Système de Physique Simplifiée et Rendu en 2D : \* Grâce à une physique simplifiée mais réaliste, les mouvements de saut, de chute, et d'attaque de Wukong sont fluides et précis, favorisant une jouabilité agréable.
 
-##Méthodes de développement :
+## Méthodes de développement :
 
 Conception fonctionnelle : Un jeu a la gestion de l’état dynamique . La gestion des entités (joueur, ennemis, objets), utilisation des types algébriques et des fonctions pures.
 
