@@ -3,7 +3,7 @@
 une application mobile axée sur la lecture rapide et la prise de notes synthétiques
 utile dans un contexte où les utilisateurs souhaitent optimiser leur temps de lecture et améliorer la rétention d’informations.
 
-##Enjeux possibles dans la production de l’application :
+## Enjeux possibles dans la production de l’application :
 
 Simplicité et efficacité : application intuitive pour ne pas perdre de temps, surtout pour des utilisateurs cherchant à lire rapidement et à prendre des notes.
 
