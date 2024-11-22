@@ -15,6 +15,8 @@ Pour chaque type de case, il est nécessaire d'implémenter les conditions, les 
 
 Enfin on peut utilser l'agorithme d'**Aldous-Broder ou de Prim** pour rendre l'agencement plus aléatoire et linéaire.
 
+Précision : l'idée serait de fragmenter la carte en plusieurs sous zones et dans chacune de ces sous zones on lance un automate sur une case avec un type aléatoire/définit puis à la fin on effectue un parcours avec prim pour relier ces zones entres eux si un chemin n'existe aps déjà.
+
 <!--
 -Structure des données du donjon
 Le donjon peut être représenté comme une matrice 2D de cases, chaque case représentant un type de terrain (sol, mur, porte, etc.).
