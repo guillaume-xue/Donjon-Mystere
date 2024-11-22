@@ -8,7 +8,13 @@ TODO pour la semaine prochaine :
 
 On se dirigerait vers l'une des deux idées de jeux.
 TODO pour la semaine prochaine
-[ ] définir l'état du jeu avec des types OCaml
-[ ] trouver des idées d'interactions intéressantes à générer procéduralement dans l'état du jeu
+[x] définir l'état du jeu avec des types OCaml
+[/] trouver des idées d'interactions intéressantes à générer procéduralement dans l'état du jeu
 [ ] expliciter encore un peu plus les méthodes de développement.
 
+# 22/11/2024 Degorre
+
+À faire :
+[/] trouver des idées d'interactions intéressantes à générer procéduralement dans l'état du jeu (à étoffer dans un document séparé)
+[ ] expliciter encore un peu plus les méthodes de développement. (ce qui a été écrit concerne des aspects puerement techniques. Par "méthodes de développement", on entend les aspects organisationnels du projet : répartition des tâches, utilitation des issues et des branches, etc.)
+[ ] commencer la génération procédurale (subdiviser les objectifs)
