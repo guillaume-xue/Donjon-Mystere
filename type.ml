@@ -1,8 +1,23 @@
+(* Type pour représenter le levier et les portes *)
+type cross = 
+  | Simple_or_Double of bool
+  | Lever of int
+  | Door_1 of int
+  | Door_2  of int
+
+(* Type pour représenter l'eau, la glace et le temps de transformation *)
+type water_ice =
+  | Water of bool
+  | Ice of bool
+  | Delay of int
+
 (* Type pour représenter les cases du donjon *)
 type cell =
   | Wall                   (* Mur, infranchissable *)
   | Floor                  (* Sol, franchissable *)
-  | Door                   (* Porte, permet de relier deux salles *)
+  | Water_Ice of water_ice (* Eau pouvant se geler pour débloquer des passages *)
+  | Exit                   (* Sortie, permet d'aller au niveau suivant ou de s'arrêter*)
+  | Door of cross          (* Porte, permet de relier deux salles *)
   | Monster of int         (* Monstre avec un identifiant pour le lier à une entité *)
   | Treasure of int        (* Trésor avec un identifiant pour l'inventaire *)
   | Player                 (* Joueur *)
@@ -28,6 +43,12 @@ type monster = {
   behavior : string;        (* Comportement, ex. "aggressif", "fuite" *)
 }
 
+(* Type pour représenter les objets *)
+type item =
+  | Weapon of { name : string; damage : int }  (* Arme avec nom et dégâts *)
+  | Armor of { name : string; defense : int }  (* Armure avec nom et défense *)
+  | Potion of { name : string; effect : string; potency : int }  (* Potion *)
+
 (* Type pour représenter le joueur *)
 type player = {
   name : string;            (* Nom du joueur *)
@@ -35,12 +56,6 @@ type player = {
   stats : stats;            (* Statistiques du joueur *)
   inventory : item list;    (* Inventaire contenant des objets *)
 }
-
-(* Type pour représenter les objets *)
-type item =
-  | Weapon of { name : string; damage : int }  (* Arme avec nom et dégâts *)
-  | Armor of { name : string; defense : int }  (* Armure avec nom et défense *)
-  | Potion of { name : string; effect : string; potency : int }  (* Potion *)
 
 (* Type pour représenter l’état du jeu *)
 type game_state = {

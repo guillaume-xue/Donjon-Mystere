@@ -10,7 +10,8 @@ Un jeu de type roguelike inspiré de la saga "donjon mystère" et "Deep Rock Gal
 
 On utilise l’algorithme des **arbres de partition binaire** pour découper l’espace et générer une carte cohérente dans lequel on attribue chaque zone à une salle ou couloirs etc.
 
-Puis on utilise des **automates cellulaires** pour générer des cavernes ou des zones "naturelles" dans le donjon dans lesquelles on vient ajouter des obstacles, des trésors, et des ennemis.
+Puis on utilise des **automates cellulaires** pour générer des cavernes ou des zones "naturelles" dans le donjon dans lesquelles on vient ajouter des obstacles, des trésors, et des ennemis.\
+Pour chaque type de case, il est nécessaire d'implémenter les conditions, les probabilités ou les événements qui pourront déclancher son apparition.
 
 Enfin on peut utilser l'agorithme d'**Aldous-Broder ou de Prim** pour rendre l'agencement plus aléatoire et linéaire.
 
