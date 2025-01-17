@@ -13,6 +13,8 @@ On utilise l’algorithme des **arbres de partition binaire** pour découper l�
 Puis on utilise des **automates cellulaires** pour générer des cavernes ou des zones "naturelles" dans le donjon dans lesquelles on vient ajouter des obstacles, des trésors, et des ennemis.\
 Pour chaque type de case, il est nécessaire d'implémenter les conditions, les probabilités ou les événements qui pourront déclancher son apparition.
 
+Utilisation des algorithmes de bruit (Worley) pour generé les differents zones de la map.
+
 Enfin on peut utilser l'agorithme d'**Aldous-Broder ou de Prim** pour rendre l'agencement plus aléatoire et linéaire.
 
 Précision : l'idée serait de fragmenter la carte en plusieurs sous zones et dans chacune de ces sous zones on lance un automate sur une case avec un type aléatoire/définit puis à la fin on effectue un parcours avec prim pour relier ces zones entres eux si un chemin n'existe aps déjà.
