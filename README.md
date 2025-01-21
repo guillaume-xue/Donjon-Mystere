@@ -10,14 +10,9 @@ Un jeu de type roguelike inspiré de la saga "donjon mystère" et "Deep Rock Gal
 
 On utilise l’algorithme des **arbres de partition binaire** pour découper l’espace et générer une carte cohérente dans lequel on attribue chaque zone à une salle ou couloirs etc.
 
-Puis on utilise des **automates cellulaires** pour générer des cavernes ou des zones "naturelles" dans le donjon dans lesquelles on vient ajouter des obstacles, des trésors, et des ennemis.\
-Pour chaque type de case, il est nécessaire d'implémenter les conditions, les probabilités ou les événements qui pourront déclancher son apparition.
-
-Utilisation des algorithmes de bruit (Worley) pour generé les differents zones de la map.
+Puis on utilise des **automates cellulaires** pour générer des cavernes ou des zones "naturelles" dans le donjon dans lesquelles on vient ajouter des obstacles, des trésors, et des ennemis.
 
 Enfin on peut utilser l'agorithme d'**Aldous-Broder ou de Prim** pour rendre l'agencement plus aléatoire et linéaire.
-
-Précision : l'idée serait de fragmenter la carte en plusieurs sous zones et dans chacune de ces sous zones on lance un automate sur une case avec un type aléatoire/définit puis à la fin on effectue un parcours avec prim pour relier ces zones entres eux si un chemin n'existe aps déjà.
 
 <!--
 -Structure des données du donjon
@@ -97,3 +92,31 @@ Configurer CI/CD (à voir comment ça fonctionne et comment l'adapter à du ocam
 - Gestion de l’Inventaire et des Objets : 2 semaine
 - Affichage et Interface Utilisateur : 2 semaine
 - Aspects supplémentaires (À voir)
+
+## Pré-requit
+
+Pour MacOs assurez-vous que XQuartz est installer et en cours d'exécution.
+
+```bash
+https://www.xquartz.org
+```
+
+Utilisant Homebrew :
+
+```bash
+brew install xquartz
+```
+
+## Compilation
+
+Pour executer le projet :
+
+```bash
+  make run
+```
+
+Pour nettoyer les fichiers build :
+
+```bash
+  make clean
+```
