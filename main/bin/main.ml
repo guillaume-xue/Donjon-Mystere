@@ -1,1 +1,3 @@
-let () = Menu.menu ()
+open Controller.GameController
+
+let() = run ()

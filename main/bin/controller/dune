@@ -1,0 +1,5 @@
+(library
+ (name controller)
+ (public_name main.controller)
+ (libraries raylib ctypes main.view)
+ (modules menuController gameController))

@@ -1,4 +1,5 @@
 (executable
  (public_name main)
  (name main)
- (libraries graphics))
+ (libraries raylib ctypes main.controller main.view)
+ (modules main))
