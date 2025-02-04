@@ -10,15 +10,15 @@ let run () =
   init_window screen_width screen_height "Mystery Dungeon";
 
   (* Charger une image et la redimensionner *)
-  let titre = load_image "resources/menu/title.png" in
-  let image_width = Image.width titre in
-  let image_height = Image.height titre in
+  let title = load_image "resources/menu/title.png" in
+  let image_width = Image.width title in
+  let image_height = Image.height title in
   let new_width = image_width * 2 in
   let new_height = image_height * 2 in
-  image_resize (addr titre) new_width new_height;
-  let texture = load_texture_from_image image in
+  image_resize (addr title) new_width new_height;
+  let texture = load_texture_from_image title in
   (* On peut décharger l'image car elle est maintenant en texture *)
-  unload_image titre; 
+  unload_image title; 
 
   (* Générer un nombre aléatoire entre 1 et 7 *)
   Random.self_init ();
@@ -45,7 +45,7 @@ let run () =
         draw_menu texture background_texture screen_height screen_width new_height new_width;
 
         (* Vérifier si un bouton est cliqué *)
-        check_button_click ();
+        check_screen_click ();
 
         end_drawing ();
         main_loop ()
