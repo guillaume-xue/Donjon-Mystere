@@ -1,6 +1,6 @@
 open Raylib
 
-let check_button_click () =
+let check_screen_click () =
   if is_mouse_button_pressed MouseButton.Left then
     let mouse_x = get_mouse_x () in
     let mouse_y = get_mouse_y () in

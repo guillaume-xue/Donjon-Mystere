@@ -10,22 +10,21 @@ let run () =
   init_window screen_width screen_height "Mystery Dungeon";
 
   (* Charger une image et la redimensionner *)
-  let image = load_image "resources/menu/title.png" in
-  let image_width = Image.width image in
-  let image_height = Image.height image in
+  let titre = load_image "resources/menu/title.png" in
+  let image_width = Image.width titre in
+  let image_height = Image.height titre in
   let new_width = image_width * 2 in
   let new_height = image_height * 2 in
-  image_resize (addr image) new_width new_height;
-
+  image_resize (addr titre) new_width new_height;
   let texture = load_texture_from_image image in
-  unload_image image; (* On peut décharger l'image car elle est maintenant en texture *)
+  (* On peut décharger l'image car elle est maintenant en texture *)
+  unload_image titre; 
 
   (* Générer un nombre aléatoire entre 1 et 7 *)
   Random.self_init ();
   let rand = Random.int 7 + 1 in
-
+  (* Charger une image de fond aléatoire *)
   let file = "resources/menu/image-menu-" ^ string_of_int rand ^ ".png" in
-
   let background = load_image file in
   image_resize (addr background) screen_width screen_height;
   let background_texture = load_texture_from_image background in
