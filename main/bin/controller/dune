@@ -1,5 +1,5 @@
 (library
  (name controller)
  (public_name main.controller)
- (libraries raylib ctypes main.view)
- (modules menuController gameController))
+ (libraries raylib ctypes yojson main.view main.util main.model)
+ (modules gameController))
