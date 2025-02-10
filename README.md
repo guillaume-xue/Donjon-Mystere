@@ -107,6 +107,15 @@ Utilisant Homebrew :
 brew install xquartz
 ```
 
+Pour les utilisateurs linux:
+
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev
+opam install raylib yojson
+```
+
 ## Compilation
 
 Pour executer le projet :
