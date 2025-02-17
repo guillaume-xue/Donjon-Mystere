@@ -1,4 +1,8 @@
 open Controller.GameController
+open Model.GenerationMapCellulaire
 
-let() = run ()
-(* let () = Generation_Map_Cellulaire.generation_Map_Cellulaire () *)
+
+let() = 
+  generation_Map_Cellulaire ();
+  run ()
+  

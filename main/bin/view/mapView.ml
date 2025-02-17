@@ -27,8 +27,13 @@ let draw_map (map: map) =
     match tiles with
     | [] -> ()
     | tile :: rest ->
-      let texture = List.nth !textures tile.texture_id in
-      
+      let num n =
+        match n with
+        | 0 -> 0
+        | 1 -> 4
+        | _ -> 0
+      in
+      let texture = List.nth !textures (num tile.texture_id) in
       draw_texture texture (tile.x * 24) (tile.y * 24) Color.white;
       draw_textures rest;
   in
