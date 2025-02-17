@@ -2,4 +2,4 @@
  (name model)
  (public_name main.model)
  (libraries raylib ctypes)
- (modules generationMapCellulaire mapModel))
+ (modules generationMapCellulaire))
