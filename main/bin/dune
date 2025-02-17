@@ -1,5 +1,5 @@
 (executable
  (public_name main)
  (name main)
- (libraries raylib ctypes yojson main.controller main.view main.model)
+ (libraries main.controller main.view main.model main.util)
  (modules main))
