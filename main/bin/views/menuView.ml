@@ -8,7 +8,11 @@ let title_pos_y = ref 0
 let text_pos_x = ref 0
 let text_pos_y = ref 0
 
-(* Fonction d'initialisation *)
+(**
+  [init_menu screen_width screen_height] initialise les textures pour le menu.
+  @param screen_width La largeur de l'écran.
+  @param screen_height La hauteur de l'écran.
+*)
 let init_menu screen_width screen_height =
   (* Charger et redimensionner l'image du titre *)
   let title = load_image "resources/menu/title.png" in
@@ -34,7 +38,9 @@ let init_menu screen_width screen_height =
   text_pos_x := screen_width / 2 - 80;
   text_pos_y := screen_height - 150
 
-(* Fonction pour dessiner le menu *)
+(**
+  [draw_menu ()] dessine le menu.
+*)
 let draw_menu () =
   let time = get_time () in
   let blink = int_of_float (time *. 2.0) mod 3 = 0 in

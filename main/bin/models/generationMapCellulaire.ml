@@ -1,6 +1,6 @@
 (* TODO: Ajouter un menu option pour une meilleur interaction *)
 
-open Util.Types
+open Utils.Types
 
 (** 
   [tile_to_yojson] convertit une tuile en une représentation JSON.
@@ -15,7 +15,7 @@ open Util.Types
   - ["y"] : la position y de la tuile.
   - ["texture_id"] : l'identifiant de la texture associée à la tuile.
 *)
-let tile_to_yojson tile =
+let tile_to_yojson (tile : tile) =
   `Assoc [
     ("x", `Int tile.x);
     ("y", `Int tile.y);
@@ -35,7 +35,7 @@ let tile_to_yojson tile =
     - ["height"] : la hauteur de la carte.
     - ["tiles"] : une liste de tuiles converties en JSON.
 *)
-let map_to_yojson map =
+let map_to_yojson (map: map) =
   `Assoc [
     ("width", `Int map.width);
     ("height", `Int map.height);
@@ -87,7 +87,7 @@ let initialisation_terrain () =
 *)
 let nb_voisins_vivant tiles x y =
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1); (1, 1); (-1, -1); (1, -1); (-1, 1)] in
-  List.fold_left (fun acc tile ->
+  List.fold_left (fun acc (tile : tile) ->
     if List.exists (fun (dx, dy) -> tile.x = x + dx && tile.y = y + dy) directions then
       acc + tile.texture_id
     else
@@ -109,7 +109,7 @@ let nb_voisins_vivant tiles x y =
 let rec regles_auto_cell tiles n =
   if n = 0 then tiles
   else
-    let new_tiles = List.map (fun tile ->
+    let new_tiles = List.map (fun (tile : tile) ->
       let voisins = nb_voisins_vivant tiles tile.x tile.y in
       let texture_id =
         match tile.texture_id with
@@ -145,7 +145,7 @@ let flood_fill tiles visited x y =
         visited := (cx, cy) :: !visited;
         let new_stack = List.fold_left (fun acc (dx, dy) ->
           let nx, ny = (cx + dx, cy + dy) in
-          if List.exists (fun tile -> tile.x = nx && tile.y = ny && tile.texture_id = 1) tiles then
+          if List.exists (fun (tile: tile) -> tile.x = nx && tile.y = ny && tile.texture_id = 1) tiles then
             (nx, ny) :: acc
           else
             acc
@@ -173,12 +173,12 @@ let remove_zone tiles x y =
     match stack with
     | [] -> updated_tiles
     | (cx, cy) :: rest ->
-      let updated_tiles = List.map (fun tile ->
+      let updated_tiles = List.map (fun (tile : tile) ->
         if tile.x = cx && tile.y = cy then { tile with texture_id = 0 } else tile
       ) updated_tiles in
       let new_stack = List.fold_left (fun acc (dx, dy) ->
         let nx, ny = (cx + dx, cy + dy) in
-        if List.exists (fun tile -> tile.x = nx && tile.y = ny && tile.texture_id = 1) updated_tiles then
+        if List.exists (fun (tile: tile) -> tile.x = nx && tile.y = ny && tile.texture_id = 1) updated_tiles then
           (nx, ny) :: acc
         else
           acc
@@ -228,7 +228,7 @@ let remove_small_zones tiles =
 *)
 let print_grid tiles =
   let grid = Array.make_matrix taille_terrain_x taille_terrain_y '.' in
-  List.iter (fun tile ->
+  List.iter (fun (tile: tile) ->
     grid.(tile.x).(tile.y) <- if tile.texture_id = 0 then '.' else '#'
   ) tiles;
   Array.iter (fun row ->

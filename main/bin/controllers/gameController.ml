@@ -1,26 +1,15 @@
 open Raylib
-open View.MapView
-open View.MenuView
-open Util.Types
-open Yojson.Basic
-open Yojson.Basic.Util
+open Views.MapView
+open Views.MenuView
+open Views.PlayerView
+open Models.GenerationMapCellulaire
+open Models.PlayerModel
+open Utils.Funcs
 
-(* Fonction pour charger une map depuis un fichier json *)
-let load_map_from_json (filename: string): map =
-  let json = from_file filename in
-  let width = json |> member "width" |> to_int in
-  let height = json |> member "height" |> to_int in
-  let tiles = json |> member "tiles" |> to_list |> List.map (fun tile ->
-    {
-      x = tile |> member "x" |> to_int;
-      y = tile |> member "y" |> to_int;
-      texture_id = tile |> member "texture_id" |> to_int;
-    }
-  ) in
-  { width; height; tiles }
-
-
-(* Fonction pour vérifier si l'écran a été cliqué *)
+(**
+  [check_screen_click ()] checks if the screen is clicked.
+  @return [true] if the screen is clicked, [false] otherwise.
+*)
 let check_screen_click () =
   if is_mouse_button_pressed MouseButton.Left then
     let mouse_x = get_mouse_x () in
@@ -35,7 +24,9 @@ let check_screen_click () =
   else
     false
 
-(* Fonction principale *)
+(**
+  [run ()] runs the game.
+*)
 let run () =
   let screen_width = 800 in
   let screen_height = 600 in
@@ -43,12 +34,23 @@ let run () =
   init_window screen_width screen_height "Mystery Dungeon";
   set_target_fps 60;
 
+  generation_Map_Cellulaire ();
   (* Initialisation *)
   init_map ();
+  init_player ();
+  set_player_screen (screen_width/2) (screen_height/2);
   init_menu screen_width screen_height;
 
   let is_click = ref false in
   let my_map = ref (load_map_from_json "resources/map/map.json") in
+
+  let draw ()=
+    begin_drawing ();
+    clear_background Color.raywhite;
+    draw_map !my_map;
+    draw_player !player;
+    end_drawing ()
+  in
 
   (* Boucle principale *)
   let rec main_loop () =
@@ -57,7 +59,7 @@ let run () =
     else
       if !is_click then
         begin
-          draw_map !my_map;
+          draw ();
           main_loop ()
         end
       else

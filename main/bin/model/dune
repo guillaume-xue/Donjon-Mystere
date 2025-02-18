@@ -1,5 +1,0 @@
-(library
- (name model)
- (public_name main.model)
- (libraries raylib ctypes yojson main.util)
- (modules generationMapCellulaire))

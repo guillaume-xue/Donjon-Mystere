@@ -1,0 +1,5 @@
+(library
+ (name models)
+ (public_name main.models)
+ (libraries raylib ctypes yojson main.utils)
+ (modules generationMapCellulaire playerModel))
