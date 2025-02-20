@@ -6,7 +6,6 @@ let textures = ref []
 (**
   [init_map ()] initializes the textures for the map.
 *)
-
 let init_map () =
   let image = load_image "resources/map/forest.png" in
   let rec init_textures x y =
@@ -28,8 +27,7 @@ let init_map () =
   [draw_map map] draws the map on the screen.
   @param map The map to draw.
 *)
-
-let draw_map (map: map) =
+let draw_map (map: map) (player: player) =
   let rec draw_textures (tiles: tile list) =
     match tiles with
     | [] -> ()
@@ -41,7 +39,7 @@ let draw_map (map: map) =
         | _ -> 0
       in
       let texture = List.nth !textures (num tile.texture_id) in
-      draw_texture texture (tile.x * 24) (tile.y * 24) Color.white;
+      draw_texture texture (player.screen_x + player.pos_x + tile.x * 24) (player.screen_y + player.pos_y + tile.y * 24) Color.white;
       draw_textures rest;
   in
   draw_textures map.tiles

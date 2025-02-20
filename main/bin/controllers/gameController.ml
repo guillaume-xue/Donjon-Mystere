@@ -36,10 +36,10 @@ let run () =
 
   generation_Map_Cellulaire ();
   (* Initialisation *)
-  init_map ();
-  init_player ();
-  set_player_screen (screen_width/2) (screen_height/2);
   init_menu screen_width screen_height;
+  init_player ();
+  set_player_screen (screen_width/2 - 12) (screen_height/2 - 12);
+  init_map ();
 
   let is_click = ref false in
   let my_map = ref (load_map_from_json "resources/map/map.json") in
@@ -47,9 +47,20 @@ let run () =
   let draw ()=
     begin_drawing ();
     clear_background Color.raywhite;
-    draw_map !my_map;
+    draw_map !my_map !player;
     draw_player !player;
     end_drawing ()
+  in
+
+  let update ()=
+    if is_key_down Key.Right then
+      move_player (-1) 0
+    else if is_key_down Key.Left then
+      move_player 1 0
+    else if is_key_down Key.Up then
+      move_player 0 1
+    else if is_key_down Key.Down then
+      move_player 0 (-1)
   in
 
   (* Boucle principale *)
@@ -60,6 +71,7 @@ let run () =
       if !is_click then
         begin
           draw ();
+          update ();
           main_loop ()
         end
       else
