@@ -41,3 +41,10 @@ type player = {
   screen_y: int;
   player_textures_id: int;
 }
+
+type screenState = 
+  | Intro 
+  | Select 
+  | NewGame 
+  | LoadGame 
+  | Game

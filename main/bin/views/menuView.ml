@@ -3,6 +3,10 @@ open Raylib
 (* Variables globales pour stocker les textures *)
 let title_texture = ref None
 let background_texture = ref None
+let select_texture = ref None
+let arrow_texture = ref None
+
+(* Variables pour le titre *)
 let title_pos_x = ref 0
 let title_pos_y = ref 0
 let text_pos_x = ref 0
@@ -36,12 +40,24 @@ let init_menu screen_width screen_height =
   unload_image background;
 
   text_pos_x := screen_width / 2 - 80;
-  text_pos_y := screen_height - 150
+  text_pos_y := screen_height - 150;
+
+  (* Charger select texture *)
+  let select = load_image "resources/menu/select.png" in
+  image_resize (addr select) screen_width screen_height;
+  select_texture := Some (load_texture_from_image select);
+  unload_image select;
+
+  (* Charger arrow texture *)
+  let arrow = load_image "resources/menu/arrow.png" in
+  image_resize (addr arrow) 20 20;
+  arrow_texture := Some (load_texture_from_image arrow);
+  unload_image arrow
 
 (**
-  [draw_menu ()] dessine le menu.
+  [draw_intro ()] dessine le menu.
 *)
-let draw_menu () =
+let draw_intro () =
   let time = get_time () in
   let blink = int_of_float (time *. 2.0) mod 3 = 0 in
 
@@ -59,4 +75,32 @@ let draw_menu () =
 
   if blink then
     draw_text "Appuie pour jouer" !text_pos_x !text_pos_y 20 Color.white;
+  end_drawing ()
+
+(**
+  [draw_select ()] dessine le menu de sélection.
+*)
+
+let draw_select () =
+  let time = get_time () in
+  let blink = int_of_float (time *. 2.0) mod 3 = 0 in
+  begin_drawing ();
+  clear_background Color.raywhite;
+  (* Dessiner le fond *)
+  (match !background_texture with
+  | Some texture -> draw_texture texture 0 0 Color.white
+  | None -> ());
+  (* Dessiner le fond *)
+  (match !select_texture with
+  | Some texture -> draw_texture texture 0 0 Color.white
+  | None -> ());
+  
+  (* Dessiner une fleche *)
+  if blink then 
+    (match !arrow_texture with
+    | Some texture -> draw_texture texture 70 58 Color.white
+    | None -> ());
+  (* Dessiner texte *)
+  draw_text "Nouvelle Partie" 100 60 20 Color.white;
+  draw_text "Autre" 100 90 20 Color.white;
   end_drawing ()
