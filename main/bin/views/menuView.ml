@@ -12,6 +12,13 @@ let title_pos_y = ref 0
 let text_pos_x = ref 0
 let text_pos_y = ref 0
 
+(* Variable pour la fleche *)
+let arrow_pos_x = ref 70
+let arrow_pos_y = ref 58
+
+(* Variable pour le texte select *)
+let text_select = ref "Voulez-vous creer une nouvelle partie ?"
+
 (**
   [init_menu screen_width screen_height] initialise les textures pour le menu.
   @param screen_width La largeur de l'écran.
@@ -98,9 +105,25 @@ let draw_select () =
   (* Dessiner une fleche *)
   if blink then 
     (match !arrow_texture with
-    | Some texture -> draw_texture texture 70 58 Color.white
+    | Some texture -> draw_texture texture !arrow_pos_x !arrow_pos_y Color.white
     | None -> ());
   (* Dessiner texte *)
   draw_text "Nouvelle Partie" 100 60 20 Color.white;
   draw_text "Autre" 100 90 20 Color.white;
+  draw_text !text_select 100 450 20 Color.white;
   end_drawing ()
+
+let set_arrow_up () =
+  arrow_pos_y := 58
+
+let set_arrow_down () =
+  arrow_pos_y := 88
+
+let is_arrow_up () =
+  !arrow_pos_y = 58
+  
+let set_text_select_up () =
+  text_select := "Voulez-vous creer une nouvelle partie ?"
+
+let set_text_select_down () =
+  text_select := "Voulez-vous continuer la partie en cours ?"

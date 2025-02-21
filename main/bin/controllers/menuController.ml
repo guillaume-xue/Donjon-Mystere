@@ -1,4 +1,5 @@
 open Views.MenuView
+open Models.GenerationMapCellulaire
 open Utils.Types
 open Raylib
 
@@ -24,17 +25,21 @@ let check_intro_screen_click () =
     Intro
 
 let check_select_screen_click () =
-  if is_mouse_button_pressed MouseButton.Left then
-    let mouse_x = get_mouse_x () in
-    let mouse_y = get_mouse_y () in
-    if mouse_x >= 0 && mouse_x <= 800 then (* Largeur de la fenêtre *)
-      if mouse_y >= 0 && mouse_y <= 600 then (* Hauteur de la fenêtre *)
-        Game
-      else
-        Select
-    else
-      Select
-  else
+  if is_key_down Key.Enter then
+    if is_arrow_up() then (
+      generation_Map_Cellulaire();
+      Game
+    ) else
+      Game
+  else if is_key_down Key.Down then (
+    set_arrow_down ();
+    set_text_select_down ();
+    Select
+  ) else if is_key_down Key.Up then (
+    set_arrow_up ();
+    set_text_select_up ();
+    Select
+  ) else
     Select
 
 let update_intro () =
