@@ -1,4 +1,5 @@
 open Types
+open Settings_map
 
 (** 
   [calcul_arete] calcule toutes les arêtes possibles entre toutes 
@@ -127,9 +128,12 @@ let create_path (x1, y1) (x2, y2) =
 let connect_zones tiles zones =
   let aretes = calcul_arete zones in
   let mst = prim zones aretes in
+  let filtered_aretes = List.filter (fun _ ->
+    Random.float 1.0 <= proba_route_bonus
+  ) aretes in
 
   (* Ajouter les chemins du MST aux tuiles *)
   List.fold_left (fun acc arete ->
     let path = create_path arete.coord1 arete.coord2 in
     acc @ path
-  ) tiles mst
+  ) tiles (mst @ filtered_aretes)
