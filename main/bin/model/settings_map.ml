@@ -1,0 +1,6 @@
+(* TODO: Ajouter un menu option pour une meilleur interaction *)
+let map_size_x = 50 (* Taille du terrain X *)
+let map_size_y = 50 (* Taille du terrain Y *)
+let density = 0.45 (* Proportion initiale de cellules vivantes *)
+let iterations = 5 (* Nombre d'itérations de l'automate cellulaire *)
+let map_min_size = 30 (* Taille minimale pour garder une zone *)
