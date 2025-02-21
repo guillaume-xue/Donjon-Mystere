@@ -21,7 +21,7 @@ type tile = {
 *)
 type zone = {
   id: int;
-  (* size: int; *)
+  size: int;
   tiles: tile list;
 }
 

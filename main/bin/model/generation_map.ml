@@ -87,7 +87,7 @@ let get_all_zones tiles =
     | tile :: rest ->
       if tile.texture_id <> 0 && not (List.exists (fun (vx, vy) -> vx = tile.x && vy = tile.y) !visited) then
         let zone_tiles = get_zone tiles visited tile.x tile.y in
-        aux rest ({ id = List.length zones; tiles = zone_tiles } :: zones)
+        aux rest ({ id = List.length zones; size = List.length zone_tiles; tiles = zone_tiles } :: zones)
       else
         aux rest zones
   in
