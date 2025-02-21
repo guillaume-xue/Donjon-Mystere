@@ -63,3 +63,9 @@ let check_key_pressed () =
 let update_game ()=
   check_key_pressed ();
   draw_game ()
+
+(**
+  [get_player ()] returns the player.
+  @return The player.
+*)
+let get_player () = !player

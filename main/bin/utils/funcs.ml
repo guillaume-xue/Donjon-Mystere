@@ -34,3 +34,13 @@ let load_player_from_json (filename: string): player =
     screen_y = json |> member "screen_y" |> to_int;
     player_textures_id = json |> member "player_textures_id" |> to_int;
   }
+
+let save_player_to_json (filename: string) (player: player) =
+  let json = `Assoc [
+    ("pos_x", `Int player.pos_x);
+    ("pos_y", `Int player.pos_y);
+    ("screen_x", `Int player.screen_x);
+    ("screen_y", `Int player.screen_y);
+    ("player_textures_id", `Int player.player_textures_id);
+  ] in
+  to_file filename json

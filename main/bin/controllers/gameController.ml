@@ -1,5 +1,6 @@
 open Raylib
 open Utils.Types
+open Utils.Funcs
 open MenuController
 open MapController
 
@@ -44,7 +45,10 @@ let run () =
   (* Boucle principale *)
   let rec main_loop () =
     if window_should_close () then
-      close_window ()
+      begin
+        save_player_to_json "resources/map/player.json" (get_player());
+        close_window ()
+      end
     else
       begin
         check_screen_state ();
