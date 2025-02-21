@@ -128,6 +128,8 @@ let create_path (x1, y1) (x2, y2) =
 let connect_zones tiles zones =
   let aretes = calcul_arete zones in
   let mst = prim zones aretes in
+
+  (* Choisir parmi la liste d'arete de potentiel nouveau chemin *)
   let filtered_aretes = List.filter (fun _ ->
     Random.float 1.0 <= proba_route_bonus
   ) aretes in
