@@ -3,6 +3,11 @@ open Models.GenerationMapCellulaire
 open Utils.Types
 open Raylib
 
+(**
+  [init_menu_controller screen_width screen_height] initializes the menu controller.
+  @param screen_width The width of the screen.
+  @param screen_height The height of the screen.
+*)
 let init_menu_controller screen_width screen_height =
   init_menu screen_width screen_height
 
@@ -24,7 +29,11 @@ let check_intro_screen_click () =
   else
     Intro
 
-let check_select_screen_click () =
+(**
+    [check_select_screen_select ()] checks if player selected an option.
+    @return [Game] if player selected an option, [Select].
+*)
+let check_select_screen_select () =
   if is_key_down Key.Enter then
     if is_arrow_up() then (
       generation_Map_Cellulaire();
@@ -42,8 +51,14 @@ let check_select_screen_click () =
   ) else
     Select
 
+(**
+  [update_intro ()] updates the intro screen.
+*)
 let update_intro () =
   draw_intro ()
 
+(**
+  [update_select ()] updates the select screen.
+*)
 let update_select () =
   draw_select ()

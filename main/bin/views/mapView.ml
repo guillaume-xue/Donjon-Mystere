@@ -1,6 +1,7 @@
 open Raylib
 open Utils.Types
 
+(* Textures is the list of textures for the map *)
 let textures = ref []
 
 (**
@@ -39,7 +40,7 @@ let draw_map (map: map) (player: player) =
         | _ -> 0
       in
       let texture = List.nth !textures (num tile.texture_id) in
-      draw_texture texture (player.screen_x + player.pos_x + tile.x * 24) (player.screen_y + player.pos_y + tile.y * 24) Color.white;
+      draw_texture texture (player.screen_x + tile.x * 24 - player.pos_x * 24) (player.screen_y + tile.y * 24 - player.pos_y * 24) Color.white;
       draw_textures rest;
   in
   draw_textures map.tiles

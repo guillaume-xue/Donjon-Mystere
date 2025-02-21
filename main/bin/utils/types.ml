@@ -42,6 +42,15 @@ type player = {
   player_textures_id: int;
 }
 
+(** 
+  Type [screenState] représentant l'état de l'écran.
+
+  @param Intro Écran d'introduction.
+  @param Select Écran de sélection.
+  @param NewGame Écran de nouvelle partie.
+  @param LoadGame Écran de chargement de partie.
+  @param Game Écran de jeu.
+*)
 type screenState = 
   | Intro 
   | Select 

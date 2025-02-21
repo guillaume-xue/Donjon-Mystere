@@ -30,7 +30,7 @@ let run () =
       end
     | Select ->
       begin
-        screen_state := check_select_screen_click ();
+        screen_state := check_select_screen_select ();
         update_select ()
       end
     | Game ->

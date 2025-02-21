@@ -90,7 +90,7 @@ let draw_intro () =
 
 let draw_select () =
   let time = get_time () in
-  let blink = int_of_float (time *. 2.0) mod 3 = 0 in
+  let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
   clear_background Color.raywhite;
   (* Dessiner le fond *)
@@ -113,17 +113,33 @@ let draw_select () =
   draw_text !text_select 100 450 20 Color.white;
   end_drawing ()
 
+(**
+  [set_arrow_up ()] déplace la flèche vers le haut.
+*)
 let set_arrow_up () =
   arrow_pos_y := 58
 
+(**
+  [set_arrow_down ()] déplace la flèche vers le bas.
+*)
 let set_arrow_down () =
   arrow_pos_y := 88
 
+(**
+  [is_arrow_up ()] vérifie si la flèche est en haut.
+  @return [true] si la flèche est en haut, [false] sinon.
+*)
 let is_arrow_up () =
   !arrow_pos_y = 58
   
+(**
+  [set_text_select_up ()] change le texte de la selection en haut.
+*)
 let set_text_select_up () =
   text_select := "Voulez-vous creer une nouvelle partie ?"
 
+(**
+  [set_text_select_down ()] change le texte de la selection en bas.
+*)
 let set_text_select_down () =
   text_select := "Voulez-vous continuer la partie en cours ?"
