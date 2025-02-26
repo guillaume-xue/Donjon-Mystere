@@ -29,7 +29,7 @@ let init_map () =
   @param map The map to draw.
 *)
 let draw_map (map: map) (player: player) =
-  let rec draw_textures (tiles: tile list) =
+  let rec draw_textures (tiles: tile list) (x: float) (y: float) =
     match tiles with
     | [] -> ()
     | tile :: rest ->
@@ -40,9 +40,7 @@ let draw_map (map: map) (player: player) =
         | _ -> 0
       in
       let texture = List.nth !textures (num tile.texture_id) in
-      draw_texture texture (player.screen_x + tile.x * 24 - player.pos_x * 24) (player.screen_y + tile.y * 24 - player.pos_y * 24) Color.white;
-      draw_textures rest;
+      draw_texture texture (player.screen_x + tile.x * 24 + int_of_float(x)) (player.screen_y + tile.y * 24 + int_of_float(y)) Color.white;
+      draw_textures rest x y
   in
-  draw_textures map.tiles
-  
-  
+  draw_textures map.tiles (player.pos_x *. 24.0) (player.pos_y *. 24.0);

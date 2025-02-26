@@ -28,19 +28,27 @@ let load_map_from_json (filename: string): map =
 let load_player_from_json (filename: string): player =
   let json = from_file filename in
   {
-    pos_x = json |> member "pos_x" |> to_int;
-    pos_y = json |> member "pos_y" |> to_int;
+    pos_x = json |> member "pos_x" |> to_float;
+    pos_y = json |> member "pos_y" |> to_float;
     screen_x = json |> member "screen_x" |> to_int;
     screen_y = json |> member "screen_y" |> to_int;
     player_textures_id = json |> member "player_textures_id" |> to_int;
+    target_x = json |> member "target_x" |> to_float;
+    target_y = json |> member "target_y" |> to_float;
+    moving = false;
   }
 
+(**
+  
+*)
 let save_player_to_json (filename: string) (player: player) =
   let json = `Assoc [
-    ("pos_x", `Int player.pos_x);
-    ("pos_y", `Int player.pos_y);
+    ("pos_x", `Float player.pos_x);
+    ("pos_y", `Float player.pos_y);
     ("screen_x", `Int player.screen_x);
     ("screen_y", `Int player.screen_y);
     ("player_textures_id", `Int player.player_textures_id);
+    ("target_x", `Float player.target_x);
+    ("target_y", `Float player.target_y);
   ] in
   to_file filename json

@@ -33,13 +33,19 @@ type map = {
   @param screen_x Coordonnée x de l'écran.
   @param screen_y Coordonnée y de l'écran.
   @param player_textures_id Identifiant de la texture associée au joueur.
+  @param target_x Coordonnée x cible du joueur.
+  @param target_y Coordonnée y cible du joueur.
+  @param moving Indique si le joueur est en mouvement.
 *)
 type player = {
-  pos_x: int;
-  pos_y: int;
+  pos_x: float;
+  pos_y: float;
   screen_x: int;
   screen_y: int;
   player_textures_id: int;
+  target_x: float;
+  target_y: float;
+  moving: bool;
 }
 
 (** 

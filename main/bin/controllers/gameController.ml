@@ -36,8 +36,7 @@ let run () =
       end
     | Game ->
       begin
-        update_game ();
-        draw_game ()
+        update_game ()
       end
     | _ -> ()
   in
