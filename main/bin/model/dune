@@ -2,4 +2,4 @@
  (name model)
  (public_name main.model)
  (libraries raylib ctypes yojson main.util)
- (modules generationMapCellulaire))
+ (modules types json_conversions automate_1 settings_map prim_2 generation_map))
