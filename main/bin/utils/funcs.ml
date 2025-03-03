@@ -32,14 +32,18 @@ let load_player_from_json (filename: string): player =
     pos_y = json |> member "pos_y" |> to_float;
     screen_x = json |> member "screen_x" |> to_int;
     screen_y = json |> member "screen_y" |> to_int;
-    player_textures_id = json |> member "player_textures_id" |> to_int;
+    player_textures_id = 0;
     target_x = json |> member "target_x" |> to_float;
     target_y = json |> member "target_y" |> to_float;
     moving = false;
+    state = Idle;
+    direction = Down;
   }
 
 (**
-  
+  [save_player_to_json filename player] saves a player to a JSON file.
+  @param filename The name of the file to save.
+  @param player The player to save.
 *)
 let save_player_to_json (filename: string) (player: player) =
   let json = `Assoc [

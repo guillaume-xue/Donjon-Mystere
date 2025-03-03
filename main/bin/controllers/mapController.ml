@@ -9,10 +9,13 @@ open Utils.Funcs
 let my_map = ref { width = 0; height = 0; tiles = [] }
 
 (* Player *)
-let player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = 0.0; target_y = 0.0; moving = false }
+let player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = 0.0; target_y = 0.0; moving = false; state = Idle; direction = Down }
 
 (* Last player position update time *)
 let last_update_time = ref 0.0
+
+(* Last texture update time *)
+let last_texture_update_time = ref 0.0
 
 (**
   [init_map_controller screen_width screen_height] initializes the map controller.
@@ -24,6 +27,7 @@ let init_map_controller screen_width screen_height=
   init_player ();
   player := (load_player_from_json "resources/map/player.json");
   player := set_player_screen !player (screen_width / 2) (screen_height / 2);
+  player := set_player_texture_id !player 24;
   my_map := load_map_from_json "resources/map/map.json"
 
 (**
@@ -37,25 +41,37 @@ let draw_game () =
   end_drawing ()
 
 (**
+  [increment_texture_id ()] increments the texture id.
+*)
+let increment_texture_id () =
+  if get_time () -. !last_texture_update_time >= 0.4 then begin
+    player := update_player_texture_id !player;
+    last_texture_update_time := get_time ()
+  end
+
+(**
   [new_player_pos ()] updates the player's position gradually towards the target.
 *)
 let new_player_pos () =
   let current_time = get_time () in
-  if current_time -. !last_update_time >= 0.1 then begin (* Update every 0.1 seconds *)
+  if current_time -. !last_update_time >= 0.2 then begin (* Update every 0.1 seconds *)
     let dx = !player.target_x -. !player.pos_x in (* Distance to target x *)
     let dy = !player.target_y -. !player.pos_y in (* Distance to target y *)
     let step = 0.1 in
     let new_x = if abs_float dx < step then !player.target_x else !player.pos_x +. (if dx > 0.0 then step else -.step) in
     let new_y = if abs_float dy < step then !player.target_y else !player.pos_y +. (if dy > 0.0 then step else -.step) in
+    if (!player.pos_x = !player.target_x && !player.pos_y = !player.target_y) then
+      player := set_player_moving !player false;
     if not(!player.moving) then begin 
       let new_x = if new_x <> floor new_x then floor new_x +. 1.0 else new_x in
       let new_y = if new_y <> floor new_y then floor new_y +. 1.0 else new_y in
       player := set_player_pos !player new_x new_y;
-      last_update_time := current_time
+      player := set_player_state !player Idle;
     end else begin
       player := set_player_pos !player new_x new_y;
-      last_update_time := current_time
-    end
+      player := set_player_state !player Moving;
+    end;
+    last_update_time := current_time;
   end
 
 (**
@@ -64,18 +80,22 @@ let new_player_pos () =
 let check_key_pressed () =
   if not(!player.moving) then begin
     if is_key_down Key.Right then begin
-      player := set_target !player (!player.pos_x +. 1.0) !player.pos_y;
+      player := set_target !player (!player.pos_x -. 1.0) !player.pos_y;
+      player := set_player_direction !player Right;
       player := set_player_moving !player true
     end else if is_key_down Key.Left then begin
-      player := set_target !player (!player.pos_x -. 1.0) !player.pos_y;
+      player := set_target !player (!player.pos_x +. 1.0) !player.pos_y;
+      player := set_player_direction !player Left;
       player := set_player_moving !player true
     end else if is_key_down Key.Up then begin
-      player := set_target !player !player.pos_x (!player.pos_y -. 1.0);
+      player := set_target !player !player.pos_x (!player.pos_y +. 1.0);
+      player := set_player_direction !player Up;
       player := set_player_moving !player true
     end else if is_key_down Key.Down then begin
-      player := set_target !player !player.pos_x (!player.pos_y +. 1.0);
+      player := set_target !player !player.pos_x (!player.pos_y -. 1.0);
+      player := set_player_direction !player Down;
       player := set_player_moving !player true
-    end
+    end;
   end
     
 (**
@@ -85,6 +105,7 @@ let update_game () =
   draw_game ();
   check_key_pressed ();
   new_player_pos ();
+  increment_texture_id ();
   player := is_end_movin !player
 
 (**
