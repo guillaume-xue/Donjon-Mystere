@@ -38,6 +38,11 @@ let load_player_from_json (filename: string): player =
     moving = false;
     state = Idle;
     direction = Down;
+    current_hp = json |> member "current_hp" |> to_int;
+    max_hp = json |> member "max_hp" |> to_int;
+    level = json |> member "level" |> to_int;
+    current_xp = json |> member "current_xp" |> to_int;
+    max_xp = json |> member "max_xp" |> to_int;
   }
 
 (**
@@ -54,5 +59,10 @@ let save_player_to_json (filename: string) (player: player) =
     ("player_textures_id", `Int player.player_textures_id);
     ("target_x", `Float player.target_x);
     ("target_y", `Float player.target_y);
+    ("current_hp", `Int player.current_hp);
+    ("max_hp", `Int player.max_hp);
+    ("level", `Int player.level);
+    ("current_xp", `Int player.current_xp);
+    ("max_xp", `Int player.max_xp);
   ] in
   to_file filename json

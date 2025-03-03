@@ -9,7 +9,7 @@ open Utils.Funcs
 let my_map = ref { width = 0; height = 0; tiles = [] }
 
 (* Player *)
-let player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = 0.0; target_y = 0.0; moving = false; state = Idle; direction = Down }
+let player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = 0.0; target_y = 0.0; moving = false; state = Idle; direction = Down; current_hp = 0; max_hp = 0; level = 0; current_xp = 0; max_xp = 0 }
 
 (* Last player position update time *)
 let last_update_time = ref 0.0
@@ -38,6 +38,7 @@ let draw_game () =
   clear_background Color.raywhite;
   draw_map !my_map !player;
   draw_player !player;
+  draw_player_stats !player;
   end_drawing ()
 
 (**

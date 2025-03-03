@@ -85,8 +85,11 @@ type map = {
   @param moving Indique si le joueur est en mouvement.
   @param state État du joueur.
   @param direction Direction du joueur.
+  @param current_hp Points de vie actuels du joueur.
+  @param max_hp Points de vie maximum du joueur.
+  @param level Niveau du joueur.
+  @param xp Points d'expérience du joueur.
 *)
-
 type player = {
   pos_x: float;
   pos_y: float;
@@ -98,4 +101,9 @@ type player = {
   moving: bool;
   state: playerState;
   direction: direction;
+  current_hp: int;
+  max_hp: int;
+  level: int;
+  current_xp: int;
+  max_xp: int;
 }
