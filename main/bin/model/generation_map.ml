@@ -1,5 +1,5 @@
 open Util.Types
-open Json_conversions
+open Util.Json_conversions
 open Automate_1
 open Util.Settings_map
 open Prim_2
@@ -18,7 +18,7 @@ let init_map () =
     else if y >= map_size_y then init_tiles (x + 1) 0 acc
     else
       let texture_id = if Random.float 1.0 < density then 1 else 0 in
-      let tile = { x; y; texture_id } in
+      let tile = { x; y; texture_id; biome_id = 0 } in
       init_tiles x (y + 1) (tile :: acc)
   in
   init_tiles 0 0 []
@@ -35,7 +35,7 @@ let init_map () =
 let print_grid tiles =
   let grid = Array.make_matrix map_size_x map_size_y '.' in
   List.iter (fun tile ->
-    grid.(tile.x).(tile.y) <- if tile.texture_id = 0 then '.' else Char.chr (tile.texture_id + Char.code '0')
+    grid.(tile.x).(tile.y) <- if tile.texture_id = 0 then '.' else Char.chr (tile.biome_id + Char.code '0')
   ) tiles;
   Array.iter (fun row ->
     Array.iter (fun cell -> print_char cell; print_char ' ') row;

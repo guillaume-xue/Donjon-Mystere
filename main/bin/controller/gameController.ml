@@ -15,6 +15,7 @@ let load_map_from_json (filename: string): map =
       x = tile |> member "x" |> to_int;
       y = tile |> member "y" |> to_int;
       texture_id = tile |> member "texture_id" |> to_int;
+      biome_id = tile |> member "biome_id" |> to_int;
     }
   ) in
   { width; height; tiles; regions = [] }

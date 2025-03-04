@@ -1,4 +1,4 @@
-open Util.Types
+open Types
 
 (** 
   [tile_to_yojson] convertit une tuile en une représentation JSON.
@@ -9,12 +9,14 @@ open Util.Types
   - ["x"] : la position x de la tuile.
   - ["y"] : la position y de la tuile.
   - ["texture_id"] : l'identifiant de la texture associée à la tuile.
+  - ["biome_id"] : l'identifiant du biome associé à la tuile.
 *)
 let tile_to_yojson tile =
   `Assoc [
     ("x", `Int tile.x);
     ("y", `Int tile.y);
-    ("texture_id", `Int tile.texture_id)
+    ("texture_id", `Int tile.texture_id);
+    ("biome_id", `Int tile.biome_id)
   ]
 
 (** 
