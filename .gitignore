@@ -4,3 +4,5 @@
 /main/lib
 *.java
 *.class
+.DS_Store
+*.json

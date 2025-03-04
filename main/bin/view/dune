@@ -1,0 +1,5 @@
+(library
+ (name view)
+ (public_name main.view)
+ (libraries raylib ctypes main.util)
+ (modules menuView mapView))

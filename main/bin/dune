@@ -1,4 +1,5 @@
 (executable
  (public_name main)
  (name main)
- (libraries graphics))
+ (libraries main.controller main.view main.model main.util)
+ (modules main))
