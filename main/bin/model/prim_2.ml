@@ -1,5 +1,5 @@
-open Types
-open Settings_map
+open Util.Types
+open Util.Settings_map
 
 (** 
   [calcul_arete] calcule toutes les arêtes possibles entre toutes 
