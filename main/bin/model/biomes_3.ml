@@ -13,7 +13,7 @@ let random_biome_center zones =
     | zone :: rest ->
       let r = Random.int zone.size in
       let tile = List.nth zone.tiles r in
-      let modified_tile = { tile with texture_id = Random.int 9 + 1 } in
+      let modified_tile = { tile with biome_id = Random.int 9 + 1 } in
       aux rest (modified_tile :: acc)
   in
   aux zones []
@@ -32,7 +32,7 @@ let generate_biomes tiles zones () =
     match tiles with
     | [] -> List.rev biomes
     | tile :: rest ->
-      if tile.texture_id <> 0 then
+      if tile.texture_id = 1 then
         let closest_spawn = List.fold_left (fun acc spawn ->
           let dist = sqrt (float_of_int ((tile.x - spawn.x) * (tile.x - spawn.x) + (tile.y - spawn.y) * (tile.y - spawn.y))) in
           match acc with
@@ -41,7 +41,7 @@ let generate_biomes tiles zones () =
         ) None spawn_points in
         match closest_spawn with
         | None -> aux rest spawn_points (tile :: biomes)
-        | Some (spawn, _) -> aux rest spawn_points ({ tile with texture_id = spawn.texture_id } :: biomes)
+        | Some (spawn, _) -> aux rest spawn_points ({ tile with biome_id = spawn.biome_id } :: biomes)
       else
         aux rest spawn_points (tile :: biomes)
   in

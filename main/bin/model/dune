@@ -1,6 +1,6 @@
 (library
  (name model)
  (public_name main.model)
- (libraries raylib ctypes yojson main.util)
- (modules json_conversions automate_1 prim_2 biomes_3 generation_map))
+ (libraries raylib ctypes main.util)
+ (modules automate_1 prim_2 biomes_3 generation_map))
 

@@ -9,6 +9,7 @@ type tile = {
   x: int;
   y: int;
   texture_id: int;
+  biome_id: int;
 }
 
 (** 

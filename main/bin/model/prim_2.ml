@@ -108,11 +108,11 @@ let create_path (x1, y1) (x2, y2) =
     let sy = if y0 < y1 then 1 else -1 in
     let rec loop x y err acc =
       (* Si dernière tuile, la rajouter *)
-      if x = x1 && y = y1 then { x; y; texture_id = 2 } :: acc
+      if x = x1 && y = y1 then { x; y; texture_id = 1; biome_id = 0 } :: acc
       else
         (* Calcul de l'erreur, doublé, pour travailler avec des entiers *)
         let e2 = 2 * err in
-        let new_acc = { x; y; texture_id = 2 } :: acc in
+        let new_acc = { x; y; texture_id = 1; biome_id = 0 } :: acc in
         (* Si l'erreur est plus grande que la différence en y, on effectue un déplacement en x *)
         if e2 > -dy then loop (x + sx) y (err - dy) new_acc
         (* Si l'erreur est plus grande que la différence en x, on effectue un déplacement en y *)
