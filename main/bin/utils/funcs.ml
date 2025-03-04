@@ -16,9 +16,11 @@ let load_map_from_json (filename: string): map =
       x = tile |> member "x" |> to_int;
       y = tile |> member "y" |> to_int;
       texture_id = tile |> member "texture_id" |> to_int;
+      biome_id = tile |> member "biome_id" |> to_int;
     }
   ) in
-  { width; height; tiles }
+  let regions = [] in
+  { width; height; tiles; regions }
 
 (**
   [load_player_from_json filename] loads a player from a JSON file.

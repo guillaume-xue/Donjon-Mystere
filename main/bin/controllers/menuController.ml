@@ -1,5 +1,5 @@
 open Views.MenuView
-open Models.GenerationMapCellulaire
+open Models.Generation_map
 open Utils.Types
 open Raylib
 
@@ -36,7 +36,7 @@ let check_intro_screen_click () =
 let check_select_screen_select () =
   if is_key_down Key.Enter then
     if is_arrow_up() then (
-      generation_Map_Cellulaire();
+      generation_map ();
       Game
     ) else
       Game

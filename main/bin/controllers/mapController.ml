@@ -6,7 +6,7 @@ open Utils.Types
 open Utils.Funcs
 
 (* Map *)
-let my_map = ref { width = 0; height = 0; tiles = [] }
+let my_map = ref { width = 0; height = 0; tiles = []; regions = [] }
 
 (* Player *)
 let player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = 0.0; target_y = 0.0; moving = false; state = Idle; direction = Down; current_hp = 0; max_hp = 0; level = 0; current_xp = 0; max_xp = 0 }
@@ -45,7 +45,7 @@ let draw_game () =
   [increment_texture_id ()] increments the texture id.
 *)
 let increment_texture_id () =
-  if get_time () -. !last_texture_update_time >= 0.4 then begin
+  if get_time () -. !last_texture_update_time >= 0.2 then begin
     player := update_player_texture_id !player;
     last_texture_update_time := get_time ()
   end
@@ -55,7 +55,7 @@ let increment_texture_id () =
 *)
 let new_player_pos () =
   let current_time = get_time () in
-  if current_time -. !last_update_time >= 0.2 then begin (* Update every 0.1 seconds *)
+  if current_time -. !last_update_time >= 0.01 then begin (* Update every 0.1 seconds *)
     let dx = !player.target_x -. !player.pos_x in (* Distance to target x *)
     let dy = !player.target_y -. !player.pos_y in (* Distance to target y *)
     let step = 0.1 in

@@ -1,7 +1,7 @@
-open Util.Types
-open Util.Json_conversions
+open Utils.Types
+open Utils.Json_conversions
 open Automate_1
-open Util.Settings_map
+open Utils.Settings_map
 open Prim_2
 open Biomes_3
 
