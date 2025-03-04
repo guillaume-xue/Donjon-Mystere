@@ -17,7 +17,7 @@ let load_map_from_json (filename: string): map =
       texture_id = tile |> member "texture_id" |> to_int;
     }
   ) in
-  { width; height; tiles }
+  { width; height; tiles; regions = [] }
 
 
 (* Fonction pour vérifier si l'écran a été cliqué *)

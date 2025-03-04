@@ -1,8 +1,9 @@
-open Types
+open Util.Types
 open Json_conversions
 open Automate_1
-open Settings_map
+open Util.Settings_map
 open Prim_2
+open Biomes_3
 
 (** 
   [init_map] crée une liste de tuiles pour un terrain de dimensions [map_size_x] par [map_size_y]. 
@@ -103,12 +104,14 @@ let generation_map () =
   let regions_tmp = get_all_zones tiles_tmp in
   (* Connctions des zones avec l'algo de Prim *)
   let tiles_with_paths = connect_zones tiles_tmp regions_tmp in
+  (* Génération des biomes *)
+  let tiles_with_biomes = generate_biomes tiles_with_paths regions_tmp () in
 
   (* Création de la map *)
   let map = {
     width = map_size_x;
     height = map_size_y;
-    tiles = tiles_with_paths;
+    tiles = tiles_with_biomes;
     regions = regions_tmp;
   } in
 
@@ -117,7 +120,7 @@ let generation_map () =
   Printf.printf "\n\n";
   
   (* Affichage final *)
-  print_grid tiles_with_paths;
+  print_grid tiles_with_biomes;
 
   (* Sérialisation en JSON *)
   let json = map_to_yojson map in

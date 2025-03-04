@@ -1,4 +1,4 @@
-open Types
+open Util.Types
 
 (** 
   [tile_to_yojson] convertit une tuile en une représentation JSON.
