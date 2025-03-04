@@ -1,0 +1,5 @@
+(library
+ (name controllers)
+ (public_name main.controllers)
+ (libraries raylib ctypes main.views main.models main.utils)
+ (modules gameController mapController menuController))

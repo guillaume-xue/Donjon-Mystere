@@ -1,8 +1,12 @@
 open Raylib
-open Util.Types
+open Utils.Types
 
+(* Textures is the list of textures for the map *)
 let textures = ref []
 
+(**
+  [init_map ()] initializes the textures for the map.
+*)
 let init_map () =
   let image = load_image "resources/map/forest.png" in
   let rec init_textures x y =
@@ -20,10 +24,12 @@ let init_map () =
   textures := List.rev !textures;
   unload_image image
 
-let draw_map (map: map) =
-  begin_drawing ();
-  clear_background Color.raywhite;
-  let rec draw_textures (tiles: tile list) =
+(**
+  [draw_map map] draws the map on the screen.
+  @param map The map to draw.
+*)
+let draw_map (map: map) (player: player) =
+  let rec draw_textures (tiles: tile list) (x: float) (y: float) =
     match tiles with
     | [] -> ()
     | tile :: rest ->
@@ -34,10 +40,7 @@ let draw_map (map: map) =
         | _ -> 0
       in
       let texture = List.nth !textures (num tile.texture_id) in
-      draw_texture texture (tile.x * 24) (tile.y * 24) Color.white;
-      draw_textures rest;
+      draw_texture texture (player.screen_x + tile.x * 24 + int_of_float(x)) (player.screen_y + tile.y * 24 + int_of_float(y)) Color.white;
+      draw_textures rest x y
   in
-  draw_textures map.tiles;
-  end_drawing ()
-  
-  
+  draw_textures map.tiles (player.pos_x *. 24.0) (player.pos_y *. 24.0);

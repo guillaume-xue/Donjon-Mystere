@@ -1,5 +1,0 @@
-(library
- (name util)
- (public_name main.util)
- (libraries raylib ctypes yojson)
- (modules types settings_map json_conversions))

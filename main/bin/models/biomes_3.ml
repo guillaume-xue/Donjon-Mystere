@@ -1,4 +1,4 @@
-open Util.Types
+open Utils.Types
 
 (** 
   [random_biome_center] génère un centre de biome aléatoire pour chaque zone.

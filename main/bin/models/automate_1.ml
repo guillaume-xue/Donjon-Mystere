@@ -1,5 +1,5 @@
-open Util.Types
-open Util.Settings_map
+open Utils.Types
+open Utils.Settings_map
 
 (** 
   [nb_voisins_vivant] calcule le nombre de voisins vivants pour une cellule située aux coordonnées (x, y) dans une grille de tuiles.
