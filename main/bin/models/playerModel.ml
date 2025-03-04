@@ -79,7 +79,7 @@ let set_player_state (player: player) (state: playerState) =
 *)
 let update_player_texture_id (player: player) =
   let current_id = player.player_textures_id in
-  if current_id > 30 then
+  if current_id > 31 then
     set_player_texture_id player player.player_textures_id
   else begin
     let base_id = match player.state with
