@@ -10,7 +10,7 @@ let textures = ref []
 let init_map () =
   let image = load_image "resources/map/forest.png" in
   let rec init_textures x y =
-    if x < 3 then
+    if x < 2 then
       begin
         let source_rec = Rectangle.create (float_of_int(24 * x) +. float_of_int(x)) (float_of_int(24 * y) +. float_of_int(y)) 24.0 24.0 in
         let tex = load_texture_from_image (image_from_image image source_rec) in
@@ -35,9 +35,9 @@ let draw_map (map: map) (player: player) =
     | tile :: rest ->
       let num n =
         match n with
-        | 0 -> 0
-        | 1 -> 4
-        | _ -> 0
+        | 0 -> 1
+        | 1 -> 0
+        | _ -> 1
       in
       let texture = List.nth !textures (num tile.texture_id) in
       draw_texture texture (player.screen_x + tile.x * 24 + int_of_float(x)) (player.screen_y + tile.y * 24 + int_of_float(y)) Color.white;
