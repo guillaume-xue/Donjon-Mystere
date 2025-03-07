@@ -45,7 +45,7 @@ let set_player_pos (player: player) (x: float) (y: float) =
   @param direction: direction
   @return player
 *)
-let is_end_movin (player: player) =
+let is_end_moving (player: player) =
   if player.pos_x = player.target_x && player.pos_y = player.target_y then 
     set_player_moving player false
   else 

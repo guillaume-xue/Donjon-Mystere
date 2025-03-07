@@ -51,19 +51,34 @@ let increment_texture_id () =
   end
 
 (**
+  [is_wall ()] checks if the player is facing a wall.
+  @return True if the player is facing a wall, false otherwise.
+*)
+let is_wall () =
+  let tiles = !my_map.tiles in
+  let target_x = int_of_float !player.target_x in
+  let target_y = int_of_float !player.target_y in
+  List.exists (fun tile -> tile.x = target_x && tile.y = target_y && tile.texture_id = 1) tiles
+
+(**
   [new_player_pos ()] updates the player's position gradually towards the target.
 *)
 let new_player_pos () =
   let current_time = get_time () in
-  if current_time -. !last_update_time >= 0.01 then begin (* Update every 0.1 seconds *)
-    let dx = !player.target_x -. !player.pos_x in (* Distance to target x *)
-    let dy = !player.target_y -. !player.pos_y in (* Distance to target y *)
+  if not (is_wall ()) then begin
+    player := set_player_moving !player false;
+    player := set_player_state !player Idle;
+    player := set_target !player !player.pos_x !player.pos_y
+  end;
+  if current_time -. !last_update_time >= 0.01 then begin
+    let dx = !player.target_x -. !player.pos_x in
+    let dy = !player.target_y -. !player.pos_y in
     let step = 0.1 in
     let new_x = if abs_float dx < step then !player.target_x else !player.pos_x +. (if dx > 0.0 then step else -.step) in
     let new_y = if abs_float dy < step then !player.target_y else !player.pos_y +. (if dy > 0.0 then step else -.step) in
-    if (!player.pos_x = !player.target_x && !player.pos_y = !player.target_y) then
+    if !player.pos_x = !player.target_x && !player.pos_y = !player.target_y then
       player := set_player_moving !player false;
-    if not(!player.moving) then begin 
+    if not !player.moving then begin
       let new_x = if new_x <> floor new_x then floor new_x +. 1.0 else new_x in
       let new_y = if new_y <> floor new_y then floor new_y +. 1.0 else new_y in
       player := set_player_pos !player new_x new_y;
@@ -81,19 +96,19 @@ let new_player_pos () =
 let check_key_pressed () =
   if not(!player.moving) then begin
     if is_key_down Key.Right then begin
-      player := set_target !player (!player.pos_x -. 1.0) !player.pos_y;
+      player := set_target !player (!player.pos_x +. 1.0) !player.pos_y;
       player := set_player_direction !player Right;
       player := set_player_moving !player true
     end else if is_key_down Key.Left then begin
-      player := set_target !player (!player.pos_x +. 1.0) !player.pos_y;
+      player := set_target !player (!player.pos_x -. 1.0) !player.pos_y;
       player := set_player_direction !player Left;
       player := set_player_moving !player true
     end else if is_key_down Key.Up then begin
-      player := set_target !player !player.pos_x (!player.pos_y +. 1.0);
+      player := set_target !player !player.pos_x (!player.pos_y -. 1.0);
       player := set_player_direction !player Up;
       player := set_player_moving !player true
     end else if is_key_down Key.Down then begin
-      player := set_target !player !player.pos_x (!player.pos_y -. 1.0);
+      player := set_target !player !player.pos_x (!player.pos_y +. 1.0);
       player := set_player_direction !player Down;
       player := set_player_moving !player true
     end;
@@ -107,7 +122,7 @@ let update_game () =
   check_key_pressed ();
   new_player_pos ();
   increment_texture_id ();
-  player := is_end_movin !player
+  player := is_end_moving !player
 
 (**
   [get_player ()] returns the player.
