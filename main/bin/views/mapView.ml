@@ -40,7 +40,7 @@ let draw_map (map: map) (player: player) =
         | _ -> 1
       in
       let texture = List.nth !textures (num tile.texture_id) in
-      draw_texture texture (player.screen_x + tile.x * 24 + int_of_float(x)) (player.screen_y + tile.y * 24 + int_of_float(y)) Color.white;
+      draw_texture texture (player.screen_x + tile.x * 24 - int_of_float(x)) (player.screen_y + tile.y * 24 - int_of_float(y)) Color.white;
       draw_textures rest x y
   in
   draw_textures map.tiles (player.pos_x *. 24.0) (player.pos_y *. 24.0);
