@@ -191,14 +191,15 @@ let get_text_talk () =
   if !index_select_x = 0 && !index_select_y = 0 then (* New game *)
     if List.length !list_of_maps = 6 then (* Maximum number of maps *)
       "Il n'y a plus de place pour une nouvelle partie."
-    else if List.exists (fun map -> map = !map_name) !list_of_maps then
-      "La carte existe deja."
     else
       "Voulez-vous creer une nouvelle partie ?"
   else if !index_select_x = 1 then
     "Voulez-vous continuer la partie en cours ?"
   else if !index_select_x = 3 then
-    "Entrez le nom de la nouvelle carte."
+    if List.exists (fun map -> map = !map_name) !list_of_maps then
+      "La carte existe deja."
+    else
+      "Entrez le nom de la nouvelle carte."
   else
     "Choisissez une carte."
 
@@ -233,6 +234,6 @@ let update_select_other () =
   [save ()] saves the game with the current map name.
 *)
 let save () =
-  if !map_name <> "map " then
+  if !map_name <> "map " && !index_select_x <> 3 then
     save_game !map_name
 
