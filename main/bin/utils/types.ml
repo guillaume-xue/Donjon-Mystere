@@ -35,13 +35,17 @@ type playerState =
 
   @param Intro Écran d'introduction.
   @param Select Écran de sélection.
+  @param Select_New Écran de sélection de nouvelle partie.
+  @param Select_Other Écran de sélection d'autre partie.
   @param NewGame Écran de nouvelle partie.
   @param LoadGame Écran de chargement de partie.
   @param Game Écran de jeu.
 *)
 type screenState = 
   | Intro 
-  | Select 
+  | Select
+  | Select_New
+  | Select_Other 
   | NewGame 
   | LoadGame 
   | Game
@@ -109,20 +113,21 @@ type arete = {
 (** 
   Type [player] représentant un joueur.
 
-  @param pos_x Coordonnée x du joueur.
-  @param pos_y Coordonnée y du joueur.
-  @param screen_x Coordonnée x de l'écran.
-  @param screen_y Coordonnée y de l'écran.
-  @param player_textures_id Identifiant de la texture associée au joueur.
-  @param target_x Coordonnée x cible du joueur.
-  @param target_y Coordonnée y cible du joueur.
+  @param pos_x Position x du joueur.
+  @param pos_y Position y du joueur.
+  @param screen_x Position x du joueur sur l'écran.
+  @param screen_y Position y du joueur sur l'écran.
+  @param player_textures_id Identifiant de la texture du joueur.
+  @param target_x Position x de la cible du joueur.
+  @param target_y Position y de la cible du joueur.
   @param moving Indique si le joueur est en mouvement.
   @param state État du joueur.
   @param direction Direction du joueur.
   @param current_hp Points de vie actuels du joueur.
   @param max_hp Points de vie maximum du joueur.
   @param level Niveau du joueur.
-  @param xp Points d'expérience du joueur.
+  @param current_xp Points d'expérience actuels du joueur.
+  @param max_xp Points d'expérience maximum du joueur.
 *)
 type player = {
   pos_x: float;

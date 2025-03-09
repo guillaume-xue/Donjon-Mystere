@@ -94,8 +94,24 @@ let get_all_zones tiles =
   in
   aux tiles []
 
+(**
+  [spawn_player] génère une position aléatoire pour le joueur sur la carte.
+  @param map La carte sur laquelle le joueur doit être généré.
+  @return Le joueur généré.
+*)
+let spawn_player map =
+  let rec aux () =
+    let x = Random.int 20 in
+    let y = Random.int 20 in
+    if (List.exists (fun tile -> tile.x = x && tile.y = y && tile.texture_id = 1) map.tiles) = true then
+      { pos_x = float_of_int x; pos_y = float_of_int y; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = float_of_int x; target_y = float_of_int y; moving = false; state = Idle; direction = Down; current_hp = 20; max_hp = 20; level = 1; current_xp = 0; max_xp = 100 }
+    else
+      aux ()
+  in
+  aux ()
+
 (* Main *)
-let generation_map () =
+let generation_map filename =
   Random.self_init ();
 
   (* Trois en un, init -> auto cell -> supp petite zone *)
@@ -115,6 +131,9 @@ let generation_map () =
     regions = regions_tmp;
   } in
 
+  (* Spawning du joueur *)
+  let player = spawn_player map in
+
   (* Affichage préliminaire avec l'automate cellulaire *)
   print_grid tiles_tmp;
   Printf.printf "\n\n";
@@ -123,7 +142,7 @@ let generation_map () =
   print_grid tiles_with_biomes;
 
   (* Sérialisation en JSON *)
-  let json = map_to_yojson map in
+  let json = map_player_to_json map player in
 
   (* Écriture dans un fichier *)
-  write_json_to_file "resources/map/map.json" json
+  write_json_to_file (map_dir ^ filename ^ ".json") json;

@@ -1,6 +1,6 @@
 open Raylib
 open Utils.Types
-open Utils.Funcs
+open Utils.Settings_map
 open MenuController
 open MapController
 
@@ -8,15 +8,12 @@ open MapController
   [run ()] runs the game.
 *)
 let run () =
-  let screen_width = 800 in
-  let screen_height = 600 in
 
   init_window screen_width screen_height "Mystery Dungeon";
   set_target_fps 60;
 
   (* Initialisation *)
-  init_map_controller screen_width screen_height;
-  init_menu_controller screen_width screen_height;
+  init_menu_controller ();
 
   (* État de l'écran *)
   let screen_state = ref Intro in
@@ -31,8 +28,18 @@ let run () =
       end
     | Select ->
       begin
-        screen_state := check_select_screen_select ();
+        screen_state := check_select_screen_selected !screen_state;
         update_select ()
+      end
+    | Select_New ->
+      begin
+        screen_state := check_new_map_name ();
+        update_select_new ();
+      end
+    | Select_Other ->
+      begin
+        screen_state := check_select_screen_selected !screen_state;
+        update_select_other ();
       end
     | Game ->
       begin
@@ -45,7 +52,7 @@ let run () =
   let rec main_loop () =
     if window_should_close () then
       begin
-        save_player_to_json "resources/map/player.json" (get_player());
+        save ();
         close_window ()
       end
     else

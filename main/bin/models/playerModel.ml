@@ -13,8 +13,8 @@ let set_player_screen (player: player) (screen_x: int) (screen_y: int) =
 (**
   Set the player target position
   @param player: player
-  @param target_x: int
-  @param target_y: int
+  @param target_x: float
+  @param target_y: float
   @return player
 *)
 let set_target (player: player) (x: float) (y: float) =
@@ -32,8 +32,8 @@ let set_player_moving (player: player) (moving: bool) =
 (**
   Set the current player position
   @param player: player
-  @param pos_x: int
-  @param pos_y: int
+  @param pos_x: float
+  @param pos_y: float
   @return player
 *)
 let set_player_pos (player: player) (x: float) (y: float) =
@@ -42,7 +42,6 @@ let set_player_pos (player: player) (x: float) (y: float) =
 (**
   Set the player direction
   @param player: player
-  @param direction: direction
   @return player
 *)
 let is_end_moving (player: player) =
@@ -54,7 +53,7 @@ let is_end_moving (player: player) =
 (**
   Set the player direction
   @param player: player
-  @param direction: direction
+  @param id : int
   @return player
 *)
 let set_player_texture_id (player: player) (id: int) =
@@ -69,6 +68,12 @@ let set_player_texture_id (player: player) (id: int) =
 let set_player_direction (player: player) (direction: direction) =
   {pos_x = player.pos_x; pos_y = player.pos_y; screen_x = player.screen_x; screen_y = player.screen_y; player_textures_id = player.player_textures_id; target_x = player.target_x; target_y = player.target_y; moving = player.moving; state = player.state; direction = direction; current_hp = player.current_hp; max_hp = player.max_hp; level = player.level; current_xp = player.current_xp; max_xp = player.max_xp}
 
+(**
+  Set the player state
+  @param player: player
+  @param state: playerState
+  @return player
+*)
 let set_player_state (player: player) (state: playerState) =
   {pos_x = player.pos_x; pos_y = player.pos_y; screen_x = player.screen_x; screen_y = player.screen_y; player_textures_id = player.player_textures_id; target_x = player.target_x; target_y = player.target_y; moving = player.moving; state = state; direction = player.direction; current_hp = player.current_hp; max_hp = player.max_hp; level = player.level; current_xp = player.current_xp; max_xp = player.max_xp}
 
@@ -79,12 +84,12 @@ let set_player_state (player: player) (state: playerState) =
 *)
 let update_player_texture_id (player: player) =
   let current_id = player.player_textures_id in
-  if current_id > 31 then
+  if current_id > 31 then (* 31 is the last id for the player textures *)
     set_player_texture_id player player.player_textures_id
   else begin
     let base_id = match player.state with
-      | Moving -> 0
-      | Idle -> 24
+      | Moving -> 0 (* 0 is the base id for moving textures *)
+      | Idle -> 24 (* 24 is the base id for idle textures *)
     in
     let direction_offset = match player.direction with
       | Down -> 0
