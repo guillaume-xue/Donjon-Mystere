@@ -94,6 +94,11 @@ let get_all_zones tiles =
   in
   aux tiles []
 
+(**
+  [spawn_player] génère une position aléatoire pour le joueur sur la carte.
+  @param map La carte sur laquelle le joueur doit être généré.
+  @return Le joueur généré.
+*)
 let spawn_player map =
   let rec aux () =
     let x = Random.int 20 in
@@ -104,31 +109,6 @@ let spawn_player map =
       aux ()
   in
   aux ()
-
-let create_default_player_json filename =
-  let default_player = {
-    pos_x = 0.0;
-    pos_y = 0.0;
-    screen_x = 0;
-    screen_y = 0;
-    player_textures_id = 0;
-    target_x = 0.0;
-    target_y = 0.0;
-    moving = false;
-    state = Idle;
-    direction = Down;
-    current_hp = 20;
-    max_hp = 20;
-    level = 1;
-    current_xp = 0;
-    max_xp = 100;
-  } in
-  let json = player_to_yojson default_player in
-  write_json_to_file filename json
-
-let ensure_player_json_exists filename =
-  if not (Sys.file_exists filename) then
-    create_default_player_json filename
 
 (* Main *)
 let generation_map filename =

@@ -126,17 +126,6 @@ let write_json_to_file filename json =
   Yojson.Basic.pretty_to_channel oc json;
   close_out oc
 
-(** 
-  [create_empty_json_file filename] crée un fichier JSON vide s'il n'existe pas.
-
-  @param filename Le nom du fichier.
-*)
-let create_empty_json_file filename =
-  if not (Sys.file_exists filename) then
-    let oc = open_out_gen [Open_creat; Open_trunc; Open_wronly] 0o666 filename in
-    output_string oc "";
-    close_out oc
-
 (**
   [read_json_files_in_directory dir_path] lit tous les noms de fichiers .json dans un dossier.
   @param dir_path Le chemin du dossier.

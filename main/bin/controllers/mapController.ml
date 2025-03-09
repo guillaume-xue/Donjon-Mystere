@@ -6,22 +6,20 @@ open Utils.Types
 open Utils.Json_conversions
 open Utils.Settings_map
 
-(* Map *)
-let my_map = ref { width = 0; height = 0; tiles = []; regions = [] }
 
-(* Player *)
-let my_player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; player_textures_id = 0; target_x = 0.0; target_y = 0.0; moving = false; state = Idle; direction = Down; current_hp = 0; max_hp = 0; level = 0; current_xp = 0; max_xp = 0 }
-
-(* Last Player position update time *)
-let last_update_time = ref 0.0
-
-(* Last texture update time *)
-let last_texture_update_time = ref 0.0
+let my_map = ref { width = 0; height = 0; tiles = []; regions = [] } (* Map *)
+let my_player = ref { pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; 
+                      player_textures_id = 0; target_x = 0.0; target_y = 0.0; 
+                      moving = false; state = Idle; direction = Down; current_hp = 0; 
+                      max_hp = 0; level = 0; current_xp = 0; max_xp = 0 } (* Player *)
+let last_update_time = ref 0.0 (* Last Player position update time *)
+let last_texture_update_time = ref 0.0 (* Last texture update time *)
 
 (**
-  [init_map_controller screen_width screen_height] initializes the map controller.
+  [init_map_controller screen_width screen_height filename] initializes the map controller.
   @param screen_width The width of the screen.
   @param screen_height The height of the screen.
+  @param filename The name of the map file.
 *)
 let init_map_controller screen_width screen_height filename =
   init_map ();
@@ -126,8 +124,11 @@ let update_game () =
   increment_texture_id ();
   my_player := is_end_moving !my_player
 
+
 (**
-  [get_player ()] returns the player.
-  @return The player.
+  [save filename] saves the map to a file.
+  @param filename The name of the file.
 *)
-let get_player () = !my_player
+let save filename =
+  let json = map_player_to_json !my_map !my_player in
+  write_json_to_file (map_dir ^ filename ^ ".json") json

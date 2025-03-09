@@ -38,7 +38,7 @@ let init_menu list_of_maps_param =
   title_pos_x := (screen_width - new_width) / 2;
   title_pos_y := (screen_height - new_height) / 5;
 
-  (* Charger la liste des cartes *)
+  (* Charger la liste des noms de cartes *)
   list_of_maps := list_of_maps_param;
 
   (* Charger une image de fond aléatoire *)
@@ -59,13 +59,13 @@ let init_menu list_of_maps_param =
   select_texture := Some (load_texture_from_image select);
   unload_image select;
 
-  (* Charger select texture *)
+  (* Charger select_other texture *)
   let select_other = load_image "resources/images/menu/select_other.png" in
   image_resize (addr select_other) screen_width screen_height;
   select_other_texture := Some (load_texture_from_image select_other);
   unload_image select_other;
 
-  (* Charger select texture *)
+  (* Charger select_new texture *)
   let select_new = load_image "resources/images/menu/select_new.png" in
   image_resize (addr select_new) screen_width screen_height;
   select_new_texture := Some (load_texture_from_image select_new);
@@ -78,7 +78,7 @@ let init_menu list_of_maps_param =
   unload_image arrow
 
 (**
-  [draw_intro ()] dessine le menu.
+  [draw_intro ()] dessine l'indroduction.
 *)
 let draw_intro () =
   let time = get_time () in
@@ -103,8 +103,7 @@ let draw_intro () =
 (**
   [draw_select ()] dessine le menu de sélection.
 *)
-
-let draw_select () =
+let draw_select text_talk =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
@@ -127,10 +126,13 @@ let draw_select () =
   (* Dessiner texte *)
   draw_text "Nouvelle Partie" 100 60 20 Color.white;
   draw_text "Autre" 100 90 20 Color.white;
-  draw_text "Voulez-vous creer une nouvelle partie ?" 100 450 20 Color.white;
+  draw_text text_talk 100 450 20 Color.white;
   end_drawing ()
 
-let draw_select_other () =
+(**
+  [draw_select_other ()] dessine le menu de sélection de map existant.
+*)
+let draw_select_other text_talk =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
@@ -150,19 +152,26 @@ let draw_select_other () =
     (match !arrow_texture with
     | Some texture -> draw_texture texture !arrow_pos_x !arrow_pos_y Color.white
     | None -> ());
+
   (* Dessiner texte *)
   draw_text "Nouvelle Partie" 100 60 20 Color.white;
   draw_text "Autre" 100 90 20 Color.white;
-  draw_text "Voulez-vous continuer la partie en cours ?" 100 450 20 Color.white;
+  draw_text text_talk 100 450 20 Color.white;
 
   (* Dessiner la liste des cartes *)
-  List.iteri (fun i map ->
-    draw_text map 450 (60 + i * 30) 20 Color.white
-  ) !list_of_maps;
+  if List.length !list_of_maps > 0 then
+    List.iteri (fun i map ->
+      draw_text map 450 (60 + i * 30) 20 Color.white
+    ) !list_of_maps
+  else
+    draw_text "Aucune carte" 450 60 20 Color.white;
 
   end_drawing ()
 
-let draw_select_new map_name =
+(**
+  [draw_select_new ()] dessine le menu de sélection de nouvelle carte.
+*)
+let draw_select_new map_name text_talk =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
@@ -185,7 +194,7 @@ let draw_select_new map_name =
   
   (* Dessiner texte *)
   draw_text map_name 270 210 20 Color.white;
-  draw_text "Nomez votre nouvelle partie." 100 450 20 Color.white;
+  draw_text text_talk 100 450 20 Color.white;
   end_drawing ()
 
 (**
@@ -194,20 +203,8 @@ let draw_select_new map_name =
 let set_arrow_y (y : int) =
   arrow_pos_y := 58 + y * 30
 
+(**
+  [set_arrow_down ()] déplace la flèche vers le bas.
+*)
 let set_arrow_x (x : int) =
   arrow_pos_x := 70 + x * 350
-
-(**
-  [get_index_selected ()] récupère l'index de la carte sélectionnée.
-  @return L'index de la carte sélectionnée.
-*)
-
-let get_index_selected () =
-  (!arrow_pos_y - 58) / 30
-
-(**
-  [is_arrow_up ()] vérifie si la flèche est en haut.
-  @return [true] si la flèche est en haut, [false] sinon.
-*)
-let is_arrow_up () =
-  !arrow_pos_y = 58

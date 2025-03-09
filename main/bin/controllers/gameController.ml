@@ -52,7 +52,7 @@ let run () =
   let rec main_loop () =
     if window_should_close () then
       begin
-        (* write_json_to_file "resources/map/player.json" (player_to_yojson (get_player ())); *)
+        save (get_map_selected ());
         close_window ()
       end
     else
