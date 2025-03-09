@@ -34,14 +34,17 @@ type playerState =
   Type [screenState] représentant l'état de l'écran.
 
   @param Intro Écran d'introduction.
-  @param Select Écran de sélection.
+  @param Select_New Écran de sélection de nouvelle partie.
+  @param Select_Other Écran de sélection d'autre partie.
   @param NewGame Écran de nouvelle partie.
   @param LoadGame Écran de chargement de partie.
   @param Game Écran de jeu.
 *)
 type screenState = 
   | Intro 
-  | Select 
+  | Select
+  | Select_New
+  | Select_Other 
   | NewGame 
   | LoadGame 
   | Game

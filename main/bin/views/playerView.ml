@@ -7,7 +7,7 @@ let player_textures = ref []
   [init_player ()] initializes the textures for the player.
 *)
 let init_player () =
-  let image_path = "resources/player/hericendre.png" in
+  let image_path = "resources/images/player/hericendre.png" in
   if not (file_exists image_path) then
     Printf.printf "Image file does not exist: %s\n" image_path
   else

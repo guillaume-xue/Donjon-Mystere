@@ -8,7 +8,7 @@ let textures = ref []
   [init_map ()] initializes the textures for the map.
 *)
 let init_map () =
-  let image = load_image "resources/map/forest.png" in
+  let image = load_image "resources/images/map/forest.png" in
   let rec init_textures x y =
     if x < 2 then
       begin
