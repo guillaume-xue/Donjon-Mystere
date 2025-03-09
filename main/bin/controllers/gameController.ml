@@ -52,7 +52,7 @@ let run () =
   let rec main_loop () =
     if window_should_close () then
       begin
-        save (get_map_selected ());
+        save ();
         close_window ()
       end
     else

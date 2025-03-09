@@ -126,9 +126,9 @@ let update_game () =
 
 
 (**
-  [save filename] saves the map to a file.
+  [save_game filename] saves the map to a file.
   @param filename The name of the file.
 *)
-let save filename =
+let save_game filename =
   let json = map_player_to_json !my_map !my_player in
   write_json_to_file (map_dir ^ filename ^ ".json") json

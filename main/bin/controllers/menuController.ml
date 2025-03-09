@@ -229,3 +229,10 @@ let update_select_other () =
   draw_select_other (get_text_talk ());
   update_arrow ()
 
+(**
+  [save ()] saves the game with the current map name.
+*)
+let save () =
+  if !map_name <> "map " then
+    save_game !map_name
+
