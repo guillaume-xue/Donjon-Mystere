@@ -32,18 +32,15 @@ let generate_biomes tiles zones () =
     match tiles with
     | [] -> List.rev biomes
     | tile :: rest ->
-      if tile.texture_id = 1 then
-        let closest_spawn = List.fold_left (fun acc spawn ->
-          let dist = sqrt (float_of_int ((tile.x - spawn.x) * (tile.x - spawn.x) + (tile.y - spawn.y) * (tile.y - spawn.y))) in
-          match acc with
-          | None -> Some (spawn, dist)
-          | Some (_, d) -> if dist < d then Some (spawn, dist) else acc
-        ) None spawn_points in
-        match closest_spawn with
-        | None -> aux rest spawn_points (tile :: biomes)
-        | Some (spawn, _) -> aux rest spawn_points ({ tile with biome_id = spawn.biome_id } :: biomes)
-      else
-        aux rest spawn_points (tile :: biomes)
+      let closest_spawn = List.fold_left (fun acc spawn ->
+        let dist = sqrt (float_of_int ((tile.x - spawn.x) * (tile.x - spawn.x) + (tile.y - spawn.y) * (tile.y - spawn.y))) in
+        match acc with
+        | None -> Some (spawn, dist)
+        | Some (_, d) -> if dist < d then Some (spawn, dist) else acc
+      ) None spawn_points in
+      match closest_spawn with
+      | None -> aux rest spawn_points (tile :: biomes)
+      | Some (spawn, _) -> aux rest spawn_points ({ tile with biome_id = spawn.biome_id } :: biomes)
   in
   aux tiles all_spawn_points []
 
