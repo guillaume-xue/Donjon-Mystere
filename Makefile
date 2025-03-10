@@ -12,6 +12,9 @@ build:
 run: build
 	cd main && $(DISPLAY_CMD) dune exec $(EXEC)
 
+test:
+	cd main && dune runtest
+
 # Nettoyage
 clean:
 	cd main && dune clean

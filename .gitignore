@@ -1,1 +1,8 @@
 .vscode/
+/main/_build
+/main/test
+/main/lib
+*.java
+*.class
+.DS_Store
+*.json
