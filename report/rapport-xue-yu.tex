@@ -51,8 +51,8 @@ du jeu et les interactions du joueur.
 \subsection{Métriques de succès}
 Le succès du projet sera mesuré à travers les critères suivants :
 \begin{itemize}
-    \item Fonctionnalité de la génération procédurale de donjons 
-    cohérente et diversifiée de la carte.
+    \item La génération procédurale des donjons 
+    de façon cohérente et diversifiée.
     \item Fonctionnalités du menu (création et chargement de partie).
     \item Bonne gestion des collisions et animation du joueur.
     \item Stabilité et performance du jeu.
@@ -64,7 +64,7 @@ Le succès du projet sera mesuré à travers les critères suivants :
 
 \subsection{Développement et organisation du code}
 \begin{itemize}
-  \item \textbf{Module Génération de cartes} : Implémente les algorithmes (automate cellulaire, Prim, arbre de partition binaire).
+  \item \textbf{Module Génération de cartes} : Implémente les algorithmes (automate cellulaire, Prim, Flood fill, Voronoi).
   \item \textbf{Module Affichage} : Gère le rendu graphique du menu, du joueur et des biomes.
   \item \textbf{Module Interaction} : Assure les déplacements du joueur et les collisions avec l’environnement.
   \item \textbf{Module Gestion des données} : Stocke les statistiques du joueur et les sauvegardes de partie.
@@ -86,7 +86,7 @@ adaptées à OCaml pour gérer ces éléments de manière efficace.
 Le projet repose sur les technologies suivantes :
 \begin{itemize}
     \item Langage : OCaml
-    \item Algorithmes : Automate cellulaire, algorithme de Prim, arbre de partition binaire
+    \item Algorithmes : Automate cellulaire, algorithme de Prim, Flood fill, Voronoi
     \item Bibliothèques graphiques utilisées : Raylib
 \end{itemize}
 
@@ -113,7 +113,7 @@ Les tâches déjà accomplies sont :
 \subsection{Prochaines étapes}
 Les tâches à venir sont :
 \begin{itemize}
-    \item Génération des ennemis, objstacle et des objets.
+    \item Génération des ennemis, obstacles et des objets.
     \item Système de combat.
     \item Système d’inventaire.
     \item Génération des boss.
@@ -130,9 +130,9 @@ Les tâches à venir sont :
     \item Tâche 0.2 : Creation de la structure du projet.
 
     \item Tâche 1.1 : Automate cellulaire.
-    \item Tâche 1.2 : Algorithme de Prim.
-    \item Tâche 1.3 : Arbre de partition binaire.
-    \item Tâche 1.4 : Génération des objstacles.
+    \item Tâche 1.2 : Algorithme de Prim, Flood fill.
+    \item Tâche 1.3 : Algorithme de Voronoi.
+    \item Tâche 1.4 : Génération des obstacles.
     \item Tâche 1.5 : Génération des ennemis.
     \item Tâche 1.6 : Génération des objets.
     \item Tâche 1.7 : Génération des boss.
@@ -142,7 +142,7 @@ Les tâches à venir sont :
     \item Tâche 2.3 : Affichage du menu de chargement nouvelle carte.
     \item Tâche 2.4 : Affichage du menu de sauvegarde.
     \item Tâche 2.5 : Affichage du joueur avec camera centrer.
-    \item Tâche 2.6 : Affichage des objstacles.
+    \item Tâche 2.6 : Affichage des obstacles.
     \item Tâche 2.7 : Affichage des ennemis.
     \item Tâche 2.8 : Affichage des objets et inventaire.
     \item Tâche 2.9 : Affichage des boss.
