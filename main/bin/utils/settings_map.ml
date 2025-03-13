@@ -8,3 +8,5 @@ let proba_route_bonus = 0.2 (* Probabilité d'ajouter une route supplémentaire 
 let screen_width = 800 (* Largeur de la fenêtre *)
 let screen_height = 600 (* Hauteur de la fenêtre *)
 let map_dir = "resources/json/maps/" (* Dossier de sauvegarde des maps *)
+let player_texture_size = 21.0 (* Taille de textures pour le joueur *)
+let tile_texture_size = 24.0 (* Taille de textures pour les tiles *)

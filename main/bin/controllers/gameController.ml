@@ -1,6 +1,8 @@
 open Raylib
 open Utils.Types
+open Utils.Json_conversions
 open Utils.Settings_map
+open Models.PlayerModel
 open MenuController
 open MapController
 
@@ -12,53 +14,52 @@ let run () =
   init_window screen_width screen_height "Mystery Dungeon";
   set_target_fps 60;
 
-  (* Initialisation *)
-  init_menu_controller ();
+  (* Variables *)
+  let screen_state = Intro in
+  let map_name = "map " in
+  let list_of_maps = read_json_files_in_directory map_dir in
+  let index_select_x = 0 in (* Variable of cursor x *)
+  let index_select_y = 0 in (* Variable of cursor y *)
+  let last_key_press_time = get_time () in
+  let val_menu = init_menu_controller () in
+  let arrow_pos_x = 70 in
+  let arrow_pos_y = 58 in
 
-  (* État de l'écran *)
-  let screen_state = ref Intro in
-
-  (* Verification de l'etat de l'ecran *)
-  let check_screen_state () =
-    match !screen_state with
-    | Intro ->
+  (* Game loop *)
+  let rec game_loop var_game last_update_time last_texture_update_time name = 
+    let (map_textures, player_textures, my_map, my_player) = var_game in
+    if window_should_close () then begin
+      save_game name my_map my_player;
+      close_window ()
+    end else
       begin
-        screen_state := check_intro_screen_click ();
-        update_intro ()
+        draw_game my_map my_player map_textures player_textures;
+        let my_player = check_key_pressed my_player in
+        let (my_player, last_update_time) = new_player_pos my_map my_player last_update_time in
+        let (my_player, last_texture_update_time) = increment_texture_id my_player last_texture_update_time in
+        let my_player = is_end_moving my_player in
+        game_loop (map_textures, player_textures, my_map, my_player) last_update_time last_texture_update_time name
       end
-    | Select ->
-      begin
-        screen_state := check_select_screen_selected !screen_state;
-        update_select ()
-      end
-    | Select_New ->
-      begin
-        screen_state := check_new_map_name ();
-        update_select_new ();
-      end
-    | Select_Other ->
-      begin
-        screen_state := check_select_screen_selected !screen_state;
-        update_select_other ();
-      end
-    | Game ->
-      begin
-        update_game ()
-      end
-    | _ -> ()
   in
 
-  (* Boucle principale *)
-  let rec main_loop () =
+  (* Menu loop *)
+  let rec menu_loop screen_state name index_select_x index_select_y last_key_press_time arrow_pos_x arrow_pos_y =
     if window_should_close () then
       begin
-        save ();
         close_window ()
       end
     else
-      begin
-        check_screen_state ();
-        main_loop ()
-      end
+      if screen_state = Game then
+        begin
+          let var_game = init_map_controller name in
+          let last_update_time = 0.0 in (* Last Player position update time *)
+          let last_texture_update_time = 0.0 in (* Last texture update time *)
+          game_loop var_game last_update_time last_texture_update_time name;
+        end
+      else
+        begin
+          let (screen_state, new_map_name, index_select_x, index_select_y, time, arrow_pos_x, arrow_pos_y) = check_screen_state screen_state name list_of_maps index_select_x index_select_y last_key_press_time val_menu arrow_pos_x arrow_pos_y in
+          menu_loop screen_state new_map_name index_select_x index_select_y time arrow_pos_x arrow_pos_y;
+        end
   in
-  main_loop ()
+  menu_loop screen_state map_name index_select_x index_select_y last_key_press_time arrow_pos_x arrow_pos_y
