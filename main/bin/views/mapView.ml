@@ -1,13 +1,11 @@
 open Raylib
 open Utils.Types
-
-(* Textures is the list of textures for the map *)
-let textures = ref []
+open Utils.Settings_map
 
 (**
-  [init_map ()] initializes the textures for the map.
+  [init_map_textures ()] initializes the textures for the map.
 *)
-let init_map () =
+let init_map_textures () =
   let rec load_image_list path x =
     let image = load_image ("resources/images/map/biome" ^ string_of_int x ^ ".png") in
     if x < 9 then
@@ -18,26 +16,33 @@ let init_map () =
   
   let image_load = (load_image_list [] 1) in
 
-  let rec init_textures x y image =
+  let rec init_textures x y image textures =
     if x < 2 then
       begin
-        let source_rec = Rectangle.create (float_of_int(24 * x) +. float_of_int(x)) (float_of_int(24 * y) +. float_of_int(y)) 24.0 24.0 in
+        let source_rec = Rectangle.create (tile_texture_size *. float_of_int(x) +. float_of_int(x)) (tile_texture_size *. float_of_int(y) +. float_of_int(y)) tile_texture_size tile_texture_size in
         let tex = load_texture_from_image (image_from_image image source_rec) in
-        textures := tex :: !textures;
-        init_textures (x + 1) y image
+        init_textures (x + 1) y image (tex :: textures)
       end
     else if y < 0 then
-      init_textures 0 (y + 1) image
+      init_textures 0 (y + 1) image textures
+    else
+      textures
   in
-
-  List.iter (fun image -> (init_textures 0 0 image)) image_load;
-  textures := List.rev !textures
+  let rec image_to_texture_list images textures =
+    match images with
+    | [] -> textures
+    | image :: rest -> image_to_texture_list rest ((init_textures 0 0 image textures) @ textures)
+  in
+  let textures = image_to_texture_list image_load [] in
+  List.rev textures
 
 (**
-  [draw_map map] draws the map on the screen.
+  [draw_map map player textures] draws the map.
   @param map The map to draw.
+  @param player The player.
+  @param textures The textures of the map.
 *)
-let draw_map (map: map) (player: player) =
+let draw_map map player textures =
   let rec draw_textures (tiles: tile list) (x: float) (y: float) =
     match tiles with
     | [] -> ()
@@ -49,8 +54,8 @@ let draw_map (map: map) (player: player) =
         | _ -> 1
       in
 
-      let texture = List.nth !textures ((num tile.texture_id) + (tile.biome_id - 1) * 2) in
-      draw_texture texture (player.screen_x + tile.x * 24 - int_of_float(x)) (player.screen_y + tile.y * 24 - int_of_float(y)) Color.white;
+      let texture = List.nth textures ((num tile.texture_id) + (tile.biome_id - 1) * 2) in
+      draw_texture texture (player.screen_x + tile.x * int_of_float(tile_texture_size) - int_of_float(x)) (player.screen_y + tile.y * int_of_float(tile_texture_size) - int_of_float(y)) Color.white;
       draw_textures rest x y
   in
-  draw_textures map.tiles (player.pos_x *. 24.0) (player.pos_y *. 24.0);
+  draw_textures map.tiles (player.pos_x *. tile_texture_size) (player.pos_y *. tile_texture_size);
