@@ -57,6 +57,12 @@ let init_menu_textures () =
 
 (**
   [draw_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y] dessine l'écran d'introduction.
+  @param title_texture La texture du titre.
+  @param background_texture La texture de l'arrière-plan.
+  @param title_pos_x La position x du titre.
+  @param title_pos_y La position y du titre.
+  @param text_pos_x La position x du texte.
+  @param text_pos_y La position y du texte.
 *)
 let draw_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y =
   let time = get_time () in
@@ -80,6 +86,12 @@ let draw_intro title_texture background_texture title_pos_x title_pos_y text_pos
 
 (**
   [draw_select text_talk background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y] dessine le menu de sélection.
+  @param text_talk Le texte à afficher.
+  @param background_texture La texture de l'arrière-plan.
+  @param select_texture La texture de la sélection.
+  @param arrow_texture La texture de la flèche.
+  @param arrow_pos_x La position x de la flèche.
+  @param arrow_pos_y La position y de la flèche.
 *)
 let draw_select text_talk background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y =
   let time = get_time () in
@@ -109,6 +121,13 @@ let draw_select text_talk background_texture select_texture arrow_texture arrow_
 
 (**
   [draw_select_other text_talk background_texture select_other_texture list_of_maps arrow_texture arrow_pos_x arrow_pos_y] dessine le menu de sélection d'autre.
+  @param text_talk Le texte à afficher.
+  @param background_texture La texture de l'arrière-plan.
+  @param select_other_texture La texture de la sélection.
+  @param list_of_maps La liste des cartes.
+  @param arrow_texture La texture de la flèche.
+  @param arrow_pos_x La position x de la flèche.
+  @param arrow_pos_y La position y de la flèche.
 *)
 let draw_select_other text_talk background_texture select_other_texture list_of_maps arrow_texture arrow_pos_x arrow_pos_y =
   let time = get_time () in
@@ -148,6 +167,11 @@ let draw_select_other text_talk background_texture select_other_texture list_of_
 
 (**
   [draw_select_new map_name text_talk background_texture select_new_texture arrow_texture] dessine le menu de sélection de nouvelle carte.
+  @param map_name Le nom de la carte.
+  @param text_talk Le texte à afficher.
+  @param background_texture La texture de l'arrière-plan.
+  @param select_new_texture La texture de la sélection.
+  @param arrow_texture La texture de la flèche.
 *)
 let draw_select_new map_name text_talk background_texture select_new_texture arrow_texture =
   let time = get_time () in

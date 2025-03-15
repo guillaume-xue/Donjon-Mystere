@@ -17,7 +17,7 @@ test:
 
 # Nettoyage
 clean:
-	cd main && dune clean
+	cd main && dune clean && cd resources/json/maps && rm -f *.json
 
 # Recompilation complète
 rebuild: clean build

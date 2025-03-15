@@ -1,13 +1,21 @@
 open Views.MenuView
 open Models.Generation_map
 open Utils.Types
+open Utils.Funcs
 open Raylib
 
 (**
   [init_menu_controller ()] initializes the menu controller.
+  @return The menu controller stats.
 *)
 let init_menu_controller () =
-  init_menu_textures ()
+  let index_select_x = 0 in (* Variable of cursor x *)
+  let index_select_y = 0 in (* Variable of cursor y *)
+  let arrow_pos_x = 70 in
+  let arrow_pos_y = 58 in
+  let menu_item_info = (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y) in
+  let menu_stats = (init_menu_textures ()) in
+  (menu_item_info, menu_stats)
 
 (**
   [get_map_selected list_of_maps index_select_y] gets the selected map.
@@ -252,49 +260,49 @@ let update_select_other map_name list_of_maps index_select_x index_select_y back
   draw_select_other (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_other_texture list_of_maps arrow_texture arrow_pos_x arrow_pos_y
 
 (**
-  [check_screen_state screen_state map_name list_of_maps index_select_x index_select_y last_key_press_time menu_stats arrow_pos_x arrow_pos_y] checks the screen state.
+  [check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time] checks the screen state.
   @param screen_state The current screen state.
   @param map_name The name of the map.
-  @param list_of_maps The list of maps.
-  @param index_select_x The index of the selected x.
-  @param index_select_y The index of the selected y.
-  @param last_key_press_time The last time a key was pressed.
+  @param menu_item_info The menu item info.
   @param menu_stats The menu stats.
-  @param arrow_pos_x The arrow position x.
-  @param arrow_pos_y The arrow position y.
-  @return The updated screen state.
+  @param list_of_maps The list of maps.
+  @param last_time The last time.
+  @return The updated screen state, map name, menu item info, and last time.
 *)
-let check_screen_state screen_state map_name list_of_maps index_select_x index_select_y last_key_press_time menu_stats arrow_pos_x arrow_pos_y =
+let check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time =
+  let (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y) = menu_item_info in
   let (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y) = menu_stats in
   match screen_state with
   | Intro ->
     begin
       let state = check_intro_screen_click () in 
       update_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y;
-      (state, map_name, index_select_x, index_select_y, last_key_press_time, arrow_pos_x, arrow_pos_y)
+      (state, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
     end
   | Select ->
     begin
-      let (state, x, y, time, new_map_name) = check_select_screen_selected screen_state list_of_maps index_select_x index_select_y last_key_press_time map_name in
+      let (state, x, y, time, new_map_name) = check_select_screen_selected screen_state list_of_maps index_select_x index_select_y (List.nth last_time 0) map_name in
+      let last_time = replace_nth last_time 0 time in
       let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
       update_select new_map_name list_of_maps index_select_x index_select_y background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y;
-      (state, new_map_name, x, y, time, arrow_pos_x, arrow_pos_y)
+      (state, new_map_name, (x, y, arrow_pos_x, arrow_pos_y), last_time)
     end
   | Select_New ->
     begin
       let (state, new_map_name) = check_new_map_name map_name list_of_maps in
       update_select_new new_map_name list_of_maps index_select_x index_select_y background_texture select_new_texture arrow_texture;
-      (state, new_map_name, index_select_x, index_select_y, last_key_press_time, arrow_pos_x, arrow_pos_y)
+      (state, new_map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
     end
   | Select_Other ->
     begin
-      let (state, x, y, time, new_map_name) = check_select_screen_selected screen_state list_of_maps index_select_x index_select_y last_key_press_time map_name in
+      let (state, x, y, time, new_map_name) = check_select_screen_selected screen_state list_of_maps index_select_x index_select_y (List.nth last_time 0) map_name in
+      let last_time = replace_nth last_time 0 time in
       let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
       update_select_other new_map_name list_of_maps index_select_x index_select_y background_texture select_other_texture arrow_texture arrow_pos_x arrow_pos_y;
-      (state, new_map_name , x, y, time, arrow_pos_x, arrow_pos_y)
+      (state, new_map_name , (x, y, arrow_pos_x, arrow_pos_y), last_time)
     end
   | Game ->
     begin
-      (Game, map_name, index_select_x, index_select_y, last_key_press_time, arrow_pos_x, arrow_pos_y)
+      (Game, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
     end
-  | _ -> (screen_state, map_name, index_select_x, index_select_y, last_key_press_time, arrow_pos_x, arrow_pos_y)
+  | _ -> (screen_state, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)

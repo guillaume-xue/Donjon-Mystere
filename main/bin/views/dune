@@ -2,4 +2,4 @@
  (name views)
  (public_name main.views)
  (libraries raylib ctypes main.utils)
- (modules menuView mapView playerView))
+ (modules menuView mapView playerView enemyView))

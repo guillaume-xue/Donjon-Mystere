@@ -56,14 +56,14 @@ let init_player_textures () =
   @param player_textures The list of player textures.
 *)
 let draw_player player player_textures =
-  let texture = List.nth player_textures player.player_textures_id in
+  let texture = List.nth player_textures player.entity_textures_id in
   draw_texture texture (player.screen_x) (player.screen_y) Color.white
 
 (**
   [draw_player_stats player] draws the player's stats on the screen.
   @param player The player whose stats to draw.
 *)
-let draw_player_stats (player: player) =
+let draw_player_stats (player: pokemon) =
   let stats_text = "Level: " ^ string_of_int player.level ^ "     HP: " ^ string_of_int player.current_hp ^ "/" ^ string_of_int player.max_hp in
   let font = get_font_default () in
   let text_position = Vector2.create 10.0 10.0 in
