@@ -7,10 +7,11 @@ open Yojson.Basic.Util
   @param filename The name of the file to load.
   @return A tuple containing the map and the player loaded from the file.
 *)
-let load_map_player_from_json (filename: string): (map * player) =
+let load_map_player_from_json (filename: string): (map * pokemon * pokemon) =
   let json = from_file filename in
   let map_json = json |> member "map" in
   let player_json = json |> member "player" in
+  let enemy_json = json |> member "enemy" in
 
   let map = {
     width = map_json |> member "width" |> to_int;
@@ -31,7 +32,7 @@ let load_map_player_from_json (filename: string): (map * player) =
     pos_y = player_json |> member "pos_y" |> to_float;
     screen_x = player_json |> member "screen_x" |> to_int;
     screen_y = player_json |> member "screen_y" |> to_int;
-    player_textures_id = 0;
+    entity_textures_id = 0;
     target_x = player_json |> member "target_x" |> to_float;
     target_y = player_json |> member "target_y" |> to_float;
     moving = false;
@@ -44,7 +45,25 @@ let load_map_player_from_json (filename: string): (map * player) =
     max_xp = player_json |> member "max_xp" |> to_int;
   } in
 
-  (map, player)
+  let enemy = {
+    pos_x = enemy_json |> member "pos_x" |> to_float;
+    pos_y = enemy_json |> member "pos_y" |> to_float;
+    screen_x = enemy_json |> member "screen_x" |> to_int;
+    screen_y = enemy_json |> member "screen_y" |> to_int;
+    entity_textures_id = 0;
+    target_x = enemy_json |> member "target_x" |> to_float;
+    target_y = enemy_json |> member "target_y" |> to_float;
+    moving = false;
+    state = Idle;
+    direction = Down;
+    current_hp = enemy_json |> member "current_hp" |> to_int;
+    max_hp = enemy_json |> member "max_hp" |> to_int;
+    level = enemy_json |> member "level" |> to_int;
+    current_xp = enemy_json |> member "current_xp" |> to_int;
+    max_xp = enemy_json |> member "max_xp" |> to_int;
+  } in
+
+  (map, player, enemy)
 
 (** 
   [tile_to_yojson] convertit une tuile en une représentation JSON.
@@ -83,17 +102,29 @@ let map_to_yojson map =
   ]
 
 (**
-  [layer_to_yojson filename player] saves a player to a JSON file.
-  @param filename The name of the file to save.
-  @param player The player to save.
+  [pokemon_to_yojson player] converts a player to a JSON representation.
+  @param player The player to convert.
+  @return A JSON value of type [`Assoc] representing the player, with the following keys:
+  - ["pos_x"]: the x position of the player.
+  - ["pos_y"]: the y position of the player.
+  - ["screen_x"]: the x screen position of the player.
+  - ["screen_y"]: the y screen position of the player.
+  - ["entity_textures_id"]: the texture id of the player.
+  - ["target_x"]: the x target position of the player.
+  - ["target_y"]: the y target position of the player.
+  - ["current_hp"]: the current HP of the player.
+  - ["max_hp"]: the maximum HP of the player.
+  - ["level"]: the level of the player.
+  - ["current_xp"]: the current XP of the player.
+  - ["max_xp"]: the maximum XP of the player.
 *)
-let player_to_yojson (player: player) =
+let pokemon_to_yojson (player: pokemon) =
   `Assoc [
     ("pos_x", `Float player.pos_x);
     ("pos_y", `Float player.pos_y);
     ("screen_x", `Int player.screen_x);
     ("screen_y", `Int player.screen_y);
-    ("player_textures_id", `Int player.player_textures_id);
+    ("entity_textures_id", `Int player.entity_textures_id);
     ("target_x", `Float player.target_x);
     ("target_y", `Float player.target_y);
     ("current_hp", `Int player.current_hp);
@@ -104,15 +135,20 @@ let player_to_yojson (player: player) =
   ]
 
 (**
-  [map_player_to_json filename map player] saves a map and a player to a combined JSON file.
-  @param filename The name of the file to save.
-  @param map The map to save.
-  @param player The player to save.
+  [map_player_to_json map player enemy] converts a map, a player and an enemy to a JSON representation.
+  @param map The map to convert.
+  @param player The player to convert.
+  @param enemy The enemy to convert.
+  @return A JSON value of type [`Assoc] representing the map, player and enemy, with the following keys:
+  - ["map"]: the map converted to JSON.
+  - ["player"]: the player converted to JSON.
+  - ["enemy"]: the enemy converted to JSON.
 *)
-let map_player_to_json (map: map) (player: player) =
+let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon) =
   `Assoc [
     ("map", map_to_yojson map);
-    ("player", player_to_yojson player)
+    ("player", pokemon_to_yojson player);
+    ("enemy", pokemon_to_yojson enemy)
   ]
 
 (** 

@@ -4,6 +4,7 @@ open Utils.Settings_map
 
 (**
   [init_map_textures ()] initializes the textures for the map.
+  @return The textures of the map.
 *)
 let init_map_textures () =
   let rec load_image_list path x =

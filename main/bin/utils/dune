@@ -2,4 +2,4 @@
  (name utils)
  (public_name main.utils)
  (libraries yojson unix)
- (modules types settings_map json_conversions))
+ (modules types settings_map json_conversions funcs))

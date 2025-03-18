@@ -21,12 +21,12 @@ type direction =
   | DiagonalDownRight
 
 (**
-  Type [playerState] représentant l'état d'un joueur.
+  Type [entityState] représentant l'état d'un joueur.
 
   @param Idle Joueur immobile.
   @param Moving Joueur en mouvement.
 *)
-type playerState =
+type entityState =
   | Idle
   | Moving
 
@@ -111,34 +111,33 @@ type arete = {
 }
 
 (** 
-  Type [player] représentant un joueur.
-
-  @param pos_x Position x du joueur.
-  @param pos_y Position y du joueur.
-  @param screen_x Position x du joueur sur l'écran.
-  @param screen_y Position y du joueur sur l'écran.
-  @param player_textures_id Identifiant de la texture du joueur.
-  @param target_x Position x de la cible du joueur.
-  @param target_y Position y de la cible du joueur.
-  @param moving Indique si le joueur est en mouvement.
-  @param state État du joueur.
-  @param direction Direction du joueur.
-  @param current_hp Points de vie actuels du joueur.
-  @param max_hp Points de vie maximum du joueur.
-  @param level Niveau du joueur.
-  @param current_xp Points d'expérience actuels du joueur.
-  @param max_xp Points d'expérience maximum du joueur.
+  Type [pokemon] représentant un pokemon.
+  @param pos_x Position x du pokemon.
+  @param pos_y Position y du pokemon.
+  @param screen_x Position x du pokemon sur l'écran.
+  @param screen_y Position y du pokemon sur l'écran.
+  @param entity_textures_id Identifiant de la texture associée au pokemon.
+  @param target_x Position x de la cible du pokemon.
+  @param target_y Position y de la cible du pokemon.
+  @param moving Booléen indiquant si le pokemon est en mouvement.
+  @param state État du pokemon.
+  @param direction Direction du pokemon.
+  @param current_hp Points de vie actuels du pokemon.
+  @param max_hp Points de vie maximum du pokemon.
+  @param level Niveau du pokemon.
+  @param current_xp Points d'expérience actuels du pokemon.
+  @param max_xp Points d'expérience maximum du pokemon.
 *)
-type player = {
+type pokemon = {
   pos_x: float;
   pos_y: float;
   screen_x: int;
   screen_y: int;
-  player_textures_id: int;
+  entity_textures_id: int;
   target_x: float;
   target_y: float;
   moving: bool;
-  state: playerState;
+  state: entityState;
   direction: direction;
   current_hp: int;
   max_hp: int;
@@ -146,6 +145,17 @@ type player = {
   current_xp: int;
   max_xp: int;
 }
+
+(** 
+  Type [entity] représente une entité.
+
+  @param Player Joueur.
+  @param Enemy Ennemi.
+*)
+
+type entity = 
+  | Player of pokemon
+  | Enemy of pokemon
 
 (** 
   Module implémentant une file de priorité simple en utilisant une liste de paires (valeur, priorité). 
