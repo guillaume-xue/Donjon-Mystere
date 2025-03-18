@@ -4,6 +4,7 @@ open Automate_1
 open Utils.Settings_map
 open Prim_2
 open Biomes_3
+open Entity_gen
 
 (** 
   [init_map] crée une liste de tuiles pour un terrain de dimensions [map_size_x] par [map_size_y]. 
@@ -117,39 +118,6 @@ let copy_map_add_marge tiles =
   in
   new_map tiles 0 0 []
 
-
-(**
-  [spawn_player] génère une position aléatoire pour le joueur sur la carte.
-  @param map La carte sur laquelle le joueur doit être généré.
-  @return Le joueur généré.
-*)
-let spawn_player map =
-  let rec aux () =
-    let x = Random.int 20 in
-    let y = Random.int 20 in
-    if (List.exists (fun tile -> tile.x = x && tile.y = y && tile.texture_id = 1) map.tiles) = true then
-      { pos_x = float_of_int x; pos_y = float_of_int y; screen_x = 0; screen_y = 0; entity_textures_id = 0; target_x = float_of_int x; target_y = float_of_int y; moving = false; state = Idle; direction = Down; current_hp = 20; max_hp = 20; level = 1; current_xp = 0; max_xp = 100 }
-    else
-      aux ()
-  in
-  aux ()
-
-(**
-  [spawn_list_of_enemys] génère une liste d'ennemis sur la carte.
-  @param map La carte sur laquelle les ennemis doivent être générés.
-  @return La liste d'ennemis générée.
-*)
-let spawn_list_of_enemys map =
-  let rec aux () =
-    let x = Random.int 20 in
-    let y = Random.int 20 in
-    if (List.exists (fun tile -> tile.x = x && tile.y = y && tile.texture_id = 1) map.tiles) = true then
-      { pos_x = float_of_int x; pos_y = float_of_int y; screen_x = 0; screen_y = 0; entity_textures_id = 0; target_x = float_of_int x; target_y = float_of_int y; moving = false; state = Idle; direction = Down; current_hp = 20; max_hp = 20; level = 1; current_xp = 0; max_xp = 100 }
-    else
-      aux ()
-  in
-  aux ()
-
 (* Main *)
 let generation_map filename =
   Random.self_init ();
@@ -177,7 +145,7 @@ let generation_map filename =
 
   (* Spawning du joueur *)
   let player = spawn_player map in
-  let enemys = spawn_list_of_enemys map in
+  let enemys = spawn_list_of_enemys map player in
 
   (* Affichage préliminaire avec l'automate cellulaire *)
   print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2);

@@ -7,11 +7,11 @@ open Yojson.Basic.Util
   @param filename The name of the file to load.
   @return A tuple containing the map and the player loaded from the file.
 *)
-let load_map_player_from_json (filename: string): (map * pokemon * pokemon) =
+let load_map_player_from_json (filename: string): (map * pokemon * pokemon list) =
   let json = from_file filename in
   let map_json = json |> member "map" in
   let player_json = json |> member "player" in
-  let enemy_json = json |> member "enemy" in
+  let enemy_json = json |> member "enemy" |> to_list in
 
   let map = {
     width = map_json |> member "width" |> to_int;
@@ -45,23 +45,24 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon) =
     max_xp = player_json |> member "max_xp" |> to_int;
   } in
 
-  let enemy = {
-    pos_x = enemy_json |> member "pos_x" |> to_float;
-    pos_y = enemy_json |> member "pos_y" |> to_float;
-    screen_x = enemy_json |> member "screen_x" |> to_int;
-    screen_y = enemy_json |> member "screen_y" |> to_int;
-    entity_textures_id = 0;
-    target_x = enemy_json |> member "target_x" |> to_float;
-    target_y = enemy_json |> member "target_y" |> to_float;
-    moving = false;
-    state = Idle;
-    direction = Down;
-    current_hp = enemy_json |> member "current_hp" |> to_int;
-    max_hp = enemy_json |> member "max_hp" |> to_int;
-    level = enemy_json |> member "level" |> to_int;
-    current_xp = enemy_json |> member "current_xp" |> to_int;
-    max_xp = enemy_json |> member "max_xp" |> to_int;
-  } in
+  let enemy = enemy_json |> List.map (fun enemy_json ->
+    {
+      pos_x = enemy_json |> member "pos_x" |> to_float;
+      pos_y = enemy_json |> member "pos_y" |> to_float;
+      screen_x = enemy_json |> member "screen_x" |> to_int;
+      screen_y = enemy_json |> member "screen_y" |> to_int;
+      entity_textures_id = 0;
+      target_x = enemy_json |> member "target_x" |> to_float;
+      target_y = enemy_json |> member "target_y" |> to_float;
+      moving = false;
+      state = Idle;
+      direction = Down;
+      current_hp = enemy_json |> member "current_hp" |> to_int;
+      max_hp = enemy_json |> member "max_hp" |> to_int;
+      level = enemy_json |> member "level" |> to_int;
+      current_xp = enemy_json |> member "current_xp" |> to_int;
+      max_xp = enemy_json |> member "max_xp" |> to_int;
+    }) in
 
   (map, player, enemy)
 
@@ -134,6 +135,9 @@ let pokemon_to_yojson (player: pokemon) =
     ("max_xp", `Int player.max_xp);
   ]
 
+  let pokemons_to_yojson (pokemons: pokemon list) =
+    `List (List.map pokemon_to_yojson pokemons)
+
 (**
   [map_player_to_json map player enemy] converts a map, a player and an enemy to a JSON representation.
   @param map The map to convert.
@@ -144,11 +148,11 @@ let pokemon_to_yojson (player: pokemon) =
   - ["player"]: the player converted to JSON.
   - ["enemy"]: the enemy converted to JSON.
 *)
-let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon) =
+let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) =
   `Assoc [
     ("map", map_to_yojson map);
     ("player", pokemon_to_yojson player);
-    ("enemy", pokemon_to_yojson enemy)
+    ("enemy", pokemons_to_yojson enemy)
   ]
 
 (** 
