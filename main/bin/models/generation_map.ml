@@ -32,8 +32,8 @@ let init_map () =
   Ensuite, pour chaque tuile dans la liste, la fonction met à jour la case correspondante avec sa valeur de texture.
   Enfin, la grille est affichée ligne par ligne, chaque cellule étant séparée par un espace.
 *)
-let print_grid tiles =
-  let grid = Array.make_matrix map_size_x map_size_y '.' in
+let print_grid tiles x y =
+  let grid = Array.make_matrix x y '.' in
   List.iter (fun tile ->
     grid.(tile.x).(tile.y) <- if tile.texture_id = 0 then '.' else Char.chr (tile.biome_id + Char.code '0')
   ) tiles;
@@ -94,6 +94,30 @@ let get_all_zones tiles =
   in
   aux tiles []
 
+(** 
+  [copy_map_add_marge tiles] crée une nouvelle carte en ajoutant une marge autour de la carte existante.
+
+  @param tiles La liste des tuiles de la carte originale.
+  @return Une nouvelle liste de tuiles représentant la carte avec une marge ajoutée.
+*)
+let copy_map_add_marge tiles = 
+  let rec new_map tiles x y acc =
+    if x >= map_size_x + map_marge * 2 then acc
+    else if y >= map_size_y + map_marge * 2 then new_map tiles (x + 1) 0 acc
+    else
+      if x - map_marge >= 0 && x - map_marge < map_size_x && y - map_marge >= 0 && y - map_marge < map_size_y then
+        match tiles with
+        | [] -> new_map tiles x (y + 1) acc
+        | tile :: rest ->
+          let new_tile = { tile with x = x; y = y} in
+          new_map rest x (y + 1) (new_tile :: acc)
+      else
+        let new_tile = { x; y; texture_id = 0; biome_id = 0 } in
+        new_map tiles x (y + 1) (new_tile :: acc)
+  in
+  new_map tiles 0 0 []
+
+
 (**
   [spawn_player] génère une position aléatoire pour le joueur sur la carte.
   @param map La carte sur laquelle le joueur doit être généré.
@@ -115,7 +139,11 @@ let generation_map filename =
   Random.self_init ();
 
   (* Trois en un, init -> auto cell -> supp petite zone *)
-  let tiles_tmp = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
+  let tiles_tmp1 = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
+  
+  (* Ajout de la marge *)
+  let tiles_tmp = copy_map_add_marge tiles_tmp1 in
+
   (* Récupération des zones distinctes *)
   let regions_tmp = get_all_zones tiles_tmp in
   (* Connctions des zones avec l'algo de Prim *)
@@ -125,8 +153,8 @@ let generation_map filename =
 
   (* Création de la map *)
   let map = {
-    width = map_size_x;
-    height = map_size_y;
+    width = map_size_x + map_marge * 2;
+    height = map_size_y + map_marge * 2;
     tiles = tiles_with_biomes;
     regions = regions_tmp;
   } in
@@ -135,11 +163,10 @@ let generation_map filename =
   let player = spawn_player map in
 
   (* Affichage préliminaire avec l'automate cellulaire *)
-  print_grid tiles_tmp;
-  Printf.printf "\n\n";
+  print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2);
   
   (* Affichage final *)
-  print_grid tiles_with_biomes;
+  print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
 
   (* Sérialisation en JSON *)
   let json = map_player_to_json map player in
