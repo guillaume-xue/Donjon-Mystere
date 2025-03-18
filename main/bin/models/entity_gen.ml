@@ -17,7 +17,7 @@ let spawn_player map =
   @param map La carte sur laquelle les ennemis doivent être générés.
   @return La liste d'ennemis générée.
 *)
-let spawn_list_of_enemys map player =
+let spawn_list_of_enemys map (player: pokemon) =
   let rec aux regions acc =
     match regions with
     | [] -> acc
@@ -31,3 +31,15 @@ let spawn_list_of_enemys map player =
       aux rest (enemy :: acc)
   in
   aux map.regions []
+
+let spawn_list_of_loot map =
+  let rec aux regions cpt acc =
+    match regions with
+    | [] -> acc
+    | region :: rest ->
+      let case_rand = Random.int region.size in
+      let tile = List.nth region.tiles case_rand in
+      let loot = { item_id = cpt; item_skin_id = 0; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = ""} in
+      aux rest (cpt+1) (loot :: acc)
+  in
+  aux map.regions 0 []

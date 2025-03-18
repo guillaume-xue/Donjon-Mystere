@@ -18,13 +18,13 @@ let init_map_controller filename =
   let map_textures = init_map_textures () in
   let player_textures = init_player_textures () in
   let enemy_textures = init_enemy_textures () in
-  let (map, player, enemy) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
+  let (map, player, enemy, loots) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, map, new_player, enemy)
+  (map_textures, player_textures, enemy_textures, map, new_player, enemy, loots)
 
 (**
   [draw_game map player map_textures player_textures] draws the game.
@@ -35,7 +35,7 @@ let init_map_controller filename =
   @param player_textures The textures of the player.
   @param enemy_textures The textures of the enemy.
 *)
-let draw_game map player enemy map_textures player_textures enemy_textures =
+let draw_game map (player: pokemon) enemy map_textures player_textures enemy_textures =
   begin_drawing ();
   clear_background Color.raywhite;
   draw_map map player map_textures;
@@ -112,6 +112,6 @@ let update_enemy enemies player map key_pressed last_time =
   @param player The player.
   @param enemy The enemy.
 *)
-let save_game filename map player enemy =
-  let json = map_player_to_json map player enemy in
+let save_game filename map player enemy loots =
+  let json = map_player_to_json map player enemy loots in
   write_json_to_file (map_dir ^ filename ^ ".json") json

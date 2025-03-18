@@ -7,11 +7,12 @@ open Yojson.Basic.Util
   @param filename The name of the file to load.
   @return A tuple containing the map and the player loaded from the file.
 *)
-let load_map_player_from_json (filename: string): (map * pokemon * pokemon list) =
+let load_map_player_from_json (filename: string): (map * pokemon * pokemon list * loot list) =
   let json = from_file filename in
   let map_json = json |> member "map" in
   let player_json = json |> member "player" in
   let enemy_json = json |> member "enemy" |> to_list in
+  let loot_json = json |> member "loot" |> to_list in
 
   let map = {
     width = map_json |> member "width" |> to_int;
@@ -64,7 +65,19 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list)
       max_xp = enemy_json |> member "max_xp" |> to_int;
     }) in
 
-  (map, player, enemy)
+  let loot = loot_json |> List.map (fun loot_json ->
+    {
+      item_id = loot_json |> member "item_id" |> to_int;
+      item_skin_id = loot_json |> member "item_skin_id" |> to_int;
+      quantity = loot_json |> member "quantity" |> to_int;
+      pos_x = loot_json |> member "pos_x" |> to_float;
+      pos_y = loot_json |> member "pos_y" |> to_float;
+      screen_x = loot_json |> member "screen_x" |> to_int;
+      screen_y = loot_json |> member "screen_y" |> to_int;
+      description = loot_json |> member "description" |> to_string;
+    }) in
+
+  (map, player, enemy, loot)
 
 (** 
   [tile_to_yojson] convertit une tuile en une représentation JSON.
@@ -135,8 +148,38 @@ let pokemon_to_yojson (player: pokemon) =
     ("max_xp", `Int player.max_xp);
   ]
 
-  let pokemons_to_yojson (pokemons: pokemon list) =
-    `List (List.map pokemon_to_yojson pokemons)
+let pokemons_to_yojson (pokemons: pokemon list) =
+  `List (List.map pokemon_to_yojson pokemons)
+
+(** 
+  [loot_to_json loot] convertit un butin en une représentation JSON.
+
+  @param loot Le butin à convertir.
+
+  @return Une valeur JSON de type [`Assoc] représentant le butin, avec les clés suivantes :
+  - ["item_id"] : l'identifiant de l'objet.
+  - ["item_skin_id"] : l'identifiant du skin de l'objet.
+  - ["quantity"] : la quantité de l'objet.
+  - ["pos_x"] : la position x du butin.
+  - ["pos_y"] : la position y du butin.
+  - ["screen_x"] : la position x
+  - ["screen_y"] : la position y
+  - ["description"] : la description du butin.  
+*)
+let loot_to_json (loot: loot) =
+  `Assoc [
+    ("item_id", `Int loot.item_id);
+    ("item_skin_id", `Int loot.item_skin_id);
+    ("quantity", `Int loot.quantity);
+    ("pos_x", `Float loot.pos_x);
+    ("pos_y", `Float loot.pos_y);
+    ("screen_x", `Int loot.screen_x);
+    ("screen_y", `Int loot.screen_y);
+    ("description", `String loot.description)
+  ]
+
+let loots_to_json (loots: loot list) =
+  `List (List.map loot_to_json loots)
 
 (**
   [map_player_to_json map player enemy] converts a map, a player and an enemy to a JSON representation.
@@ -147,12 +190,14 @@ let pokemon_to_yojson (player: pokemon) =
   - ["map"]: the map converted to JSON.
   - ["player"]: the player converted to JSON.
   - ["enemy"]: the enemy converted to JSON.
+  - ["loot"]: the loot converted to JSON.
 *)
-let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) =
+let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items: loot list)=
   `Assoc [
     ("map", map_to_yojson map);
     ("player", pokemon_to_yojson player);
-    ("enemy", pokemons_to_yojson enemy)
+    ("enemy", pokemons_to_yojson enemy);
+    ("loot", loots_to_json items)
   ]
 
 (** 

@@ -56,7 +56,7 @@ let init_enemy_textures () =
   @param enemy_textures The textures of the enemy.
   @param player The player.
 *)
-let draw_enemy enemies enemy_textures player =
+let draw_enemy enemies enemy_textures (player: pokemon)=
   List.iter (fun enemy ->
     let texture = List.nth enemy_textures enemy.entity_textures_id in
     draw_texture texture 

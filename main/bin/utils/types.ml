@@ -152,10 +152,21 @@ type pokemon = {
   @param Player Joueur.
   @param Enemy Ennemi.
 *)
-
 type entity = 
   | Player of pokemon
   | Enemy of pokemon
+
+type loot = {
+  item_id: int;
+  item_skin_id: int;
+  quantity: int;
+  pos_x: float;
+  pos_y: float;
+  screen_x: int;
+  screen_y: int;
+  description: string;
+}
+
 
 (** 
   Module implémentant une file de priorité simple en utilisant une liste de paires (valeur, priorité). 

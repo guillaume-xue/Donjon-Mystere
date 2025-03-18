@@ -22,16 +22,16 @@ let run () =
 
   (* Game loop *)
   let rec game_loop var_game last_time name = 
-    let (map_textures, player_textures, enemy_textures, my_map, my_player, enemy) = var_game in
+    let (map_textures, player_textures, enemy_textures, my_map, my_player, enemy, loots) = var_game in
     if window_should_close () then begin
-      save_game name my_map my_player enemy;
+      save_game name my_map my_player enemy loots;
       close_window ()
     end else
       begin
         let (player, key_pressed, last_time) = update_player my_player enemy my_map last_time in
         let (enemy, last_time) = update_enemy enemy player my_map key_pressed last_time in
         draw_game my_map player enemy map_textures player_textures enemy_textures;
-        game_loop (map_textures, player_textures, enemy_textures, my_map, player, enemy) last_time name
+        game_loop (map_textures, player_textures, enemy_textures, my_map, player, enemy, loots) last_time name
       end
   in
 

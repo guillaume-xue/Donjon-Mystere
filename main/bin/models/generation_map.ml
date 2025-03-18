@@ -146,6 +146,7 @@ let generation_map filename =
   (* Spawning du joueur *)
   let player = spawn_player map in
   let enemys = spawn_list_of_enemys map player in
+  let items = spawn_list_of_loot map in
 
   (* Affichage préliminaire avec l'automate cellulaire *)
   print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2);
@@ -154,7 +155,7 @@ let generation_map filename =
   print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
 
   (* Sérialisation en JSON *)
-  let json = map_player_to_json map player enemys in
+  let json = map_player_to_json map player enemys items in
 
   (* Écriture dans un fichier *)
   write_json_to_file (map_dir ^ filename ^ ".json") json;

@@ -74,7 +74,7 @@ let set_entity_state (state: entityState) (entity: pokemon) =
   @param enemy The enemy.
   @return True if the entity is facing a wall, false otherwise.
 *)
-let is_obstacle map entity enemy =
+let is_obstacle map (entity: pokemon) (enemy: pokemon) =
   let tiles = map.tiles in
   let target_x = int_of_float entity.target_x in
   let target_y = int_of_float entity.target_y in
@@ -90,7 +90,7 @@ let is_obstacle map entity enemy =
   @param key_pressed True if a key is pressed, false otherwise.
   @return The updated entity.
 *)
-let move direction entity key_pressed =
+let move direction (entity: pokemon) key_pressed =
   if key_pressed then
     match direction with
     | Up -> 
@@ -136,7 +136,7 @@ let is_end_moving (entity: pokemon) =
   @param last_update_time The last time the entity position was updated.
   @return The updated entity and the last time the entity position was updated.
 *)
-let new_entity_pos map entity enemy last_update_time =
+let new_entity_pos map entity (enemy: pokemon) last_update_time =
   let current_time = get_time () in
   (* Check if the entity is facing a wall *)
   let new_entity = 
