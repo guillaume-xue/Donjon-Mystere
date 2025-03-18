@@ -94,6 +94,12 @@ let get_all_zones tiles =
   in
   aux tiles []
 
+(** 
+  [copy_map_add_marge tiles] crée une nouvelle carte en ajoutant une marge autour de la carte existante.
+
+  @param tiles La liste des tuiles de la carte originale.
+  @return Une nouvelle liste de tuiles représentant la carte avec une marge ajoutée.
+*)
 let copy_map_add_marge tiles = 
   let rec new_map tiles x y acc =
     if x >= map_size_x + map_marge * 2 then acc
