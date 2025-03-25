@@ -9,6 +9,7 @@
   @param DiagonalUpRight Direction diagonale vers le haut à droite.
   @param DiagonalDownLeft Direction diagonale vers le bas à gauche.
   @param DiagonalDownRight Direction diagonale vers le bas à droite.
+  @param Attack Attaque.
 *)
 type direction = 
   | Up
@@ -19,6 +20,11 @@ type direction =
   | DiagonalUpRight
   | DiagonalDownLeft
   | DiagonalDownRight
+
+type interaction =
+  | Nothing
+  | Attack
+
 
 (**
   Type [entityState] représentant l'état d'un joueur.
@@ -144,6 +150,7 @@ type pokemon = {
   level: int;
   current_xp: int;
   max_xp: int;
+  attacking: bool;
 }
 
 (** 

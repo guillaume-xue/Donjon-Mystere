@@ -42,6 +42,10 @@ let draw_game map (player: pokemon) enemy map_textures player_textures enemy_tex
   draw_player player player_textures;
   draw_enemy enemy enemy_textures player;
   draw_player_stats player;
+  (* Printf.printf "Player position: (%f, %f), Target: (%f, %f)\n" player.pos_x player.pos_y player.target_x player.target_y;
+  List.iter (fun (enemy: pokemon) ->
+    Printf.printf "Enemy position: (%f, %f)\n" enemy.pos_x enemy.pos_y
+  ) enemy; *)
   end_drawing ()
 
 (**
@@ -64,6 +68,15 @@ let check_key_pressed player =
   end else
     (player.direction, false)
 
+let check_key_pressed_action player =
+  if not(player.moving) then begin
+    if is_key_pressed Key.J then begin
+      (Attack, true)
+    end else
+      (Nothing, false)
+  end else
+    (Nothing, false)
+
 (**
   [update_player player enemy map last_time] updates the player.
   @param player The player.
@@ -75,9 +88,10 @@ let check_key_pressed player =
 let update_player player enemy map last_time =
   let (direction, key_pressed) = check_key_pressed player in
   let player = move direction player key_pressed in
-  let (player, last_update_time) = List.fold_left (fun (player, last_time) enemy ->
-    new_entity_pos map player enemy last_time
-  ) (player, List.nth last_time 4) enemy in
+  let (action , key_pressed) = check_key_pressed_action player in
+  let player = action_player action player key_pressed in
+  let enemy = player_attack player enemy in
+  let (player, last_update_time) = new_entity_pos map player enemy (List.nth last_time 4) in
   let last_time = replace_nth last_time 4 last_update_time in
   let (player, last_texture_update_time) = increment_texture_id player (List.nth last_time 3) in
   let last_time = replace_nth last_time 3 last_texture_update_time in
@@ -95,14 +109,14 @@ let update_player player enemy map last_time =
 *)
 let update_enemy enemies player map key_pressed last_time =
   List.fold_left (fun (updated_enemies, last_time) enemy ->
-    let enemy_target = update_target_enemy enemy player in
-    let enemy = move enemy_target enemy key_pressed in
-    let (enemy, last) = new_entity_pos map enemy player (List.nth last_time 1) in
-    let last_time = replace_nth last_time 1 last in
-    let (enemy, last_t) = increment_texture_id enemy (List.nth last_time 2) in
-    let last_time = replace_nth last_time 2 last_t in
-    let enemy = is_end_moving enemy in
-    (enemy :: updated_enemies, last_time)
+      let enemy_target = update_target_enemy enemy player in
+      let enemy = move enemy_target enemy key_pressed in
+      let (enemy, last) = new_entity_pos map enemy [player] (List.nth last_time 1) in
+      let last_time = replace_nth last_time 1 last in
+      let (enemy, last_t) = increment_texture_id enemy (List.nth last_time 2) in
+      let last_time = replace_nth last_time 2 last_t in
+      let enemy = is_end_moving enemy in
+      (enemy :: updated_enemies, last_time)
   ) ([], last_time) enemies
 
 (**

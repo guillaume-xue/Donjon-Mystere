@@ -9,7 +9,7 @@ let spawn_player map =
   let zone_rand = Random.int (List.length map.regions) in
   let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
   let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
-  { pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; entity_textures_id = 0; target_x = float_of_int tile.x; target_y = float_of_int tile.y; moving = false; state = Idle; direction = Down; current_hp = 20; max_hp = 20; level = 1; current_xp = 0; max_xp = 100 }
+  { pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; entity_textures_id = 0; target_x = float_of_int tile.x; target_y = float_of_int tile.y; moving = false; state = Idle; direction = Down; current_hp = 20; max_hp = 20; level = 1; current_xp = 0; max_xp = 100; attacking = false }
 
 
 (**
@@ -27,7 +27,7 @@ let spawn_list_of_enemys map (player: pokemon) =
       if player.pos_x = float_of_int tile.x && player.pos_y = float_of_int tile.y then
         aux rest acc
       else
-        let enemy = { pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; entity_textures_id = 0; target_x = float_of_int tile.x; target_y = float_of_int tile.y; moving = false; state = Idle; direction = Down; current_hp = 10; max_hp = 10; level = 1; current_xp = 0; max_xp = 100 } in
+        let enemy = { pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; entity_textures_id = 0; target_x = float_of_int tile.x; target_y = float_of_int tile.y; moving = false; state = Idle; direction = Down; current_hp = 10; max_hp = 10; level = 1; current_xp = 0; max_xp = 100; attacking = false } in
       aux rest (enemy :: acc)
   in
   aux map.regions []
