@@ -44,6 +44,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     level = player_json |> member "level" |> to_int;
     current_xp = player_json |> member "current_xp" |> to_int;
     max_xp = player_json |> member "max_xp" |> to_int;
+    attacking = false;
   } in
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
@@ -63,6 +64,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       level = enemy_json |> member "level" |> to_int;
       current_xp = enemy_json |> member "current_xp" |> to_int;
       max_xp = enemy_json |> member "max_xp" |> to_int;
+      attacking = false;
     }) in
 
   let loot = loot_json |> List.map (fun loot_json ->
