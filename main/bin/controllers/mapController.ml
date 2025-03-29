@@ -91,10 +91,10 @@ let update_player player enemy map last_time =
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
   let enemy = player_attack player enemy in
-  let (player, last_update_time) = new_entity_pos map player enemy (List.nth last_time 4) in
-  let last_time = replace_nth last_time 4 last_update_time in
-  let (player, last_texture_update_time) = increment_texture_id player (List.nth last_time 3) in
-  let last_time = replace_nth last_time 3 last_texture_update_time in
+  let (player, last_update_time) = new_entity_pos map player enemy (List.nth last_time 0) in
+  let last_time = replace_nth last_time 0 last_update_time in
+  let (player, last_texture_update_time) = increment_texture_id player (List.nth last_time 1) in
+  let last_time = replace_nth last_time 1 last_texture_update_time in
   let player = is_end_moving player in
   (player, key_pressed, last_time)
 
@@ -108,16 +108,20 @@ let update_player player enemy map last_time =
   @return The updated enemy.
 *)
 let update_enemy enemies player map key_pressed last_time =
-  List.fold_left (fun (updated_enemies, last_time) enemy ->
+  let rec aux index enemies updated_enemies last_time =
+    match enemies with
+    | [] -> (updated_enemies, last_time)
+    | enemy :: rest ->
       let enemy_target = update_target_enemy enemy player in
       let enemy = move enemy_target enemy key_pressed in
-      let (enemy, last) = new_entity_pos map enemy [player] (List.nth last_time 1) in
-      let last_time = replace_nth last_time 1 last in
-      let (enemy, last_t) = increment_texture_id enemy (List.nth last_time 2) in
-      let last_time = replace_nth last_time 2 last_t in
+      let (enemy, last) = new_entity_pos map enemy [player] (List.nth last_time index) in
+      let last_time = replace_nth last_time index last in
+      let (enemy, last_t) = increment_texture_id enemy (List.nth last_time (index + 1)) in
+      let last_time = replace_nth last_time (index + 1) last_t in
       let enemy = is_end_moving enemy in
-      (enemy :: updated_enemies, last_time)
-  ) ([], last_time) enemies
+      aux (index + 2) rest (enemy :: updated_enemies) last_time
+  in
+  aux 2 enemies [] last_time
 
 (**
   [save_game filename map player enemy] saves the game.

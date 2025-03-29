@@ -16,7 +16,6 @@ let run () =
   (* Variables *)
   let screen_state = Intro in
   let map_name = "map " in
-  let last_time = List.init 5 (fun _ -> 0.0) in
   let list_of_maps = read_json_files_in_directory map_dir in
   let (menu_item_info, menu_stats) = init_menu_controller () in
 
@@ -36,7 +35,7 @@ let run () =
   in
 
   (* Menu loop *)
-  let rec menu_loop screen_state map_name menu_item_info last_time =
+  let rec menu_loop screen_state map_name menu_item_info last_time_menu =
     if window_should_close () then
       begin
         close_window ()
@@ -44,13 +43,14 @@ let run () =
     else
       if screen_state = Game then
         begin
-          let var_game = init_map_controller map_name in
-          game_loop var_game last_time map_name;
+          let (map_textures, player_textures, enemy_textures, my_map, my_player, enemy, loots) = init_map_controller map_name in
+          let list_of_last_time = List.init (2 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
+          game_loop (map_textures, player_textures, enemy_textures, my_map, my_player, enemy, loots) list_of_last_time map_name;
         end
       else
         begin
-          let (screen_state, map_name, menu_item_info, last_time) = check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time  in
-          menu_loop screen_state map_name menu_item_info last_time;
+          let (screen_state, map_name, menu_item_info, last_time_menu) = check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time_menu in
+          menu_loop screen_state map_name menu_item_info last_time_menu;
         end
   in
-  menu_loop screen_state map_name menu_item_info last_time
+  menu_loop screen_state map_name menu_item_info (List.init 5 (fun _ -> 0.0));
