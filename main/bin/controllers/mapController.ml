@@ -4,6 +4,7 @@ open Models.EnemyModel
 open Views.PlayerView
 open Views.MapView
 open Views.EnemyView
+open Views.ItemView
 open Utils.Types
 open Utils.Json_conversions
 open Utils.Funcs
@@ -18,13 +19,14 @@ let init_map_controller filename =
   let map_textures = init_map_textures () in
   let player_textures = init_player_textures () in
   let enemy_textures = init_enemy_textures () in
+  let items_textures = init_items_textures () in
   let (map, player, enemy, loots) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, map, new_player, enemy, loots)
+  (map_textures, player_textures, enemy_textures, items_textures, map, new_player, enemy, loots)
 
 (**
   [draw_game map player map_textures player_textures] draws the game.
@@ -35,10 +37,11 @@ let init_map_controller filename =
   @param player_textures The textures of the player.
   @param enemy_textures The textures of the enemy.
 *)
-let draw_game map (player: pokemon) enemy map_textures player_textures enemy_textures =
+let draw_game map (player: pokemon) enemy (items : loot list) map_textures player_textures enemy_textures items_textures =
   begin_drawing ();
   clear_background Color.raywhite;
   draw_map map player map_textures;
+  draw_items items player items_textures;
   draw_player player player_textures;
   draw_enemy enemy enemy_textures player;
   draw_player_stats player;
