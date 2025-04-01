@@ -76,11 +76,22 @@ let set_entity_state (state: entityState) (entity: pokemon) =
 let set_entity_attacking (attacking: bool) (entity: pokemon) =
   {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = attacking; action = entity.action; bag = entity.bag}
 
-let set_action (action: interaction) (entity: pokemon) =
+(**
+  Set the entity action
+  @param action: interaction
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_action (action: interaction) (entity: pokemon) =
   {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = action; bag = entity.bag}
   
-
-let set_bag (bag: bag) (entity: pokemon) =
+(**
+  Set the entity bag
+  @param bag: bag
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_bag (bag: bag) (entity: pokemon) =
   {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = bag}
 
 (**
@@ -89,7 +100,7 @@ let set_bag (bag: bag) (entity: pokemon) =
   @param entity: pokemon
   @return entity
 *)
-let add_item (item: loot) (entity: pokemon) =
+let add_item_bag (item: loot) (entity: pokemon) =
   let bag = entity.bag in
   let new_items = item :: bag.items in
   let new_bag = {items = new_items; max_size = bag.max_size} in
@@ -97,13 +108,22 @@ let add_item (item: loot) (entity: pokemon) =
 
 (**
   Remove an item from the entity bag
-  @param item: loot
+  @param nth: int
   @param entity: pokemon
   @return entity
 *)
-let remove_item (item: loot) (entity: pokemon) =
+let remove_item_bag (nth: int) (entity: pokemon) =
   let bag = entity.bag in
-  let new_items = List.filter (fun i -> i.item_id <> item.item_id) bag.items in
+  let new_items = 
+    let rec aux i acc lst =
+      match lst with
+      | [] -> List.rev acc
+      | x :: xs ->
+        if i = nth then List.rev_append acc xs
+        else aux (i + 1) (x :: acc) xs
+    in
+    aux 0 [] bag.items
+  in
   let new_bag = {items = new_items; max_size = bag.max_size} in
   {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = new_bag}
 
@@ -129,7 +149,7 @@ let is_obstacle map (entity: pokemon) (enemy: pokemon list) =
   @return The updated entity.
 *)
 let move direction (entity: pokemon) key_pressed =
-  if key_pressed then
+  if key_pressed && entity.action = Nothing then
     match direction with
     | Up -> 
       entity
@@ -269,6 +289,11 @@ let increment_texture_id entity last_texture_update_time =
   else begin
     (entity, last_texture_update_time)
   end
+
+let set_enemys_action action (entitys: pokemon list) =
+  List.map (fun (e: pokemon) ->
+    set_action action e
+  ) entitys
 
 let player_attack (player: pokemon) (enemy: pokemon list) =
   if player.attacking then begin

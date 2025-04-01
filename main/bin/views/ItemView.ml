@@ -2,13 +2,17 @@ open Raylib
 open Utils.Types
 open Utils.Settings_map
 
+(**
+  [init_items_textures ()] initializes the textures for the items.
+  @return The textures of the items.
+*)
 let init_items_textures () =
   let image = load_image ("resources/images/loot/throw_items.png") in
   if is_image_ready image then
     let rec init_loots x y loots_textures =
       if x < 5 then
         begin
-          let source_rec = Rectangle.create (loot_texture_size *. float_of_int(x) +. float_of_int(x)) (loot_texture_size *. float_of_int(y) +. float_of_int(y)) loot_texture_size loot_texture_size in
+          let source_rec = Rectangle.create (loot_texture_size *. float_of_int(x)) (loot_texture_size *. float_of_int(y)) loot_texture_size loot_texture_size in
           let tex = load_texture_from_image (image_from_image image source_rec) in
           init_loots (x + 1) y (tex :: loots_textures)
         end
@@ -25,6 +29,12 @@ let init_items_textures () =
     []
   end
 
+(**
+  [draw_items loots player loots_textures] draws the items on the map.
+  @param loots The list of items.
+  @param player The player.
+  @param loots_textures The textures of the items.
+*)
 let draw_items (loots : loot list) (player : pokemon) loots_textures =
   List.iter (fun loot ->
     let texture = List.nth loots_textures loot.item_skin_id in

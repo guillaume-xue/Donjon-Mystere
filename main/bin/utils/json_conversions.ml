@@ -149,6 +149,15 @@ let map_to_yojson map =
     ("tiles", `List (List.map tile_to_yojson map.tiles))
   ]
 
+(**
+  [bag_to_yojson bag] convertit un sac en une représentation JSON.
+
+  @param bag Le sac à convertir.
+
+  @return Une valeur JSON de type [`Assoc] représentant le sac, avec les clés suivantes :
+  - ["items"] : une liste d'objets convertis en JSON.
+  - ["max_size"] : la taille maximale du sac.
+*)
 let bag_to_yojson bag =
   `Assoc [
     ("items", `List (List.map (fun item ->

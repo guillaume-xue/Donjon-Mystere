@@ -12,16 +12,16 @@ open Utils.Funcs
 open Utils.Settings_map
 
 (**
-  [init_map_textures filename] initializes the textures for the map.
-  @param filename The name of the file.
-  @return The textures and map elements.
+  [init_map_controller filename] initializes the map controller.
+  @param filename The name of the map file.
+  @return The map textures, player textures, enemy textures, items textures, bag textures, map, player, enemy and loots.
 *)
 let init_map_controller filename =
   let map_textures = init_map_textures () in
   let player_textures = init_player_textures () in
   let enemy_textures = init_enemy_textures () in
   let items_textures = init_items_textures () in
-  let bag_textures = init_bag_textures () in
+  let bag_textures = init_bag_textures items_textures in
   let (map, player, enemy, loots) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
@@ -30,21 +30,30 @@ let init_map_controller filename =
   in
   (map_textures, player_textures, enemy_textures, items_textures, bag_textures, map, new_player, enemy, loots)
 
-let draw_open_bag player bag_textures items_textures =
-  if player.action = OpenBag then
-    draw_bag player bag_textures items_textures
-  
-
 (**
-  [draw_game map player map_textures player_textures] draws the game.
+  [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
+  @param player The player.
+  @param bag_textures The textures of the bag.
+  @param select The selected item.
+*)
+let draw_open_bag player bag_textures select =
+  if player.action = OpenBag then
+    draw_bag player bag_textures select
+  
+(**
+  [draw_game map player enemy items map_textures player_textures enemy_textures items_textures bag_textures select] draws the game.
   @param map The map.
   @param player The player.
   @param enemy The enemy.
+  @param items The items.
   @param map_textures The textures of the map.
   @param player_textures The textures of the player.
   @param enemy_textures The textures of the enemy.
+  @param items_textures The textures of the items.
+  @param bag_textures The textures of the bag.
+  @param select The selected item.
 *)
-let draw_game map (player: pokemon) enemy (items : loot list) map_textures player_textures enemy_textures items_textures bag_textures =
+let draw_game map (player: pokemon) enemy (items : loot list) map_textures player_textures enemy_textures items_textures bag_textures select =
   begin_drawing ();
   clear_background Color.raywhite;
   draw_map map player map_textures;
@@ -52,7 +61,7 @@ let draw_game map (player: pokemon) enemy (items : loot list) map_textures playe
   draw_player player player_textures;
   draw_enemy enemy enemy_textures player;
   draw_player_stats player;
-  draw_open_bag player bag_textures items_textures;
+  draw_open_bag player bag_textures select;
   (* Printf.printf "Player position: (%f, %f), Target: (%f, %f)\n" player.pos_x player.pos_y player.target_x player.target_y;
   List.iter (fun (enemy: pokemon) ->
     Printf.printf "Enemy position: (%f, %f)\n" enemy.pos_x enemy.pos_y
@@ -79,6 +88,11 @@ let check_key_pressed player =
   end else
     (player.direction, false)
 
+(**
+  [check_key_pressed_action player] checks if a key is pressed for an action.
+  @param player The player.
+  @return The action and if a key is pressed.
+*)
 let check_key_pressed_action player =
   if not(player.moving) then begin
     if is_key_pressed Key.J then begin
@@ -94,6 +108,30 @@ let check_key_pressed_action player =
     (Nothing, false)
 
 (**
+  [check_key_pressed_bag player select] checks if a key is pressed for the bag.
+  @param player The player.
+  @param select The selected item.
+  @return The action and the selected item.
+*)
+let check_key_pressed_bag player select =
+  let len = (List.length player.bag.items) - 1 in
+  if (player.action = OpenBag) then begin
+    if is_key_pressed Key.Up && select - 7 >= 0 then begin
+      (false, select - 7)
+    end else if is_key_pressed Key.Down && (select + 7 <= len && select + 7 <= 27) then begin
+      (false, select + 7)
+    end else if is_key_pressed Key.Left && select - 1 >= 0 then begin
+      (false, select - 1)
+    end else if is_key_pressed Key.Right && (select + 1 <= len && select + 1 <= 27) then begin
+      (false, select + 1)
+    end else if is_key_pressed Key.Enter then begin
+      (true, select)
+    end else
+      (false, select)
+  end else
+    (false, 0)
+
+(**
   [update_player player enemy map last_time] updates the player.
   @param player The player.
   @param enemy The enemy.
@@ -101,22 +139,32 @@ let check_key_pressed_action player =
   @param last_time The last time.
   @return The updated player.
 *)
-let update_player player enemy map last_time =
-  let (direction, key_pressed) = check_key_pressed player in
-  let player = move direction player key_pressed in
+let update_player player enemy map last_time select =
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
+  let (direction, key_pressed) = check_key_pressed player in
+  let player = move direction player key_pressed in
   let enemy = player_attack player enemy in
+  let enemy = set_enemys_action action enemy in
   let (player, last_update_time) = new_entity_pos map player enemy (List.nth last_time 0) in
   let last_time = replace_nth last_time 0 last_update_time in
   let (player, last_texture_update_time) = increment_texture_id player (List.nth last_time 1) in
   let last_time = replace_nth last_time 1 last_texture_update_time in
   let player = is_end_moving player in
-  (player, key_pressed, last_time)
+  let (enter, nb_select) = check_key_pressed_bag player select in
+  let player = 
+    if enter then 
+      player
+      |> remove_item_bag select
+      |> set_action Nothing
+    else 
+      player 
+  in
+  (player, key_pressed, last_time, nb_select)
 
 (**
-  [update_enemy enemy player map key_pressed last_time] updates the enemy.
-  @param enemy The enemy.
+  [update_enemy enemies player map key_pressed last_time] updates the enemy.
+  @param enemies The enemy.
   @param player The player.
   @param map The map.
   @param key_pressed True if a key is pressed, false otherwise.
