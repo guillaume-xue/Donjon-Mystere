@@ -1,6 +1,7 @@
 open Raylib
 open Models.EntityModel
 open Models.EnemyModel
+open Models.ItemModel
 open Views.PlayerView
 open Views.MapView
 open Views.EnemyView
@@ -101,7 +102,9 @@ let check_key_pressed_action player =
       if player.action <> OpenBag then
         (OpenBag, true)
       else
-        (Nothing, true)  
+        (Nothing, true) 
+    end else if is_key_pressed Key.T then begin 
+      (PickUp, true)
     end else
       (Nothing, false)
   end else
@@ -131,6 +134,37 @@ let check_key_pressed_bag player select =
   end else
     (false, 0)
 
+let check_pickup_item (player: pokemon) (items: loot list) =
+  if player.action = PickUp then begin
+    let rec aux x y (list: loot list) =
+      match list with
+      | [] -> (player, items)
+      | item :: rest ->
+        if x = item.pos_x && y = item.pos_y then
+          let new_player = 
+            player
+            |> add_item_bag item
+            |> set_entity_action Nothing
+          in
+          let new_list = remove_item_in_list item items in
+          (new_player, new_list)
+        else
+          aux x y rest
+    in
+    match player.direction with
+    | Up -> 
+        aux player.pos_x (player.pos_y -. 1.0) items
+    | Down -> 
+        aux player.pos_x (player.pos_y +. 1.0) items
+    | Left -> 
+        aux (player.pos_x -. 1.0) player.pos_y items
+    | Right -> 
+        aux (player.pos_x +. 1.0) player.pos_y items
+    | _ -> (player, items)
+  end else
+    (player, items)
+  
+
 (**
   [update_player player enemy map last_time] updates the player.
   @param player The player.
@@ -139,9 +173,10 @@ let check_key_pressed_bag player select =
   @param last_time The last time.
   @return The updated player.
 *)
-let update_player player enemy map last_time select =
+let update_player (player: pokemon) enemy map last_time select (items: loot list) =
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
+  let (player, items) = check_pickup_item player items in
   let (direction, key_pressed) = check_key_pressed player in
   let player = move direction player key_pressed in
   let enemy = player_attack player enemy in
@@ -160,7 +195,7 @@ let update_player player enemy map last_time select =
     else 
       player 
   in
-  (player, key_pressed, last_time, nb_select)
+  (player, key_pressed, last_time, nb_select, items)
 
 (**
   [update_enemy enemies player map key_pressed last_time] updates the enemy.

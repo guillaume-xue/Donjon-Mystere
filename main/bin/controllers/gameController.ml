@@ -27,7 +27,7 @@ let run () =
       close_window ()
     end else
       begin
-        let (player, key_pressed, last_time, select) = update_player my_player enemy my_map last_time select in
+        let (player, key_pressed, last_time, select, loots) = update_player my_player enemy my_map last_time select loots in
         let (enemy, last_time) = update_enemy enemy player my_map key_pressed last_time in
         draw_game my_map player enemy loots map_textures player_textures enemy_textures items_textures bag_textures select;
         game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, my_map, player, enemy, loots, select) last_time name
