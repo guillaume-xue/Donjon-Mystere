@@ -24,6 +24,7 @@ type direction =
 type interaction =
   | Nothing
   | Attack
+  | PickUp
   | OpenBag
 
 (**

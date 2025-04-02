@@ -184,6 +184,9 @@ let action_player action (entity: pokemon) key_pressed =
     | OpenBag -> 
       entity
         |> set_entity_action OpenBag
+    | PickUp -> 
+      entity
+        |> set_entity_action PickUp
     | Nothing -> 
       entity
         |> set_entity_action Nothing
