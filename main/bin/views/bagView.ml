@@ -48,34 +48,37 @@ let draw_bag player bag_textures select =
     (* Draw the bag texture *)
     draw_texture texture 0 0 Color.white;
     draw_text "Mon sac" 80 80 26 Color.white;
-    (* Draw the items in the bag *)
-    List.iteri (fun i item ->
-      let item_texture = List.nth items_tex item.item_skin_id in
-      draw_texture item_texture (85 + (i mod 7 * 60)) (125 + (i / 7 * 60 + 50)) Color.white;
-      
-    ) player.bag.items;
-    let description_lines = 
-      let rec split_text text acc =
-        if String.length text <= 35 then
-          List.rev (text :: acc)
-        else
-          let space_index = 
-          try String.rindex_from text 34 ' ' 
-          with Not_found -> 35 
-          in
-          let line = String.sub text 0 space_index in
-          let rest = String.sub text (space_index + 1) (String.length text - space_index - 1) in
-          split_text rest (line :: acc)
-      in
-      split_text ((List.nth player.bag.items select).description) []
-    in
-    (* Draw the description of the selected item *)
-    List.iteri (fun j line ->
-      draw_text line 80 (480 + j * 20) 20 Color.white;
-    ) description_lines;
     (* Draw the text for the actions *)
     draw_text "[Enter] Utiliser" 580 480 20 Color.white;
     draw_text "[i]        Quitter" 580 510 20 Color.white;
+    (* Draw the items in the bag *)
+    match player.bag.items with
+    | [] -> ()
+    | _ ->
+      List.iteri (fun i item ->
+        let item_texture = List.nth items_tex item.item_skin_id in
+        draw_texture item_texture (85 + (i mod 7 * 60)) (125 + (i / 7 * 60 + 50)) Color.white;
+        
+      ) player.bag.items;
+      let description_lines = 
+        let rec split_text text acc =
+          if String.length text <= 35 then
+            List.rev (text :: acc)
+          else
+            let space_index = 
+            try String.rindex_from text 34 ' ' 
+            with Not_found -> 35 
+            in
+            let line = String.sub text 0 space_index in
+            let rest = String.sub text (space_index + 1) (String.length text - space_index - 1) in
+            split_text rest (line :: acc)
+        in
+        split_text ((List.nth player.bag.items select).description) []
+      in
+      (* Draw the description of the selected item *)
+      List.iteri (fun j line ->
+        draw_text line 80 (480 + j * 20) 20 Color.white;
+      ) description_lines;
     (* Draw the square around the selected item *)
     match squarte_texture with
     | None -> ()

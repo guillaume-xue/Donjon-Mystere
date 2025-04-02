@@ -55,7 +55,7 @@ let draw_open_bag player bag_textures select =
 *)
 let draw_game map (player: pokemon) enemy (items : loot list) map_textures player_textures enemy_textures items_textures bag_textures select =
   begin_drawing ();
-  clear_background Color.raywhite;
+  clear_background Color.black;
   draw_map map player map_textures;
   draw_items items player items_textures;
   draw_player player player_textures;
@@ -156,7 +156,7 @@ let update_player player enemy map last_time select =
     if enter then 
       player
       |> remove_item_bag select
-      |> set_action Nothing
+      |> set_entity_action Nothing
     else 
       player 
   in

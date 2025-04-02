@@ -183,10 +183,10 @@ let action_player action (entity: pokemon) key_pressed =
         |> set_entity_attacking true
     | OpenBag -> 
       entity
-        |> set_action OpenBag
+        |> set_entity_action OpenBag
     | Nothing -> 
       entity
-        |> set_action Nothing
+        |> set_entity_action Nothing
   else
     entity
 
@@ -292,7 +292,7 @@ let increment_texture_id entity last_texture_update_time =
 
 let set_enemys_action action (entitys: pokemon list) =
   List.map (fun (e: pokemon) ->
-    set_action action e
+    set_entity_action action e
   ) entitys
 
 let player_attack (player: pokemon) (enemy: pokemon list) =
