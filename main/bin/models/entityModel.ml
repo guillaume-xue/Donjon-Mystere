@@ -9,7 +9,7 @@ open Raylib
   @return entity
 *)
 let set_entity_screen (screen_x: int) (screen_y: int) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = screen_x; screen_y = screen_y; entity_textures_id = entity.entity_textures_id ; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = screen_x; screen_y = screen_y; entity_textures_id = entity.entity_textures_id ; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
 (**
   Set the entity target position
@@ -19,7 +19,7 @@ let set_entity_screen (screen_x: int) (screen_y: int) (entity: pokemon) =
   @return entity
 *)
 let set_entity_target (x: float) (y: float) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = x; target_y = y ; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = x; target_y = y ; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
 (**
   Set the entity can moving
@@ -28,7 +28,7 @@ let set_entity_target (x: float) (y: float) (entity: pokemon) =
   @return entity
 *)
 let set_entity_moving (moving: bool) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
 (**
   Set the current entity position
@@ -38,7 +38,7 @@ let set_entity_moving (moving: bool) (entity: pokemon) =
   @return entity
 *)
 let set_entity_pos (x: float) (y: float) (entity: pokemon) =
-  {pos_x = x; pos_y = y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = x; pos_y = y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
 (**
   Set the entity direction
@@ -47,7 +47,7 @@ let set_entity_pos (x: float) (y: float) (entity: pokemon) =
   @return entity
 *)
 let set_entity_texture_id (id: int) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
 (**
   Set the entity direction
@@ -56,7 +56,7 @@ let set_entity_texture_id (id: int) (entity: pokemon) =
   @return entity
 *)
 let set_entity_direction (direction: direction) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
 (**
   Set the entity state
@@ -65,11 +65,67 @@ let set_entity_direction (direction: direction) (entity: pokemon) =
   @return entity
 *)
 let set_entity_state (state: entityState) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = entity.bag}
 
+(**
+  Set the entity attacking
+  @param attacking: bool
+  @param entity: pokemon
+  @return entity
+*)
 let set_entity_attacking (attacking: bool) (entity: pokemon) =
-  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = attacking}
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = attacking; action = entity.action; bag = entity.bag}
 
+(**
+  Set the entity action
+  @param action: interaction
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_action (action: interaction) (entity: pokemon) =
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = action; bag = entity.bag}
+  
+(**
+  Set the entity bag
+  @param bag: bag
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_bag (bag: bag) (entity: pokemon) =
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = bag}
+
+(**
+  Add an item to the entity bag
+  @param item: loot
+  @param entity: pokemon
+  @return entity
+*)
+let add_item_bag (item: loot) (entity: pokemon) =
+  let bag = entity.bag in
+  let new_items = item :: bag.items in
+  let new_bag = {items = new_items; max_size = bag.max_size} in
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = new_bag}
+
+(**
+  Remove an item from the entity bag
+  @param nth: int
+  @param entity: pokemon
+  @return entity
+*)
+let remove_item_bag (nth: int) (entity: pokemon) =
+  let bag = entity.bag in
+  let new_items = 
+    let rec aux i acc lst =
+      match lst with
+      | [] -> List.rev acc
+      | x :: xs ->
+        if i = nth then List.rev_append acc xs
+        else aux (i + 1) (x :: acc) xs
+    in
+    aux 0 [] bag.items
+  in
+  let new_bag = {items = new_items; max_size = bag.max_size} in
+  {pos_x = entity.pos_x; pos_y = entity.pos_y; screen_x = entity.screen_x; screen_y = entity.screen_y; entity_textures_id = entity.entity_textures_id; target_x = entity.target_x; target_y = entity.target_y; moving = entity.moving; state = entity.state; direction = entity.direction; current_hp = entity.current_hp; max_hp = entity.max_hp; level = entity.level; current_xp = entity.current_xp; max_xp = entity.max_xp; attacking = entity.attacking; action = entity.action; bag = new_bag}
 
 (**
   [is_objstacle map entity] checks if the entity is facing a wall.
@@ -93,7 +149,7 @@ let is_obstacle map (entity: pokemon) (enemy: pokemon list) =
   @return The updated entity.
 *)
 let move direction (entity: pokemon) key_pressed =
-  if key_pressed then
+  if key_pressed && entity.action = Nothing then
     match direction with
     | Up -> 
       entity
@@ -125,11 +181,14 @@ let action_player action (entity: pokemon) key_pressed =
     | Attack -> 
       entity
         |> set_entity_attacking true
-    | _ -> entity
+    | OpenBag -> 
+      entity
+        |> set_entity_action OpenBag
+    | Nothing -> 
+      entity
+        |> set_entity_action Nothing
   else
     entity
-
-
 
 (**
   [is_end_moving entity] checks if the pokemon has reached its target position.
@@ -230,6 +289,11 @@ let increment_texture_id entity last_texture_update_time =
   else begin
     (entity, last_texture_update_time)
   end
+
+let set_enemys_action action (entitys: pokemon list) =
+  List.map (fun (e: pokemon) ->
+    set_entity_action action e
+  ) entitys
 
 let player_attack (player: pokemon) (enemy: pokemon list) =
   if player.attacking then begin

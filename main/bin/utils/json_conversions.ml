@@ -45,6 +45,22 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     current_xp = player_json |> member "current_xp" |> to_int;
     max_xp = player_json |> member "max_xp" |> to_int;
     attacking = false;
+    action = Nothing;
+    bag = {
+      items = player_json |> member "bag" |> member "items" |> to_list |> List.map (fun item ->
+        {
+          item_id = item |> member "item_id" |> to_int;
+          item_skin_id = item |> member "item_skin_id" |> to_int;
+          quantity = item |> member "quantity" |> to_int;
+          pos_x = item |> member "pos_x" |> to_float;
+          pos_y = item |> member "pos_y" |> to_float;
+          screen_x = item |> member "screen_x" |> to_int;
+          screen_y = item |> member "screen_y" |> to_int;
+          description = item |> member "description" |> to_string;
+        }
+      );
+      max_size = player_json |> member "bag" |> member "max_size" |> to_int;
+    }
   } in
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
@@ -65,6 +81,22 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       current_xp = enemy_json |> member "current_xp" |> to_int;
       max_xp = enemy_json |> member "max_xp" |> to_int;
       attacking = false;
+      action = Nothing;
+      bag = {
+        items = enemy_json |> member "bag" |> member "items" |> to_list |> List.map (fun item ->
+          {
+            item_id = item |> member "item_id" |> to_int;
+            item_skin_id = item |> member "item_skin_id" |> to_int;
+            quantity = item |> member "quantity" |> to_int;
+            pos_x = item |> member "pos_x" |> to_float;
+            pos_y = item |> member "pos_y" |> to_float;
+            screen_x = item |> member "screen_x" |> to_int;
+            screen_y = item |> member "screen_y" |> to_int;
+            description = item |> member "description" |> to_string;
+          }
+        );
+        max_size = enemy_json |> member "bag" |> member "max_size" |> to_int;
+      }
     }) in
 
   let loot = loot_json |> List.map (fun loot_json ->
@@ -118,6 +150,32 @@ let map_to_yojson map =
   ]
 
 (**
+  [bag_to_yojson bag] convertit un sac en une représentation JSON.
+
+  @param bag Le sac à convertir.
+
+  @return Une valeur JSON de type [`Assoc] représentant le sac, avec les clés suivantes :
+  - ["items"] : une liste d'objets convertis en JSON.
+  - ["max_size"] : la taille maximale du sac.
+*)
+let bag_to_yojson bag =
+  `Assoc [
+    ("items", `List (List.map (fun item ->
+      `Assoc [
+        ("item_id", `Int item.item_id);
+        ("item_skin_id", `Int item.item_skin_id);
+        ("quantity", `Int item.quantity);
+        ("pos_x", `Float item.pos_x);
+        ("pos_y", `Float item.pos_y);
+        ("screen_x", `Int item.screen_x);
+        ("screen_y", `Int item.screen_y);
+        ("description", `String item.description)
+      ]
+    ) bag.items));
+    ("max_size", `Int bag.max_size)
+  ]
+
+(**
   [pokemon_to_yojson player] converts a player to a JSON representation.
   @param player The player to convert.
   @return A JSON value of type [`Assoc] representing the player, with the following keys:
@@ -148,6 +206,7 @@ let pokemon_to_yojson (player: pokemon) =
     ("level", `Int player.level);
     ("current_xp", `Int player.current_xp);
     ("max_xp", `Int player.max_xp);
+    ("bag", bag_to_yojson player.bag)
   ]
 
 let pokemons_to_yojson (pokemons: pokemon list) =

@@ -24,7 +24,7 @@ type direction =
 type interaction =
   | Nothing
   | Attack
-
+  | OpenBag
 
 (**
   Type [entityState] représentant l'état d'un joueur.
@@ -116,6 +116,39 @@ type arete = {
   distance: float;
 }
 
+(**
+  Type [loot] représentant un loot.
+  @param item_id Identifiant de l'objet.
+  @param item_skin_id Identifiant de la texture associée à l'objet.
+  @param quantity Quantité de l'objet.
+  @param pos_x Position x du sur l'écran.
+  @param pos_y Position y du sur l'écran.
+  @param screen_x Position x du loot sur l'écran.
+  @param screen_y Position y du loot sur l'écran.
+  @param description Description de l'objet.
+*)
+type loot = {
+  item_id: int;
+  item_skin_id: int;
+  quantity: int;
+  pos_x: float;
+  pos_y: float;
+  screen_x: int;
+  screen_y: int;
+  description: string;
+}
+
+
+(**
+  Type [bag] représentant un sac à dos.
+  @param items Liste des objets dans le sac.
+  @param max_size Taille maximum du sac.
+*)
+type bag = {
+  items: loot list;
+  max_size: int;
+}
+
 (** 
   Type [pokemon] représentant un pokemon.
   @param pos_x Position x du pokemon.
@@ -151,6 +184,8 @@ type pokemon = {
   current_xp: int;
   max_xp: int;
   attacking: bool;
+  action: interaction;
+  bag: bag;
 }
 
 (** 
@@ -162,18 +197,6 @@ type pokemon = {
 type entity = 
   | Player of pokemon
   | Enemy of pokemon
-
-type loot = {
-  item_id: int;
-  item_skin_id: int;
-  quantity: int;
-  pos_x: float;
-  pos_y: float;
-  screen_x: int;
-  screen_y: int;
-  description: string;
-}
-
 
 (** 
   Module implémentant une file de priorité simple en utilisant une liste de paires (valeur, priorité). 
