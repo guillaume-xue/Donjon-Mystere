@@ -1,10 +1,9 @@
-open Utils.Types
-open Utils.Json_conversions
+open Util.Types
+open Util.Json_conversions
 open Automate_1
-open Utils.Settings_map
+open Util.Settings_map
 open Prim_2
 open Biomes_3
-open Entity_gen
 
 (** 
   [init_map] crée une liste de tuiles pour un terrain de dimensions [map_size_x] par [map_size_y]. 
@@ -118,8 +117,9 @@ let copy_map_add_marge tiles =
   in
   new_map tiles 0 0 []
 
+
 (* Main *)
-let generation_map filename =
+let generation_map () =
   Random.self_init ();
 
   (* Trois en un, init -> auto cell -> supp petite zone *)
@@ -143,11 +143,6 @@ let generation_map filename =
     regions = regions_tmp;
   } in
 
-  (* Spawning du joueur *)
-  let player = spawn_player map in
-  let enemys = spawn_list_of_enemys map player in
-  let items = spawn_list_of_loot map in
-
   (* Affichage préliminaire avec l'automate cellulaire *)
   print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2);
   
@@ -155,7 +150,7 @@ let generation_map filename =
   print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
 
   (* Sérialisation en JSON *)
-  let json = map_player_to_json map player enemys items in
+  let json = map_to_yojson map in
 
   (* Écriture dans un fichier *)
-  write_json_to_file (map_dir ^ filename ^ ".json") json;
+  write_json_to_file "resources/map/map.json" json
