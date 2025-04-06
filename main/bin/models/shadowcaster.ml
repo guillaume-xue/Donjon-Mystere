@@ -76,13 +76,13 @@ let rec cast_light x y x_max y_max radius set_visible is_blocked octant row star
   @param visibility A function to set visibility for a tile.
   @param i The current octant being processed (0-7).
 *)
-let rec process_octants x y x_max y_max radius visibility i =
+let rec process_octants x y x_max y_max radius set_visible is_blocked visibility i =
   if i > 7 then visibility
   else (
-    cast_light x y x_max y_max radius i 1 1.0 0.0
+    cast_light x y x_max y_max radius set_visible is_blocked i 1 1.0 0.0
       multipliers.(0).(i) multipliers.(1).(i)
       multipliers.(2).(i) multipliers.(3).(i);
-    process_octants x y x_max y_max radius visibility (i + 1)
+    process_octants x y x_max y_max radius set_visible is_blocked visibility (i + 1)
   )
 
 (**
