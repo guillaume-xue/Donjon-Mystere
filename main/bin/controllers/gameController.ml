@@ -21,7 +21,7 @@ let run () =
 
   (* Game loop *)
   let rec game_loop var_game last_time name = 
-    let (map_textures, player_textures, enemy_textures, items_textures, bag_textures, my_map, my_player, enemy, loots, select) = var_game in
+    let (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, my_map, my_player, enemy, loots, select) = var_game in
     if window_should_close () then begin
       save_game name my_map my_player enemy loots;
       close_window ()
@@ -29,8 +29,9 @@ let run () =
       begin
         let (player, key_pressed, last_time, select, loots) = update_player my_player enemy my_map last_time select loots in
         let (enemy, last_time) = update_enemy enemy player my_map key_pressed last_time in
-        draw_game my_map player enemy loots map_textures player_textures enemy_textures items_textures bag_textures select;
-        game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, my_map, player, enemy, loots, select) last_time name
+        let grid_shadow_cast = update_shadow_cast player my_map in
+        draw_game my_map player enemy loots grid_shadow_cast map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture select;
+        game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, my_map, player, enemy, loots, select) last_time name
       end
   in
 
@@ -43,9 +44,9 @@ let run () =
     else
       if screen_state = Game then
         begin
-          let (map_textures, player_textures, enemy_textures, items_textures, bag_textures, my_map, my_player, enemy, loots) = init_map_controller map_name in
+          let (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, my_map, my_player, enemy, loots) = init_map_controller map_name in
           let list_of_last_time = List.init (2 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
-          game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, my_map, my_player, enemy, loots, 0) list_of_last_time map_name;
+          game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, my_map, my_player, enemy, loots, 0) list_of_last_time map_name;
         end
       else
         begin

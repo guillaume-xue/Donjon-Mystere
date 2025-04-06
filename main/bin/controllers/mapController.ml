@@ -2,11 +2,13 @@ open Raylib
 open Models.EntityModel
 open Models.EnemyModel
 open Models.ItemModel
+open Models.Shadowcaster
 open Views.PlayerView
 open Views.MapView
 open Views.EnemyView
 open Views.ItemView
 open Views.BagView
+open Views.ShadowCastView
 open Utils.Types
 open Utils.Json_conversions
 open Utils.Funcs
@@ -23,13 +25,14 @@ let init_map_controller filename =
   let enemy_textures = init_enemy_textures () in
   let items_textures = init_items_textures () in
   let bag_textures = init_bag_textures items_textures in
+  let shadow_cast_texture = init_shadow_cast_view () in
   let (map, player, enemy, loots) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, map, new_player, enemy, loots)
+  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, map, new_player, enemy, loots)
 
 (**
   [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
@@ -47,6 +50,7 @@ let draw_open_bag player bag_textures select =
   @param player The player.
   @param enemy The enemy.
   @param items The items.
+  @param visibility The grid for shadowcasting
   @param map_textures The textures of the map.
   @param player_textures The textures of the player.
   @param enemy_textures The textures of the enemy.
@@ -54,15 +58,17 @@ let draw_open_bag player bag_textures select =
   @param bag_textures The textures of the bag.
   @param select The selected item.
 *)
-let draw_game map (player: pokemon) enemy (items : loot list) map_textures player_textures enemy_textures items_textures bag_textures select =
+let draw_game map (player: pokemon) enemy (items : loot list) visibility map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture select =
   begin_drawing ();
   clear_background Color.black;
   draw_map map player map_textures;
   draw_items items player items_textures;
   draw_player player player_textures;
   draw_enemy enemy enemy_textures player;
+  draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
   draw_player_stats player;
   draw_open_bag player bag_textures select;
+  (* Uncomment the following lines to print the player and enemy positions for debugging purposes *)
   (* Printf.printf "Player position: (%f, %f), Target: (%f, %f)\n" player.pos_x player.pos_y player.target_x player.target_y;
   List.iter (fun (enemy: pokemon) ->
     Printf.printf "Enemy position: (%f, %f)\n" enemy.pos_x enemy.pos_y
@@ -164,7 +170,6 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   end else
     (player, items)
   
-
 (**
   [update_player player enemy map last_time] updates the player.
   @param player The player.
@@ -221,6 +226,14 @@ let update_enemy enemies player map key_pressed last_time =
       aux (index + 2) rest (enemy :: updated_enemies) last_time
   in
   aux 2 enemies [] last_time
+
+(**
+  [update_shadow_cast player map] update the shadow casting
+  @param player The player.
+  @param map The map.
+*)
+let update_shadow_cast player map =
+  compute_fov player 7 map.tiles map.width map.height
 
 (**
   [save_game filename map player enemy] saves the game.
