@@ -54,7 +54,6 @@ let draw_map map (player: pokemon) textures =
         | 1 -> 0
         | _ -> 1
       in
-
       let texture = List.nth textures ((num tile.texture_id) + (tile.biome_id - 1) * 2) in
       draw_texture texture (player.screen_x + tile.x * int_of_float(tile_texture_size) - int_of_float(x)) (player.screen_y + tile.y * int_of_float(tile_texture_size) - int_of_float(y)) Color.white;
       draw_textures rest x y

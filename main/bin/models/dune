@@ -10,4 +10,5 @@
   enemyModel
   entityModel
   itemModel
-  entity_gen))
+  entity_gen
+  shadowcaster))
