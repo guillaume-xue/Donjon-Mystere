@@ -21,6 +21,16 @@ type direction =
   | DiagonalDownLeft
   | DiagonalDownRight
 
+type trap_and_ground_type =
+  | Stairs
+  | Trap
+
+type trap_and_ground = {
+  nature: trap_and_ground_type;
+  pos_x: int;
+  pos_y: int;
+}
+
 type interaction =
   | Nothing
   | Attack

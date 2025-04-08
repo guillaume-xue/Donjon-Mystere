@@ -9,7 +9,7 @@ let spawn_player map =
   let zone_rand = Random.int (List.length map.regions) in
   let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
   let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
-  {
+  ({
     pos_x = float_of_int tile.x;
     pos_y = float_of_int tile.y;
     screen_x = 0;
@@ -28,7 +28,7 @@ let spawn_player map =
     attacking = false;
     action = Nothing;
     bag = { items = []; max_size = 10 }
-  }
+  }, zone_rand)
 
 (**
   [spawn_list_of_enemys] génère une liste d'ennemis sur la carte.
@@ -80,3 +80,23 @@ let spawn_list_of_loot map =
       aux rest (cpt+1) (loot :: acc)
   in
   aux map.regions 0 []
+
+let spawn_list_of_trap_and_ground map zone =
+  let res = [] in
+  let rec zone_tiles () =
+    let zone_rand = Random.int (List.length map.regions) in
+    if zone_rand = zone then 
+      zone_tiles()
+    else 
+      zone_rand 
+  in
+  let zone_rand = zone_tiles() in
+  let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
+  let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+  let stairs = { 
+    nature = Stairs;
+    pos_x = tile.x;
+    pos_y = tile.y;
+  } in
+  let res = stairs :: res in
+  res

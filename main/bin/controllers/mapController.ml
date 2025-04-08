@@ -26,13 +26,13 @@ let init_map_controller filename =
   let items_textures = init_items_textures () in
   let bag_textures = init_bag_textures items_textures in
   let shadow_cast_texture = init_shadow_cast_view () in
-  let (map, player, enemy, loots) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
+  let (map, player, enemy, loots, traps_and_grounds) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, map, new_player, enemy, loots)
+  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, map, new_player, enemy, loots, traps_and_grounds)
 
 (**
   [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
@@ -241,7 +241,9 @@ let update_shadow_cast player map =
   @param map The map.
   @param player The player.
   @param enemy The enemy.
+  @param loots The loots.
+  @param traps_and_grounds The traps and grounds.
 *)
-let save_game filename map player enemy loots =
-  let json = map_player_to_json map player enemy loots in
+let save_game filename map player enemy loots traps_and_grounds =
+  let json = map_player_to_json map player enemy loots traps_and_grounds in
   write_json_to_file (map_dir ^ filename ^ ".json") json
