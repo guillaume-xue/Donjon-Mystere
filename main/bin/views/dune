@@ -9,4 +9,5 @@
   enemyView
   itemView
   bagView
-  shadowCastView))
+  shadowCastView
+  trapGroundView))

@@ -94,7 +94,7 @@ let spawn_list_of_trap_and_ground map zone =
   let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
   let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
   let stairs = { 
-    nature = Stairs;
+    nature = Stairs_Up;
     pos_x = tile.x;
     pos_y = tile.y;
   } in

@@ -22,7 +22,8 @@ type direction =
   | DiagonalDownRight
 
 type trap_and_ground_type =
-  | Stairs
+  | Stairs_Up
+  | Stairs_Down
   | Trap
 
 type trap_and_ground = {

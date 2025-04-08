@@ -8,6 +8,7 @@ open Views.MapView
 open Views.EnemyView
 open Views.ItemView
 open Views.BagView
+open Views.TrapGroundView
 open Views.ShadowCastView
 open Utils.Types
 open Utils.Json_conversions
@@ -26,13 +27,14 @@ let init_map_controller filename =
   let items_textures = init_items_textures () in
   let bag_textures = init_bag_textures items_textures in
   let shadow_cast_texture = init_shadow_cast_view () in
+  let trap_and_ground_texures = init_trap_ground_textures () in
   let (map, player, enemy, loots, traps_and_grounds) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, map, new_player, enemy, loots, traps_and_grounds)
+  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, map, new_player, enemy, loots, traps_and_grounds)
 
 (**
   [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
@@ -58,13 +60,15 @@ let draw_open_bag player bag_textures select =
   @param bag_textures The textures of the bag.
   @param select The selected item.
 *)
-let draw_game map (player: pokemon) enemy (items : loot list) visibility map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture select =
+let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_and_grounds map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures select =
   begin_drawing ();
   clear_background Color.black;
   draw_map map player map_textures;
+  draw_trap_ground traps_and_grounds player trap_and_ground_texures;
   draw_items items player items_textures;
   draw_player player player_textures;
   draw_enemy enemy enemy_textures player;
+
   draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
   draw_player_stats player;
   draw_open_bag player bag_textures select;

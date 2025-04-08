@@ -114,7 +114,8 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
 
   let trap_and_ground = trap_and_ground_json |> List.map (fun trap_and_ground_json ->
     {
-      nature = if trap_and_ground_json |> member "nature" |> to_string = "trap" then Trap else Stairs;
+      nature = if trap_and_ground_json |> member "nature" |> to_string = "stairs_up" then Stairs_Up else
+               if trap_and_ground_json |> member "nature" |> to_string = "stairs_down" then Stairs_Down else Trap;
       pos_x = trap_and_ground_json |> member "pos_x" |> to_int;
       pos_y = trap_and_ground_json |> member "pos_y" |> to_int;
     }) in
@@ -253,8 +254,9 @@ let loots_to_json (loots: loot list) =
 let trap_and_ground_to_json (trap_and_ground: trap_and_ground) =
   `Assoc [
     ("nature", `String (match trap_and_ground.nature with
-      | Trap -> "trap"
-      | Stairs -> "stairs"));
+      | Stairs_Up -> "stairs_up"
+      | Stairs_Down -> "stairs_down"
+      | Trap -> "trap"));
     ("pos_x", `Int trap_and_ground.pos_x);
     ("pos_y", `Int trap_and_ground.pos_y);
   ]
