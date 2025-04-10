@@ -1,2 +1,4 @@
 (test
- (name test_main))
+ (name test_main)
+ (modules test_main)
+ (libraries ounit2 models utils test_map_model test_item_model))

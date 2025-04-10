@@ -3,6 +3,8 @@ open Models.EntityModel
 open Models.EnemyModel
 open Models.ItemModel
 open Models.Shadowcaster
+open Models.Trap_ground
+open Models.Generation_map
 open Views.PlayerView
 open Views.MapView
 open Views.EnemyView
@@ -68,7 +70,6 @@ let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_a
   draw_items items player items_textures;
   draw_player player player_textures;
   draw_enemy enemy enemy_textures player;
-
   draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
   draw_player_stats player;
   draw_open_bag player bag_textures select;
@@ -173,6 +174,21 @@ let check_pickup_item (player: pokemon) (items: loot list) =
     | _ -> (player, items)
   end else
     (player, items)
+
+(**
+  [update_trap_and_ground map player trap_and_ground enemys items] updates the trap and ground.
+  @param map The map.
+  @param player The player.
+  @param trap_and_ground The trap and ground.
+  @param enemys The enemy.
+  @param items The items.
+  @return The updated map, player, trap and ground, enemy and items.
+*)
+let update_trap_and_ground map player trap_and_ground enemys items =
+  if is_stairs trap_and_ground player then
+    generation_map ()
+  else
+    (map, player, trap_and_ground, enemys, items)
   
 (**
   [update_player player enemy map last_time] updates the player.
@@ -182,7 +198,8 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   @param last_time The last time.
   @return The updated player.
 *)
-let update_player (player: pokemon) enemy map last_time select (items: loot list) =
+let update_player (player: pokemon) enemy map last_time select (items: loot list) trap_and_ground =
+  let (map, player, trap_and_ground, enemy, items) = update_trap_and_ground map player trap_and_ground enemy items in
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
   let (player, items) = check_pickup_item player items in
@@ -204,7 +221,7 @@ let update_player (player: pokemon) enemy map last_time select (items: loot list
     else 
       player 
   in
-  (player, key_pressed, last_time, nb_select, items)
+  (map, player, key_pressed, last_time, nb_select, items, trap_and_ground, enemy)
 
 (**
   [update_enemy enemies player map key_pressed last_time] updates the enemy.

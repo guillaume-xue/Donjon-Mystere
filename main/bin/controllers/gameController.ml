@@ -27,7 +27,7 @@ let run () =
       close_window ()
     end else
       begin
-        let (player, key_pressed, last_time, select, loots) = update_player my_player enemy my_map last_time select loots in
+        let (my_map, player, key_pressed, last_time, select, loots, traps_and_grounds, enemy) = update_player my_player enemy my_map last_time select loots traps_and_grounds in
         let (enemy, last_time) = update_enemy enemy player my_map key_pressed last_time in
         let grid_shadow_cast = update_shadow_cast player my_map in
         draw_game my_map player enemy loots grid_shadow_cast traps_and_grounds map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures select;
@@ -45,7 +45,7 @@ let run () =
       if screen_state = Game then
         begin
           let (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, my_map, my_player, enemy, loots, traps_and_grounds) = init_map_controller map_name in
-          let list_of_last_time = List.init (2 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
+          let list_of_last_time = List.init (6 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
           game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, my_map, my_player, enemy, loots, traps_and_grounds, 0) list_of_last_time map_name;
         end
       else

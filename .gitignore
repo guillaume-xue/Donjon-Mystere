@@ -1,6 +1,5 @@
 .vscode/
 /main/_build
-/main/test
 /main/lib
 *.java
 *.class

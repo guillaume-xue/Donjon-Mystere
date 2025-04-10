@@ -1,4 +1,6 @@
 open Utils.Types
+open Map_model
+open Utils.Settings_map
 
 (**
   [spawn_player] génère une position aléatoire pour le joueur sur la carte.
@@ -6,15 +8,22 @@ open Utils.Types
   @return Le joueur généré.
 *)
 let spawn_player map =
-  let zone_rand = Random.int (List.length map.regions) in
-  let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
-  let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+  let rec tile_rand () =
+    let zone_rand = Random.int (List.length map.regions) in
+    let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
+    let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+    if is_wall tile.x tile.y map then
+      tile_rand ()
+    else
+      zone_rand, tile
+  in
+  let (zone_rand, tile) = tile_rand () in
   ({
     pos_x = float_of_int tile.x;
     pos_y = float_of_int tile.y;
-    screen_x = 0;
-    screen_y = 0;
-    entity_textures_id = 0;
+    screen_x = (screen_width / 2);
+    screen_y = (screen_height / 2);
+    entity_textures_id = 24;
     target_x = float_of_int tile.x;
     target_y = float_of_int tile.y;
     moving = false;

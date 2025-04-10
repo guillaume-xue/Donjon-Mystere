@@ -12,4 +12,5 @@
   itemModel
   entity_gen
   shadowcaster
-  trap_and_ground))
+  trap_ground
+  map_model))

@@ -148,7 +148,7 @@ let key_pressed_to_char key =
   @param list_of_maps The list of maps.
   @return The new screen state and the new map name.
 *)
-let check_new_map_name map_name list_of_maps =
+let check_new_map_name (map_name: string) list_of_maps =
   if is_any_key_pressed () then
     if map_name = "map " then (Select_New, "")
     else if String.length map_name < 16 then begin (* Maximum length of map name *)
@@ -162,7 +162,7 @@ let check_new_map_name map_name list_of_maps =
     else (Select_New, map_name)
   end else if is_key_pressed Key.Enter then begin (* Enter *)
     if not (List.exists (fun map -> map = map_name) list_of_maps) && map_name <> "map " then begin
-      generation_map map_name;
+      create_map_json map_name;
       (Game, map_name)
     end else
       (Select_New, map_name)
