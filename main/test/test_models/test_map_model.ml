@@ -3,7 +3,7 @@ open Models.Map_model
 open Utils.Types
 
 let test_is_in_map _ =
-  let map = { width = 5; height = 5; tiles = []; regions = [] } in
+  let map = { width = 5; height = 5; tiles = []; regions = []; floor = 1 } in
   assert_equal true (is_in_map 0 0 map);
   assert_equal true (is_in_map 4 4 map);
   assert_equal false (is_in_map 5 5 map);
@@ -20,7 +20,8 @@ let test_is_wall _ =
       { x = 1; y = 1; texture_id = 0; biome_id = 0 };
       { x = 2; y = 2; texture_id = 0; biome_id = 0 }
     ];
-    regions = []
+    regions = [];
+    floor = 1
   } in
   assert_equal false (is_wall 0 0 map);
   assert_equal true (is_wall 1 1 map);

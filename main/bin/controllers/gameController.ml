@@ -45,7 +45,7 @@ let run () =
       if screen_state = Game then
         begin
           let (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, my_map, my_player, enemy, loots, traps_and_grounds) = init_map_controller map_name in
-          let list_of_last_time = List.init (6 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
+          let list_of_last_time = List.init (7 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
           game_loop (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, my_map, my_player, enemy, loots, traps_and_grounds, 0) list_of_last_time map_name;
         end
       else

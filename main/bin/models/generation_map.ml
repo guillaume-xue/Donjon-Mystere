@@ -137,6 +137,7 @@ let generation_map () =
     height = map_size_y + map_marge * 2;
     tiles = tiles_with_biomes;
     regions = regions_tmp;
+    floor = 1; (* Initial floor *)
   } in
 
   (* Spawning du joueur *)

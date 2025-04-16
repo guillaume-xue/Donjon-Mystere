@@ -58,4 +58,7 @@ let draw_map map (player: pokemon) textures =
       draw_texture texture (player.screen_x + tile.x * int_of_float(tile_texture_size) - int_of_float(x)) (player.screen_y + tile.y * int_of_float(tile_texture_size) - int_of_float(y)) Color.white;
       draw_textures rest x y
   in
-  draw_textures map.tiles (player.pos_x *. tile_texture_size) (player.pos_y *. tile_texture_size);
+  draw_textures map.tiles (player.pos_x *. tile_texture_size) (player.pos_y *. tile_texture_size)
+
+let draw_floor_intro map =
+  draw_text ("Floor: " ^ string_of_int map.floor) (screen_width / 2 - 50) (screen_height / 2 - 50) 20 Color.white

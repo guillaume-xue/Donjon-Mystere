@@ -26,7 +26,8 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
         biome_id = tile |> member "biome_id" |> to_int;
       }
     );
-    regions = []
+    regions = [];
+    floor = map_json |> member "floor" |> to_int;
   } in
 
   let player = {
@@ -150,12 +151,14 @@ let tile_to_yojson tile =
     - ["width"] : la largeur de la carte.
     - ["height"] : la hauteur de la carte.
     - ["tiles"] : une liste de tuiles converties en JSON.
+    - ["floor"] : l'étage de la carte.
 *)
 let map_to_yojson map =
   `Assoc [
     ("width", `Int map.width);
     ("height", `Int map.height);
-    ("tiles", `List (List.map tile_to_yojson map.tiles))
+    ("tiles", `List (List.map tile_to_yojson map.tiles));
+    ("floor", `Int map.floor)
   ]
 
 (**
@@ -265,17 +268,15 @@ let traps_and_grounds_to_json (trap_and_ground: trap_and_ground list) =
   `List (List.map trap_and_ground_to_json trap_and_ground)
 
 (**
-  [map_player_to_json map player enemy] converts a map, a player and an enemy to a JSON representation.
+  [map_player_to_json map player enemy items traps_and_grounds] converts a map, a player, enemies, items, and traps/grounds to a JSON representation.
   @param map The map to convert.
   @param player The player to convert.
   @param enemy The enemy to convert.
-  @return A JSON value of type [`Assoc] representing the map, player and enemy, with the following keys:
-  - ["map"]: the map converted to JSON.
-  - ["player"]: the player converted to JSON.
-  - ["enemy"]: the enemy converted to JSON.
-  - ["loot"]: the loot converted to JSON.
+  @param items The items to convert.
+  @param traps_and_grounds The traps and grounds to convert.
+  @return A JSON value of type [`Assoc] representing the map, player, enemies, items, and traps/grounds.
 *)
-let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items: loot list) (traps_and_grounds: trap_and_ground list)=
+let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items: loot list) (traps_and_grounds: trap_and_ground list) =
   `Assoc [
     ("map", map_to_yojson map);
     ("player", pokemon_to_yojson player);

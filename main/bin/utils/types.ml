@@ -103,12 +103,14 @@ type zone = {
   @param height La hauteur de la carte.
   @param tiles La liste des tuiles de la carte.
   @param regions La liste des zones distinctes de la carte.
+  @param floor L'étage actuel de la carte.
 *)
 type map = {
   width: int;
   height: int;
   tiles: tile list;
   regions: zone list;
+  floor: int;
 }
 
 (** 

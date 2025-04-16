@@ -63,22 +63,25 @@ let draw_open_bag player bag_textures select =
   @param select The selected item.
 *)
 let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_and_grounds map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures select =
-  begin_drawing ();
-  clear_background Color.black;
-  draw_map map player map_textures;
-  draw_trap_ground traps_and_grounds player trap_and_ground_texures;
-  draw_items items player items_textures;
-  draw_player player player_textures;
-  draw_enemy enemy enemy_textures player;
-  draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
-  draw_player_stats player;
-  draw_open_bag player bag_textures select;
-  (* Uncomment the following lines to print the player and enemy positions for debugging purposes *)
-  (* Printf.printf "Player position: (%f, %f), Target: (%f, %f)\n" player.pos_x player.pos_y player.target_x player.target_y;
-  List.iter (fun (enemy: pokemon) ->
-    Printf.printf "Enemy position: (%f, %f)\n" enemy.pos_x enemy.pos_y
-  ) enemy; *)
-  end_drawing ()
+  if is_stairs traps_and_grounds player then begin
+    begin_drawing ();
+    clear_background Color.black;
+    draw_floor_intro map;
+    end_drawing ()
+  end else begin
+    begin_drawing ();
+    clear_background Color.black;
+    draw_map map player map_textures;
+    draw_trap_ground traps_and_grounds player trap_and_ground_texures;
+    draw_items items player items_textures;
+    draw_player player player_textures;
+    draw_enemy enemy enemy_textures player;
+    draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
+    draw_player_stats player;
+    draw_open_bag player bag_textures select;
+    end_drawing ()
+  end
+
 
 (**
   [check_key_pressed player] checks if a key is pressed.
@@ -184,11 +187,14 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   @param items The items.
   @return The updated map, player, trap and ground, enemy and items.
 *)
-let update_trap_and_ground map player trap_and_ground enemys items =
-  if is_stairs trap_and_ground player then
-    generation_map ()
-  else
-    (map, player, trap_and_ground, enemys, items)
+let update_trap_and_ground map player trap_and_ground enemys item =
+  if is_stairs trap_and_ground player then begin
+    Unix.sleep 1; (* Sleep for 1 second for draw floor intro *)
+    let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map () in
+    ({ new_map with floor = map.floor + 1 }, new_player, new_trap_and_ground, new_enemys, new_items)
+  end else
+    (map, player, trap_and_ground, enemys, item)
+
   
 (**
   [update_player player enemy map last_time] updates the player.
