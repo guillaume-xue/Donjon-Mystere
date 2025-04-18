@@ -119,7 +119,7 @@ let copy_map_add_marge tiles =
   new_map tiles 0 0 []
 
 (* Main *)
-let generation_map () =
+let generation_map floor =
   (* Trois en un, init -> auto cell -> supp petite zone *)
   let tiles_tmp1 = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
   (* Ajout de la marge *)
@@ -137,7 +137,7 @@ let generation_map () =
     height = map_size_y + map_marge * 2;
     tiles = tiles_with_biomes;
     regions = regions_tmp;
-    floor = 1; (* Initial floor *)
+    floor = floor; (* Initial floor *)
   } in
 
   (* Spawning du joueur *)
@@ -160,7 +160,7 @@ let generation_map () =
 *)
 let create_map_json filename =
   (* Génération de la map *)
-  let (map, player, trap_and_ground, enemys, items) = generation_map () in
+  let (map, player, trap_and_ground, enemys, items) = generation_map 0 in
   (* Sérialisation en JSON *)
   let json = map_player_to_json map player enemys items trap_and_ground in
   (* Écriture dans un fichier *)

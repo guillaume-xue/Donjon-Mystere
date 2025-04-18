@@ -22,14 +22,30 @@ type direction =
   | DiagonalDownRight
 
 type trap_and_ground_type =
-  | Stairs_Up
-  | Stairs_Down
-  | Trap
+  | Stairs_Up             (* proceed to the next up floor of a dungeon *)
+  | Stairs_Down           (* proceed to the next down floor of a dungeon *)
+  | Bug_Switch            (* Induces sleep on Pokémon that steps on it*)
+  | Chestnut_Switch       (* Causes spiky chestnuts to fall, inflicts 10 fix damage on the Pokémon that steps on the trap *)
+  | Drop_Hole             (* Pokémon that steps on trap falls to the next floor, other team members will faint even with the Resurrect Seed *)
+  | Explosion_Switch      (* An Electrode explodes to inflict damage on all Pokémon in the immediately surrounding 20 squares. Break walls, and wipe out items *)
+  | Fan_Switch            (* Sends Pokémon blasting against wall in any direction, causes damage unless holding Passthrough Scarf or is a ghost Pokémon *)
+  | Glue_Switch           (* Randomly disables one of the held items or item in bag until you leave the dungeon *)
+  | Grimer_Switch         (* Turns one food item in your bag into a Grimer Food *)
+  | Imprison_Switch       (* Disables one attack until changes floors *)
+  | Mud_Switch            (* Randomly decreases one stat by 1 *)
+  | Poison_Sting_Switch   (* Induces poison on Pokémon that steps on it *)
+  | Pokemon_Switch        (* Changes the wild Pokémon or items in the same room *)
+  | Self_Destruct_Switch  (* A Voltorb self-destructs to inflict damage on all Pokémon in the immediately surrounding 8 squares, also breaking some walls and wiping up items *)
+  | Skill_Drop_Switch     (* Reduces one random attack's PP to 0 *)
+  | Slowpoke_Switch       (* Slows walking pace of Pokémon that steps on it *)
+  | Spin_Swith            (* Induces confusion on Pokémon that steps on it *)
+  | Summon_Switch         (* Causes several wild Pokémon to appear. Trap disappears afterwards *)
+  | Warp_Trap             (* Warps to another part of the floor *)
 
 type trap_and_ground = {
   nature: trap_and_ground_type;
-  pos_x: int;
-  pos_y: int;
+  tag_pos_x: int;
+  tag_pos_y: int;
 }
 
 type interaction =

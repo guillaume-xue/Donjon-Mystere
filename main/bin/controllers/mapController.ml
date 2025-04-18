@@ -187,13 +187,14 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   @param items The items.
   @return The updated map, player, trap and ground, enemy and items.
 *)
-let update_trap_and_ground map player trap_and_ground enemys item =
+let update_trap_and_ground map player trap_and_ground enemys item last_time =
   if is_stairs trap_and_ground player then begin
     Unix.sleep 1; (* Sleep for 1 second for draw floor intro *)
-    let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map () in
-    ({ new_map with floor = map.floor + 1 }, new_player, new_trap_and_ground, new_enemys, new_items)
+    let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor in
+    let list_of_last_time = List.init (3 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
+    ({ new_map with floor = map.floor + 1 }, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
   end else
-    (map, player, trap_and_ground, enemys, item)
+    (map, player, trap_and_ground, enemys, item, last_time)
 
   
 (**
@@ -205,7 +206,7 @@ let update_trap_and_ground map player trap_and_ground enemys item =
   @return The updated player.
 *)
 let update_player (player: pokemon) enemy map last_time select (items: loot list) trap_and_ground =
-  let (map, player, trap_and_ground, enemy, items) = update_trap_and_ground map player trap_and_ground enemy items in
+  let (map, player, trap_and_ground, enemy, items, last_time) = update_trap_and_ground map player trap_and_ground enemy items last_time in
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
   let (player, items) = check_pickup_item player items in

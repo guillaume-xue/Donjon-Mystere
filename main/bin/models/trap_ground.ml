@@ -10,8 +10,20 @@ let is_stairs (trap_and_ground: trap_and_ground list) (player: pokemon) =
   let rec aux res =
     match res with
     | [] -> false
-    | {nature; pos_x; pos_y} :: rest ->
-      if (nature = Stairs_Up || nature = Stairs_Down) && int_of_float player.pos_x = pos_x && int_of_float player.pos_y = pos_y then
+    | {nature; tag_pos_x; tag_pos_y} :: rest ->
+      if (nature = Stairs_Up || nature = Stairs_Down) && int_of_float player.pos_x = tag_pos_x && int_of_float player.pos_y = tag_pos_y then
+        true
+      else
+        aux rest
+  in
+  aux trap_and_ground
+
+let is_trap_ground (trap_and_ground: trap_and_ground list) x y =
+  let rec aux res =
+    match res with
+    | [] -> false
+    | {tag_pos_x; tag_pos_y; _} :: rest ->
+      if x = tag_pos_x && y = tag_pos_y then
         true
       else
         aux rest

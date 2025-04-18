@@ -1,6 +1,7 @@
 open Utils.Types
 open Map_model
 open Utils.Settings_map
+open Trap_ground
 
 (**
   [spawn_player] génère une position aléatoire pour le joueur sur la carte.
@@ -91,21 +92,62 @@ let spawn_list_of_loot map =
   aux map.regions 0 []
 
 let spawn_list_of_trap_and_ground map zone =
-  let res = [] in
-  let rec zone_tiles () =
-    let zone_rand = Random.int (List.length map.regions) in
-    if zone_rand = zone then 
-      zone_tiles()
-    else 
-      zone_rand 
+  let gen_stair () =
+    let rec zone_tiles () =
+      let zone_rand = Random.int (List.length map.regions) in
+      if zone_rand = zone then 
+        zone_tiles()
+      else 
+        zone_rand 
+    in
+    let zone_rand = zone_tiles() in
+    let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
+    let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+    { 
+      nature = Stairs_Up;
+      tag_pos_x = tile.x;
+      tag_pos_y = tile.y;
+    }
   in
-  let zone_rand = zone_tiles() in
-  let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
-  let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
-  let stairs = { 
-    nature = Stairs_Up;
-    pos_x = tile.x;
-    pos_y = tile.y;
-  } in
-  let res = stairs :: res in
-  res
+  (* Fonction pour générer un piège aléatoire *)
+  let random_trap excluded_indices =
+    (* Filtrer les pièges exclus *)
+    let filtered_traps = List.mapi (fun i trap -> (i, trap)) traps
+                        |> List.filter (fun (i, _) -> not (List.mem i excluded_indices))
+                        |> List.map snd in
+    (* Calculer la somme des probabilités *)
+    let total_weight = List.fold_left (fun acc (_, weight) -> acc +. weight) 0.0 filtered_traps in
+    (* Générer un nombre aléatoire entre 0 et la somme des probabilités *)
+    let rand = Random.float total_weight in
+    (* Trouver le piège correspondant *)
+    let rec find_trap acc = function
+      | [] -> failwith "No traps available"
+      | (trap, weight) :: rest ->
+          if rand <= acc +. weight then trap
+          else find_trap (acc +. weight) rest
+    in
+    find_trap 0.0 filtered_traps
+  in
+  let rec gen_trap i res =
+    if i < map.floor then
+      begin
+        let zone_rand = Random.int (List.length map.regions) in
+        let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
+        let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+        if is_trap_ground res tile.x tile.y then 
+          gen_trap i res
+        else
+          let trap = { 
+            nature = (random_trap []);
+            tag_pos_x = tile.x;
+            tag_pos_y = tile.y;
+          } in
+          gen_trap (i + 1) (trap :: res);
+      end
+    else
+      res
+  in
+  let traps_grounds = [gen_stair ()] in
+  gen_trap 0 traps_grounds
+
+
