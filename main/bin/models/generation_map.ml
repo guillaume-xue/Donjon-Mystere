@@ -119,15 +119,11 @@ let copy_map_add_marge tiles =
   new_map tiles 0 0 []
 
 (* Main *)
-let generation_map filename =
-  Random.self_init ();
-
+let generation_map floor =
   (* Trois en un, init -> auto cell -> supp petite zone *)
   let tiles_tmp1 = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
-  
   (* Ajout de la marge *)
   let tiles_tmp = copy_map_add_marge tiles_tmp1 in
-
   (* Récupération des zones distinctes *)
   let regions_tmp = get_all_zones tiles_tmp in
   (* Connctions des zones avec l'algo de Prim *)
@@ -141,10 +137,12 @@ let generation_map filename =
     height = map_size_y + map_marge * 2;
     tiles = tiles_with_biomes;
     regions = regions_tmp;
+    floor = floor; (* Initial floor *)
   } in
 
   (* Spawning du joueur *)
-  let player = spawn_player map in
+  let (player, zone_rand) = spawn_player map in
+  let trap_and_ground = spawn_list_of_trap_and_ground map zone_rand in
   let enemys = spawn_list_of_enemys map player in
   let items = spawn_list_of_loot map in
 
@@ -153,9 +151,17 @@ let generation_map filename =
   
   (* Affichage final *)
   print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
+  (map, player, trap_and_ground, enemys, items)
 
+(**
+  [create_map_json filename] génère une carte et l'enregistre au format JSON dans un fichier.
+
+  @param filename Le nom du fichier (sans extension) dans lequel la carte sera enregistrée.
+*)
+let create_map_json filename =
+  (* Génération de la map *)
+  let (map, player, trap_and_ground, enemys, items) = generation_map 0 in
   (* Sérialisation en JSON *)
-  let json = map_player_to_json map player enemys items in
-
+  let json = map_player_to_json map player enemys items trap_and_ground in
   (* Écriture dans un fichier *)
   write_json_to_file (map_dir ^ filename ^ ".json") json;

@@ -3,11 +3,14 @@ open Models.EntityModel
 open Models.EnemyModel
 open Models.ItemModel
 open Models.Shadowcaster
+open Models.Trap_ground
+open Models.Generation_map
 open Views.PlayerView
 open Views.MapView
 open Views.EnemyView
 open Views.ItemView
 open Views.BagView
+open Views.TrapGroundView
 open Views.ShadowCastView
 open Utils.Types
 open Utils.Json_conversions
@@ -26,13 +29,14 @@ let init_map_controller filename =
   let items_textures = init_items_textures () in
   let bag_textures = init_bag_textures items_textures in
   let shadow_cast_texture = init_shadow_cast_view () in
-  let (map, player, enemy, loots) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
+  let trap_and_ground_texures = init_trap_ground_textures () in
+  let (map, player, enemy, loots, traps_and_grounds) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, map, new_player, enemy, loots)
+  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, map, new_player, enemy, loots, traps_and_grounds)
 
 (**
   [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
@@ -58,22 +62,26 @@ let draw_open_bag player bag_textures select =
   @param bag_textures The textures of the bag.
   @param select The selected item.
 *)
-let draw_game map (player: pokemon) enemy (items : loot list) visibility map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture select =
-  begin_drawing ();
-  clear_background Color.black;
-  draw_map map player map_textures;
-  draw_items items player items_textures;
-  draw_player player player_textures;
-  draw_enemy enemy enemy_textures player;
-  draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
-  draw_player_stats player;
-  draw_open_bag player bag_textures select;
-  (* Uncomment the following lines to print the player and enemy positions for debugging purposes *)
-  (* Printf.printf "Player position: (%f, %f), Target: (%f, %f)\n" player.pos_x player.pos_y player.target_x player.target_y;
-  List.iter (fun (enemy: pokemon) ->
-    Printf.printf "Enemy position: (%f, %f)\n" enemy.pos_x enemy.pos_y
-  ) enemy; *)
-  end_drawing ()
+let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_and_grounds map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures select =
+  if is_stairs traps_and_grounds player then begin
+    begin_drawing ();
+    clear_background Color.black;
+    draw_floor_intro map;
+    end_drawing ()
+  end else begin
+    begin_drawing ();
+    clear_background Color.black;
+    draw_map map player map_textures;
+    draw_trap_ground traps_and_grounds player trap_and_ground_texures;
+    draw_items items player items_textures;
+    draw_player player player_textures;
+    draw_enemy enemy enemy_textures player;
+    draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
+    draw_player_stats player;
+    draw_open_bag player bag_textures select;
+    end_drawing ()
+  end
+
 
 (**
   [check_key_pressed player] checks if a key is pressed.
@@ -169,6 +177,25 @@ let check_pickup_item (player: pokemon) (items: loot list) =
     | _ -> (player, items)
   end else
     (player, items)
+
+(**
+  [update_trap_and_ground map player trap_and_ground enemys items] updates the trap and ground.
+  @param map The map.
+  @param player The player.
+  @param trap_and_ground The trap and ground.
+  @param enemys The enemy.
+  @param items The items.
+  @return The updated map, player, trap and ground, enemy and items.
+*)
+let update_trap_and_ground map player trap_and_ground enemys item last_time =
+  if is_stairs trap_and_ground player then begin
+    Unix.sleep 1; (* Sleep for 1 second for draw floor intro *)
+    let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor in
+    let list_of_last_time = List.init (3 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
+    ({ new_map with floor = map.floor + 1 }, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
+  end else
+    (map, player, trap_and_ground, enemys, item, last_time)
+
   
 (**
   [update_player player enemy map last_time] updates the player.
@@ -178,7 +205,8 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   @param last_time The last time.
   @return The updated player.
 *)
-let update_player (player: pokemon) enemy map last_time select (items: loot list) =
+let update_player (player: pokemon) enemy map last_time select (items: loot list) trap_and_ground =
+  let (map, player, trap_and_ground, enemy, items, last_time) = update_trap_and_ground map player trap_and_ground enemy items last_time in
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
   let (player, items) = check_pickup_item player items in
@@ -200,7 +228,7 @@ let update_player (player: pokemon) enemy map last_time select (items: loot list
     else 
       player 
   in
-  (player, key_pressed, last_time, nb_select, items)
+  (map, player, key_pressed, last_time, nb_select, items, trap_and_ground, enemy)
 
 (**
   [update_enemy enemies player map key_pressed last_time] updates the enemy.
@@ -241,7 +269,9 @@ let update_shadow_cast player map =
   @param map The map.
   @param player The player.
   @param enemy The enemy.
+  @param loots The loots.
+  @param traps_and_grounds The traps and grounds.
 *)
-let save_game filename map player enemy loots =
-  let json = map_player_to_json map player enemy loots in
+let save_game filename map player enemy loots traps_and_grounds =
+  let json = map_player_to_json map player enemy loots traps_and_grounds in
   write_json_to_file (map_dir ^ filename ^ ".json") json

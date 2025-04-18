@@ -1,18 +1,20 @@
 open Types
 open Yojson.Basic
 open Yojson.Basic.Util
+open Funcs
 
 (**
   [load_map_player_from_json filename] loads a map and a player from a combined JSON file.
   @param filename The name of the file to load.
   @return A tuple containing the map and the player loaded from the file.
 *)
-let load_map_player_from_json (filename: string): (map * pokemon * pokemon list * loot list) =
+let load_map_player_from_json (filename: string): (map * pokemon * pokemon list * loot list * trap_and_ground list) =
   let json = from_file filename in
   let map_json = json |> member "map" in
   let player_json = json |> member "player" in
   let enemy_json = json |> member "enemy" |> to_list in
   let loot_json = json |> member "loot" |> to_list in
+  let trap_and_ground_json = json |> member "trap_and_ground" |> to_list in
 
   let map = {
     width = map_json |> member "width" |> to_int;
@@ -25,7 +27,8 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
         biome_id = tile |> member "biome_id" |> to_int;
       }
     );
-    regions = []
+    regions = [];
+    floor = map_json |> member "floor" |> to_int;
   } in
 
   let player = {
@@ -111,7 +114,14 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       description = loot_json |> member "description" |> to_string;
     }) in
 
-  (map, player, enemy, loot)
+  let trap_and_ground = trap_and_ground_json |> List.map (fun trap_and_ground_json ->
+    {
+      nature = trap_and_ground_json |> member "nature" |> to_int |> int_to_trap_ground;
+      tag_pos_x = trap_and_ground_json |> member "tag_pos_x" |> to_int;
+      tag_pos_y = trap_and_ground_json |> member "tag_pos_y" |> to_int;
+    }) in
+
+  (map, player, enemy, loot, trap_and_ground)
 
 (** 
   [tile_to_yojson] convertit une tuile en une représentation JSON.
@@ -141,12 +151,14 @@ let tile_to_yojson tile =
     - ["width"] : la largeur de la carte.
     - ["height"] : la hauteur de la carte.
     - ["tiles"] : une liste de tuiles converties en JSON.
+    - ["floor"] : l'étage de la carte.
 *)
 let map_to_yojson map =
   `Assoc [
     ("width", `Int map.width);
     ("height", `Int map.height);
-    ("tiles", `List (List.map tile_to_yojson map.tiles))
+    ("tiles", `List (List.map tile_to_yojson map.tiles));
+    ("floor", `Int map.floor)
   ]
 
 (**
@@ -242,23 +254,32 @@ let loot_to_json (loot: loot) =
 let loots_to_json (loots: loot list) =
   `List (List.map loot_to_json loots)
 
+let trap_and_ground_to_json (trap_and_ground: trap_and_ground) =
+  `Assoc [
+    ("nature", `Int (trap_and_ground.nature |> trap_ground_to_int));
+    ("tag_pos_x", `Int trap_and_ground.tag_pos_x);
+    ("tag_pos_y", `Int trap_and_ground.tag_pos_y);
+  ]
+
+let traps_and_grounds_to_json (trap_and_ground: trap_and_ground list) =
+  `List (List.map trap_and_ground_to_json trap_and_ground)
+
 (**
-  [map_player_to_json map player enemy] converts a map, a player and an enemy to a JSON representation.
+  [map_player_to_json map player enemy items traps_and_grounds] converts a map, a player, enemies, items, and traps/grounds to a JSON representation.
   @param map The map to convert.
   @param player The player to convert.
   @param enemy The enemy to convert.
-  @return A JSON value of type [`Assoc] representing the map, player and enemy, with the following keys:
-  - ["map"]: the map converted to JSON.
-  - ["player"]: the player converted to JSON.
-  - ["enemy"]: the enemy converted to JSON.
-  - ["loot"]: the loot converted to JSON.
+  @param items The items to convert.
+  @param traps_and_grounds The traps and grounds to convert.
+  @return A JSON value of type [`Assoc] representing the map, player, enemies, items, and traps/grounds.
 *)
-let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items: loot list)=
+let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items: loot list) (traps_and_grounds: trap_and_ground list) =
   `Assoc [
     ("map", map_to_yojson map);
     ("player", pokemon_to_yojson player);
     ("enemy", pokemons_to_yojson enemy);
-    ("loot", loots_to_json items)
+    ("loot", loots_to_json items);
+    ("trap_and_ground", traps_and_grounds_to_json traps_and_grounds)
   ]
 
 (** 

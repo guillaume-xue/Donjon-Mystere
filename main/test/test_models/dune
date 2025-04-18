@@ -1,0 +1,9 @@
+(library
+ (name test_map_model)
+ (modules test_map_model)
+ (libraries ounit2 models utils))
+
+(library
+ (name test_item_model)
+ (modules test_item_model)
+ (libraries ounit2 models utils))
