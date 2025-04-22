@@ -32,3 +32,58 @@ let is_wall x y map =
     aux map.tiles
   else
     false
+
+let set_map_floor map floor = 
+  { 
+    width = map.width; 
+    height = map.height; 
+    tiles = map.tiles; 
+    regions = map.regions;
+    floor = floor
+  }
+
+let find_wall_in_direction x y direction map =
+  let rec aux x y =
+    if is_wall x y map then
+      Some (x, y)
+    else
+      match direction with
+      | Up -> aux x (y - 1)
+      | Down -> aux x (y + 1)
+      | Left -> aux (x - 1) y
+      | Right -> aux (x + 1) y
+      | _ -> Some (x, y)
+      in
+  aux x y
+
+let set_map_tile (tiles : tile list) (map : map) =
+  {
+    width = map.width;
+    height = map.height;
+    tiles = tiles;
+    regions = map.regions;
+    floor = map.floor
+  }
+
+let rec take n lst =
+  match lst with
+  | [] -> []
+  | hd :: tl -> if n > 0 then hd :: take (n - 1) tl else []
+
+let set_map_exploded x y map =
+  let radius = 8 in
+  let tiles_in_radius =
+    List.filter
+      (fun tile ->
+        let dx = tile.x - x in
+        let dy = tile.y - y in
+        dx * dx + dy * dy <= radius * radius && tile.texture_id = 0)
+      map.tiles
+  in
+  let num_to_remove = Random.int (List.length tiles_in_radius + 1) in
+  let tiles_to_keep =
+    List.filter
+      (fun tile -> not (List.mem tile (take num_to_remove tiles_in_radius)))
+      map.tiles
+  in
+  set_map_tile tiles_to_keep map

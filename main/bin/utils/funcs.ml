@@ -10,11 +10,13 @@ open Raylib
   @return La liste avec l'élément à l'index `n` remplacé par `new_value`
 *)
 let rec replace_nth lst n new_value =
-  match lst with
-  | [] -> failwith "Index out of bounds" (* Si l'index dépasse la taille de la liste *)
-  | _ :: tl when n = 0 -> new_value :: tl (* Remplace l'élément à l'index `n` *)
-  | hd :: tl -> hd :: replace_nth tl (n - 1) new_value (* Continue à parcourir la liste *)
-
+  if n < 0 || n >= List.length lst then
+    failwith "Index out of bounds"
+  else
+    match lst with
+    | [] -> failwith "Index out of bounds"
+    | _ :: tl when n = 0 -> new_value :: tl
+    | hd :: tl -> hd :: replace_nth tl (n - 1) new_value
 
 let rec init_textures x max image textures =
   if x < max then

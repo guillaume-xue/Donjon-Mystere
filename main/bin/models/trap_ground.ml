@@ -29,3 +29,15 @@ let is_trap_ground (trap_and_ground: trap_and_ground list) x y =
         aux rest
   in
   aux trap_and_ground
+
+let get_trap_ground (trap_and_ground: trap_and_ground list) x y =
+  let rec aux res =
+    match res with
+    | [] -> None
+    | {tag_pos_x; tag_pos_y; _} as trap_and_ground :: rest ->
+      if x = tag_pos_x && y = tag_pos_y then
+        Some trap_and_ground
+      else
+        aux rest
+  in
+  aux trap_and_ground
