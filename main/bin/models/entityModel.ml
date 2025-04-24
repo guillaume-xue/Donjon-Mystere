@@ -575,6 +575,7 @@ let is_end_moving (entity: pokemon) =
 *)
 let new_entity_pos map entity (enemy: pokemon list) last_update_time =
   let current_time = get_time () in
+  
   (* Check if the entity is facing a wall *)
   let new_entity = 
     if is_obstacle map entity enemy then
@@ -584,6 +585,15 @@ let new_entity_pos map entity (enemy: pokemon list) last_update_time =
     else
       entity
       |> set_entity_target (floor entity.target_x) (floor entity.target_y)
+  in
+  let new_entity = 
+    if new_entity.step_cpt > 0 && current_time -. last_update_time >= 3.0 then
+      new_entity
+      |> set_entity_step_cpt (new_entity.step_cpt - 1)
+      |> set_entity_moving false
+      |> set_entity_target (floor new_entity.pos_x) (floor new_entity.pos_y)
+    else
+      new_entity
   in
   (* Update the entity state *)
   let new_entity = 
@@ -595,7 +605,7 @@ let new_entity_pos map entity (enemy: pokemon list) last_update_time =
       |> set_entity_state Idle
   in
   (* Update the entity position *)
-  if current_time -. last_update_time >= 0.01 then
+  if current_time -. last_update_time >= 0.01 && new_entity.step_cpt = 0 then
     let dx = new_entity.target_x -. new_entity.pos_x in
     let dy = new_entity.target_y -. new_entity.pos_y in
     let step = 0.05 in
@@ -671,5 +681,3 @@ let player_attack (player: pokemon) (enemy: pokemon list) =
     end
   else
     enemy
-
-

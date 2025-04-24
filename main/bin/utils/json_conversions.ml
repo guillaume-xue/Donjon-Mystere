@@ -126,6 +126,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       nature = trap_and_ground_json |> member "nature" |> to_int |> int_to_trap_ground;
       tag_pos_x = trap_and_ground_json |> member "tag_pos_x" |> to_int;
       tag_pos_y = trap_and_ground_json |> member "tag_pos_y" |> to_int;
+      visibility = trap_and_ground_json |> member "visibility" |> to_bool;
     }) in
 
   (map, player, enemy, loot, trap_and_ground)
@@ -271,6 +272,7 @@ let trap_and_ground_to_json (trap_and_ground: trap_and_ground) =
     ("nature", `Int (trap_and_ground.nature |> trap_ground_to_int));
     ("tag_pos_x", `Int trap_and_ground.tag_pos_x);
     ("tag_pos_y", `Int trap_and_ground.tag_pos_y);
+    ("visibility", `Bool trap_and_ground.visibility);
   ]
 
 let traps_and_grounds_to_json (trap_and_ground: trap_and_ground list) =

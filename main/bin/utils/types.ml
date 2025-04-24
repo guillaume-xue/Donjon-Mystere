@@ -46,6 +46,7 @@ type trap_and_ground = {
   nature: trap_and_ground_type;
   tag_pos_x: int;
   tag_pos_y: int;
+  visibility : bool;
 }
 
 type interaction =

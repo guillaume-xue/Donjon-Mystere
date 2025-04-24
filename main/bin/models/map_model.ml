@@ -43,17 +43,20 @@ let set_map_floor map floor =
   }
 
 let find_wall_in_direction x y direction map =
-  let rec aux x y =
-    if is_wall x y map then
-      Some (x, y)
-    else
+  let rec aux aux_x aux_y =
+    let (new_x, new_y) = 
       match direction with
-      | Up -> aux x (y - 1)
-      | Down -> aux x (y + 1)
-      | Left -> aux (x - 1) y
-      | Right -> aux (x + 1) y
-      | _ -> Some (x, y)
-      in
+      | Up -> (aux_x, (aux_y - 1))
+      | Down -> (aux_x, (aux_y + 1))
+      | Left -> ((aux_x - 1), aux_y)
+      | Right -> ((aux_x + 1), aux_y)
+      | _ -> (aux_x, aux_y)
+    in
+    if is_wall new_x new_y map then
+      Some (aux_x, aux_y)
+    else
+      aux new_x new_y
+  in
   aux x y
 
 let set_map_tile (tiles : tile list) (map : map) =

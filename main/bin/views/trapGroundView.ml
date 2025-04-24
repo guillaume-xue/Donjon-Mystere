@@ -29,9 +29,12 @@ let init_trap_ground_textures () =
 *)
 let draw_trap_ground (traps_and_grounds : trap_and_ground list) (player : pokemon) traps_grounds_textures =
   List.iter (fun trap_and_ground ->
-    let texture = List.nth traps_grounds_textures (trap_ground_to_int trap_and_ground.nature) in
-    draw_texture texture 
-      (int_of_float (float_of_int player.screen_x +. float_of_int trap_and_ground.tag_pos_x *. tile_texture_size -. player.pos_x *. tile_texture_size)) 
-      (int_of_float (float_of_int player.screen_y +. float_of_int trap_and_ground.tag_pos_y *. tile_texture_size -. player.pos_y *. tile_texture_size)) 
-      Color.white
+    if trap_and_ground.visibility = false then
+      ()
+    else
+      let texture = List.nth traps_grounds_textures (trap_ground_to_int trap_and_ground.nature) in
+      draw_texture texture 
+        (int_of_float (float_of_int player.screen_x +. float_of_int trap_and_ground.tag_pos_x *. tile_texture_size -. player.pos_x *. tile_texture_size)) 
+        (int_of_float (float_of_int player.screen_y +. float_of_int trap_and_ground.tag_pos_y *. tile_texture_size -. player.pos_y *. tile_texture_size)) 
+        Color.white
   ) traps_and_grounds

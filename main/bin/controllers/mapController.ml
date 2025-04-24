@@ -195,6 +195,7 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
     match get_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) with
     | None -> (map, player, traps_and_grounds, enemys, item, last_time)
     | Some trap_and_ground ->
+      let traps_and_grounds = set_trap_ground_pos_visibility pos_x pos_y true traps_and_grounds in
       match trap_and_ground.nature with
       | Stairs_Up -> 
         Unix.sleep 1;
@@ -222,64 +223,46 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         (map, player, traps_and_grounds, enemys, item, last_time)
       | Fan_Switch ->
         let random_x = Random.int 4 in
-        let player = 
+        let direction = 
           match random_x with
           | 0 -> 
-            let (x, y) =
-              match find_wall_in_direction pos_x pos_y Right map with
-              | Some (x, y) -> (x, y)
-              | None -> (pos_x, pos_y) (* Default to current position if no wall is found *)
-            in
-            let x = float_of_int x in
-            let y = float_of_int y in
-            player 
-            |> set_entity_pos x y
-            |> set_entity_target x y
+            Right
           | 1 -> 
-            let (x, y) =
-              match find_wall_in_direction pos_x pos_y Left map with
-              | Some (x, y) -> (x, y)
-              | None -> (pos_x, pos_y) (* Default to current position if no wall is found *)
-            in
-            let x = float_of_int x in
-            let y = float_of_int y in
-            player 
-            |> set_entity_pos x y
-            |> set_entity_target x y
+            Left
           | 2 -> 
-            let (x, y) =
-              match find_wall_in_direction pos_x pos_y Up map with
-              | Some (x, y) -> (x, y)
-              | None -> (pos_x, pos_y) (* Default to current position if no wall is found *)
-            in
-            let x = float_of_int x in
-            let y = float_of_int y in
-            player 
-            |> set_entity_pos x y
-            |> set_entity_target x y
+            Up
           | 3 -> 
-            let (x, y) =
-              match find_wall_in_direction pos_x pos_y Down map with
-              | Some (x, y) -> (x, y)
-              | None -> (pos_x, pos_y) (* Default to current position if no wall is found *)
-            in
-            let x = float_of_int x in
-            let y = float_of_int y in
-            player 
-            |> set_entity_pos x y
-            |> set_entity_target x y
-          | _ -> player
+            Down
+          | _ -> 
+            Down
         in
-        (map, player, traps_and_grounds, enemys, item, last_time)
+        let player = 
+          match find_wall_in_direction pos_x pos_y direction map with
+              | Some (x, y) -> 
+                let x = float_of_int x in
+                let y = float_of_int y in
+                player 
+                |> set_entity_pos x y
+                |> set_entity_target x y
+              | None -> player
+        in
+        (map, player, traps_and_grounds, enemys, item, last_time)    
       | Glue_Switch ->
-        let rand = Random.int (List.length player.bag.items) in
-        let player = set_usable_item_bag rand false player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
+        let length = List.length player.bag.items in
+        if length = 0 then 
+          (map, player, traps_and_grounds, enemys, item, last_time)
+        else if length = 1 then
+          let player = set_usable_item_bag 0 false player in
+          (map, player, traps_and_grounds, enemys, item, last_time)
+        else
+          let rand = Random.int length in
+          let player = set_usable_item_bag rand false player in
+          (map, player, traps_and_grounds, enemys, item, last_time)
       | Grimer_Switch ->
         (* FIXME *)
         (map, player, traps_and_grounds, enemys, item, last_time)
       | Imprison_Switch ->
-        (* FIXME *)
+        let player = set_entity_current_hp (player.current_hp - 1) player in
         (map, player, traps_and_grounds, enemys, item, last_time)
       | Mud_Switch ->
         (* FIXME *)

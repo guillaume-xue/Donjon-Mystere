@@ -111,6 +111,7 @@ let spawn_list_of_trap_and_ground map zone =
       nature = Stairs_Up;
       tag_pos_x = tile.x;
       tag_pos_y = tile.y;
+      visibility = true;
     }
   in
   (* Fonction pour générer un piège aléatoire *)
@@ -145,6 +146,7 @@ let spawn_list_of_trap_and_ground map zone =
             nature = (random_trap []);
             tag_pos_x = tile.x;
             tag_pos_y = tile.y;
+            visibility = false;
           } in
           gen_trap (i + 1) (trap :: res);
       end
