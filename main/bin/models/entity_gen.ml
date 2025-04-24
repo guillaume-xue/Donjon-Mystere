@@ -37,7 +37,9 @@ let spawn_player map =
     max_xp = 100;
     attacking = false;
     action = Nothing;
-    bag = { items = []; max_size = 10 }
+    bag = { items = []; max_size = 10 };
+    step_cpt = 0;
+    speed = 1.0
   }, zone_rand)
 
 (**
@@ -73,7 +75,9 @@ let spawn_list_of_enemys map (player: pokemon) =
           max_xp = 100;
           attacking = false;
           action = Nothing;
-          bag = { items = []; max_size = 5 }
+          bag = { items = []; max_size = 5 };
+          step_cpt = 0;
+          speed = 1.0
         } in
         aux rest (enemy :: acc)
   in
@@ -86,7 +90,7 @@ let spawn_list_of_loot map =
     | region :: rest ->
       let case_rand = Random.int region.size in
       let tile = List.nth region.tiles case_rand in
-      let loot = { item_id = cpt; item_skin_id = 0; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = ""} in
+      let loot = { item_id = cpt; item_skin_id = 0; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = ""; usable = true} in
       aux rest (cpt+1) (loot :: acc)
   in
   aux map.regions 0 []
@@ -107,6 +111,7 @@ let spawn_list_of_trap_and_ground map zone =
       nature = Stairs_Up;
       tag_pos_x = tile.x;
       tag_pos_y = tile.y;
+      visibility = true;
     }
   in
   (* Fonction pour générer un piège aléatoire *)
@@ -141,6 +146,7 @@ let spawn_list_of_trap_and_ground map zone =
             nature = (random_trap []);
             tag_pos_x = tile.x;
             tag_pos_y = tile.y;
+            visibility = false;
           } in
           gen_trap (i + 1) (trap :: res);
       end

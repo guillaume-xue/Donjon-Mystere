@@ -60,10 +60,13 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
           screen_x = item |> member "screen_x" |> to_int;
           screen_y = item |> member "screen_y" |> to_int;
           description = item |> member "description" |> to_string;
+          usable = item |> member "usable" |> to_bool;
         }
       );
       max_size = player_json |> member "bag" |> member "max_size" |> to_int;
-    }
+    };
+    step_cpt = player_json |> member "step_cpt" |> to_int;
+    speed = player_json |> member "speed" |> to_float;
   } in
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
@@ -96,10 +99,13 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
             screen_x = item |> member "screen_x" |> to_int;
             screen_y = item |> member "screen_y" |> to_int;
             description = item |> member "description" |> to_string;
+            usable = item |> member "usable" |> to_bool;
           }
         );
         max_size = enemy_json |> member "bag" |> member "max_size" |> to_int;
-      }
+      };
+      step_cpt = enemy_json |> member "step_cpt" |> to_int;
+      speed = enemy_json |> member "speed" |> to_float;
     }) in
 
   let loot = loot_json |> List.map (fun loot_json ->
@@ -112,6 +118,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       screen_x = loot_json |> member "screen_x" |> to_int;
       screen_y = loot_json |> member "screen_y" |> to_int;
       description = loot_json |> member "description" |> to_string;
+      usable = loot_json |> member "usable" |> to_bool;
     }) in
 
   let trap_and_ground = trap_and_ground_json |> List.map (fun trap_and_ground_json ->
@@ -119,6 +126,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       nature = trap_and_ground_json |> member "nature" |> to_int |> int_to_trap_ground;
       tag_pos_x = trap_and_ground_json |> member "tag_pos_x" |> to_int;
       tag_pos_y = trap_and_ground_json |> member "tag_pos_y" |> to_int;
+      visibility = trap_and_ground_json |> member "visibility" |> to_bool;
     }) in
 
   (map, player, enemy, loot, trap_and_ground)
@@ -181,7 +189,8 @@ let bag_to_yojson bag =
         ("pos_y", `Float item.pos_y);
         ("screen_x", `Int item.screen_x);
         ("screen_y", `Int item.screen_y);
-        ("description", `String item.description)
+        ("description", `String item.description);
+        ("usable", `Bool item.usable)
       ]
     ) bag.items));
     ("max_size", `Int bag.max_size)
@@ -218,7 +227,9 @@ let pokemon_to_yojson (player: pokemon) =
     ("level", `Int player.level);
     ("current_xp", `Int player.current_xp);
     ("max_xp", `Int player.max_xp);
-    ("bag", bag_to_yojson player.bag)
+    ("bag", bag_to_yojson player.bag);
+    ("step_cpt", `Int player.step_cpt);
+    ("speed", `Float player.speed);
   ]
 
 let pokemons_to_yojson (pokemons: pokemon list) =
@@ -238,6 +249,7 @@ let pokemons_to_yojson (pokemons: pokemon list) =
   - ["screen_x"] : la position x
   - ["screen_y"] : la position y
   - ["description"] : la description du butin.  
+  - ["usable"] : indique si l'objet est utilisable.
 *)
 let loot_to_json (loot: loot) =
   `Assoc [
@@ -248,7 +260,8 @@ let loot_to_json (loot: loot) =
     ("pos_y", `Float loot.pos_y);
     ("screen_x", `Int loot.screen_x);
     ("screen_y", `Int loot.screen_y);
-    ("description", `String loot.description)
+    ("description", `String loot.description);
+    ("usable", `Bool loot.usable);
   ]
 
 let loots_to_json (loots: loot list) =
@@ -259,6 +272,7 @@ let trap_and_ground_to_json (trap_and_ground: trap_and_ground) =
     ("nature", `Int (trap_and_ground.nature |> trap_ground_to_int));
     ("tag_pos_x", `Int trap_and_ground.tag_pos_x);
     ("tag_pos_y", `Int trap_and_ground.tag_pos_y);
+    ("visibility", `Bool trap_and_ground.visibility);
   ]
 
 let traps_and_grounds_to_json (trap_and_ground: trap_and_ground list) =

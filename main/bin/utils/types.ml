@@ -46,6 +46,7 @@ type trap_and_ground = {
   nature: trap_and_ground_type;
   tag_pos_x: int;
   tag_pos_y: int;
+  visibility : bool;
 }
 
 type interaction =
@@ -166,6 +167,7 @@ type loot = {
   screen_x: int;
   screen_y: int;
   description: string;
+  usable: bool;
 }
 
 
@@ -216,6 +218,8 @@ type pokemon = {
   attacking: bool;
   action: interaction;
   bag: bag;
+  step_cpt : int;
+  speed : float;
 }
 
 (** 
