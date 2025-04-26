@@ -626,12 +626,12 @@ let new_entity_pos map entity (enemy: pokemon list) last_update_time =
 *)
 let update_entity_texture_id (entity: pokemon) =
   let current_id = entity.entity_textures_id in
-  if current_id > 31 then (* 31 is the last id for the entity textures *)
+  if current_id > 40 then (* 40 is the last id for the entity textures *)
     set_entity_texture_id entity.entity_textures_id entity
   else begin
     let base_id = match entity.state with
-      | Moving -> 0 (* 0 is the base id for moving textures *)
-      | Idle -> 24 (* 24 is the base id for idle textures *)
+      | Moving -> 16 (* 16 is the base id for moving textures *)
+      | Idle -> 0 (* 0 is the base id for idle textures *)
     in
     let direction_offset = match entity.direction with
       | Down -> 0

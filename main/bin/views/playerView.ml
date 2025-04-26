@@ -1,13 +1,13 @@
 open Raylib
 open Utils.Types
-open Utils.Settings_map
+open Utils.Funcs
 
 (**
   [init_player_textures ()] initializes the player textures.
   @return The list of player textures.
 *)
 let init_player_textures () =
-  let image_path = "resources/images/player/hericendre.png" in
+  let image_path = "resources/images/player/germinion.png" in
   if not (file_exists image_path) then begin
     Printf.printf "Image file does not exist: %s\n" image_path;
     []
@@ -15,33 +15,7 @@ let init_player_textures () =
     let player_textures = [] in
     let image = load_image image_path in
     if is_image_ready image then begin
-      let rec init_movement x y player_textures =
-        if x < 3 then
-          begin
-            let source_rec = Rectangle.create (player_texture_size *. float_of_int(x) +. float_of_int(x)) (player_texture_size *. float_of_int(y) +. float_of_int(y)) player_texture_size player_texture_size in
-            let tex = load_texture_from_image (image_from_image image source_rec) in
-            
-            init_movement (x + 1) y (tex :: player_textures)
-          end
-        else if y < 7 then
-          init_movement 0 (y + 1) player_textures
-        else
-          player_textures
-      in
-      let rec init_idle x y player_textures =
-        if x < 2 then
-          begin
-            let source_rec = Rectangle.create (player_texture_size *. float_of_int(x) +. float_of_int(x) +. float_of_int(64)) (player_texture_size *. float_of_int(y) +. float_of_int(y)) player_texture_size player_texture_size in
-            let tex = load_texture_from_image (image_from_image image source_rec) in
-            init_idle (x + 1) y (tex :: player_textures)
-          end
-        else if y < 7 then
-          init_idle 0 (y + 1) player_textures
-        else
-          player_textures
-      in
-      let player_textures = init_movement 0 0 player_textures in
-      let player_textures = init_idle 0 0 player_textures in
+      let player_textures = init_textures 0 40 image player_textures in
       unload_image image;
       List.rev player_textures
     end else begin
