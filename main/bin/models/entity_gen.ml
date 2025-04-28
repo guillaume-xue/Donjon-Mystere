@@ -20,6 +20,7 @@ let spawn_player map =
   in
   let (zone_rand, tile) = tile_rand () in
   ({
+    number = 0;
     pos_x = float_of_int tile.x;
     pos_y = float_of_int tile.y;
     screen_x = (screen_width / 2);
@@ -54,10 +55,12 @@ let spawn_list_of_enemys map (player: pokemon) =
     | region :: rest ->
       let case_rand = Random.int region.size in
       let tile = List.nth region.tiles case_rand in
+      let rand = (Random.int 8) + 3 in
       if player.pos_x = float_of_int tile.x && player.pos_y = float_of_int tile.y then
         aux rest acc
       else
         let enemy = {
+          number = rand;
           pos_x = float_of_int tile.x;
           pos_y = float_of_int tile.y;
           screen_x = 0;

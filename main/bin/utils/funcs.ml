@@ -1,6 +1,6 @@
-open Settings_map
 open Types
 open Raylib
+open Settings_map
 
 (**
   Remplace l'élément à l'index `n` par `new_value` dans la liste `lst`
@@ -21,8 +21,11 @@ let rec replace_nth lst n new_value =
 let rec init_textures x max image textures =
   if x < max then
     begin
-      let source_rec = Rectangle.create 0.0 (tile_texture_size *. float_of_int(x)) tile_texture_size tile_texture_size in
-      let tex = load_texture_from_image (image_from_image image source_rec) in
+      let image_width = float_of_int(Image.width image) in
+      let source_rec = Rectangle.create 0.0 (image_width *. float_of_int(x)) image_width image_width in
+      let sub_image = image_from_image image source_rec in
+      image_resize (addr sub_image) (int_of_float tile_texture_size) (int_of_float tile_texture_size); (* Resize the sub-image to 24x24 pixels *)
+      let tex = load_texture_from_image sub_image in
       init_textures (x + 1) max image (tex :: textures)
     end
   else

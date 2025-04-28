@@ -24,7 +24,9 @@ let update_target_enemy enemy player =
     enemy.direction
 
 let create_enemy (pos_x : float) (pos_y : float) =
+  let random = (Random.int 8) + 3 in
   {
+    number = random;
     pos_x = pos_x;
     pos_y = pos_y;
     screen_x = 0;

@@ -1,6 +1,7 @@
 open Raylib
 open Utils.Settings_map
 open Utils.Types
+open Utils.Funcs
 
 (**
   [init_shadow_cast_view ()] initializes the shadow cast view.
@@ -9,21 +10,7 @@ open Utils.Types
 
 let init_shadow_cast_view () =
   let image_path = "resources/images/map/light_cast.png" in
-  let image = load_image image_path in
-  let textures = [] in
-  let rec init_textures x image textures =
-    if x < 10 then
-      begin
-        let source_rec = Rectangle.create (tile_texture_size *. float_of_int(x)) 0.0 tile_texture_size tile_texture_size in
-        let tex = load_texture_from_image (image_from_image image source_rec) in
-        init_textures (x + 1) image (tex :: textures)
-      end
-    else
-      textures
-  in
-  let textures = init_textures 0 image textures in
-  unload_image image;
-  List.rev textures
+  init_textures 0 10 (load_image image_path) []
 
 (**
   [draw_shadow_cast shadow_cast_texture visibility player max_x max_y] draws the shadow cast.

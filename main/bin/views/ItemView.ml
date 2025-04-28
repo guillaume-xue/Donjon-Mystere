@@ -1,6 +1,7 @@
 open Raylib
 open Utils.Types
 open Utils.Settings_map
+open Utils.Funcs
 
 (**
   [init_items_textures ()] initializes the textures for the items.
@@ -8,26 +9,8 @@ open Utils.Settings_map
 *)
 let init_items_textures () =
   let image = load_image ("resources/images/loot/throw_items.png") in
-  if is_image_ready image then
-    let rec init_loots x y loots_textures =
-      if x < 5 then
-        begin
-          let source_rec = Rectangle.create (loot_texture_size *. float_of_int(x)) (loot_texture_size *. float_of_int(y)) loot_texture_size loot_texture_size in
-          let tex = load_texture_from_image (image_from_image image source_rec) in
-          init_loots (x + 1) y (tex :: loots_textures)
-        end
-      else if y < 2 then
-        init_loots 0 (y + 1) loots_textures
-      else
-        loots_textures
-    in
-    let loots_textures = init_loots 0 0 [] in
-    unload_image image;
-    List.rev loots_textures
-  else begin
-    Printf.printf "Failed to load image: %s\n" ("resources/images/map/throw_items.png");
-    []
-  end
+  init_textures 0 10 image [] |> List.rev
+
 
 (**
   [draw_items loots player loots_textures] draws the items on the map.

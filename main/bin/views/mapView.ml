@@ -1,41 +1,26 @@
 open Raylib
 open Utils.Types
 open Utils.Settings_map
+open Utils.Funcs
 
 (**
   [init_map_textures ()] initializes the textures for the map.
   @return The textures of the map.
 *)
 let init_map_textures () =
-  let rec load_image_list path x =
-    let image = load_image ("resources/images/map/biome" ^ string_of_int x ^ ".png") in
-    if x < 9 then
-      load_image_list (image :: path) (x + 1)
-    else
-      image :: path
+  let image_paths = Sys.readdir "resources/images/map/biome/" |> Array.to_list |> List.filter (fun file -> Filename.check_suffix file ".png") in
+  let map_textures = [] in
+  let images = List.map (fun file -> load_image (Printf.sprintf "resources/images/map/biome/%s" file)) image_paths in
+  let map_textures = 
+    let rec load_textures acc = function
+      | [] -> List.rev acc
+      | img::rest ->
+        let texture = init_textures 0 2 img acc in
+        load_textures (texture) rest
+    in
+    load_textures map_textures images
   in
-  
-  let image_load = (load_image_list [] 1) in
-
-  let rec init_textures x y image textures =
-    if x < 2 then
-      begin
-        let source_rec = Rectangle.create (tile_texture_size *. float_of_int(x) +. float_of_int(x)) (tile_texture_size *. float_of_int(y) +. float_of_int(y)) tile_texture_size tile_texture_size in
-        let tex = load_texture_from_image (image_from_image image source_rec) in
-        init_textures (x + 1) y image (tex :: textures)
-      end
-    else if y < 0 then
-      init_textures 0 (y + 1) image textures
-    else
-      textures
-  in
-  let rec image_to_texture_list images textures =
-    match images with
-    | [] -> textures
-    | image :: rest -> image_to_texture_list rest ((init_textures 0 0 image textures) @ textures)
-  in
-  let textures = image_to_texture_list image_load [] in
-  List.rev textures
+  map_textures
 
 (**
   [draw_map map player textures] draws the map.

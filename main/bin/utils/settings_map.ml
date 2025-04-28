@@ -11,7 +11,7 @@ let screen_width = 800 (* Largeur de la fenêtre *)
 let screen_height = 600 (* Hauteur de la fenêtre *)
 let map_dir = "resources/json/maps/" (* Dossier de sauvegarde des maps *)
 let player_texture_size = 21.0 (* Taille de textures pour le joueur *)
-let tile_texture_size = 24.0 (* Taille de textures pour les tiles *)
+let tile_texture_size = 30.0 (* Taille de textures pour les tiles *)
 let loot_texture_size = 16.0 (* Taille de textures pour les loots *)
 let map_marge = 10 (* Marge de la carte *)
 

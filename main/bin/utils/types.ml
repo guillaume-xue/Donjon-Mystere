@@ -200,6 +200,7 @@ type bag = {
   @param max_xp Points d'expérience maximum du pokemon.
 *)
 type pokemon = {
+  number: int;
   pos_x: float;
   pos_y: float;
   screen_x: int;

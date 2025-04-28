@@ -7,6 +7,7 @@
   mapView
   playerView
   enemyView
+  entityView
   itemView
   bagView
   shadowCastView
