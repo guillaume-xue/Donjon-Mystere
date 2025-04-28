@@ -1,28 +1,5 @@
 open Raylib
 open Utils.Types
-open Utils.Funcs
-
-(**
-  [init_player_textures ()] initializes the player textures.
-  @return The list of player textures.
-*)
-let init_player_textures () =
-  let image_path = "resources/images/player/germinion.png" in
-  if not (file_exists image_path) then begin
-    Printf.printf "Image file does not exist: %s\n" image_path;
-    []
-  end else begin
-    let player_textures = [] in
-    let image = load_image image_path in
-    if is_image_ready image then begin
-      let player_textures = init_textures 0 40 image player_textures in
-      unload_image image;
-      List.rev player_textures
-    end else begin
-      Printf.printf "Failed to load image: %s\n" image_path;
-      []
-    end
-  end
 
 (**
   [draw_player player player_textures] draws the player on the screen.
@@ -30,7 +7,7 @@ let init_player_textures () =
   @param player_textures The list of player textures.
 *)
 let draw_player player player_textures =
-  let texture = List.nth player_textures player.entity_textures_id in
+  let texture = List.nth player_textures (player.number * 40 + player.entity_textures_id) in
   draw_texture texture (player.screen_x) (player.screen_y) Color.white
 
 (**

@@ -42,8 +42,8 @@ let is_trap_ground (trap_and_ground: trap_and_ground list) x y =
   let rec aux res =
     match res with
     | [] -> false
-    | {tag_pos_x; tag_pos_y; visibility; _} :: rest ->
-      if x = tag_pos_x && y = tag_pos_y && visibility = false then
+    | {tag_pos_x; tag_pos_y; _} :: rest ->
+      if x = tag_pos_x && y = tag_pos_y then
         true
       else
         aux rest

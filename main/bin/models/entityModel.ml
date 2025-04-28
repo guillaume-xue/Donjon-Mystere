@@ -11,6 +11,7 @@ open Raylib
 *)
 let set_entity_screen (screen_x: int) (screen_y: int) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = screen_x; 
@@ -42,6 +43,7 @@ let set_entity_screen (screen_x: int) (screen_y: int) (entity: pokemon) =
 *)
 let set_entity_target (x: float) (y: float) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -72,6 +74,7 @@ let set_entity_target (x: float) (y: float) (entity: pokemon) =
 *)
 let set_entity_moving (moving: bool) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -103,6 +106,7 @@ let set_entity_moving (moving: bool) (entity: pokemon) =
 *)
 let set_entity_pos (x: float) (y: float) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = x;
     pos_y = y; 
     screen_x = entity.screen_x; 
@@ -133,6 +137,7 @@ let set_entity_pos (x: float) (y: float) (entity: pokemon) =
 *)
 let set_entity_texture_id (id: int) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -163,6 +168,7 @@ let set_entity_texture_id (id: int) (entity: pokemon) =
 *)
 let set_entity_direction (direction: direction) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -193,6 +199,7 @@ let set_entity_direction (direction: direction) (entity: pokemon) =
 *)
 let set_entity_state (state: entityState) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -223,6 +230,7 @@ let set_entity_state (state: entityState) (entity: pokemon) =
 *)
 let set_entity_attacking (attacking: bool) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -253,6 +261,7 @@ let set_entity_attacking (attacking: bool) (entity: pokemon) =
 *)
 let set_entity_action (action: interaction) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -283,6 +292,7 @@ let set_entity_action (action: interaction) (entity: pokemon) =
 *)
 let set_entity_bag (bag: bag) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -307,6 +317,7 @@ let set_entity_bag (bag: bag) (entity: pokemon) =
 
 let set_entity_step_cpt (step_cpt: int) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -331,6 +342,7 @@ let set_entity_step_cpt (step_cpt: int) (entity: pokemon) =
 
 let set_entity_current_hp (current_hp: int) (entity: pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -355,6 +367,7 @@ let set_entity_current_hp (current_hp: int) (entity: pokemon) =
 
 let set_entity_speed (speed : float) (entity : pokemon) =
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -388,6 +401,7 @@ let add_item_bag (item: loot) (entity: pokemon) =
   let new_items = item :: bag.items in
   let new_bag = {items = new_items; max_size = bag.max_size} in
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -430,6 +444,7 @@ let remove_item_bag (nth: int) (entity: pokemon) =
   in
   let new_bag = {items = new_items; max_size = bag.max_size} in
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 
@@ -466,6 +481,7 @@ let set_usable_item_bag (index : int) (usable: bool) (entity: pokemon) =
   in
   let new_bag = {items = new_items; max_size = bag.max_size} in
   {
+    number = entity.number;
     pos_x = entity.pos_x; 
     pos_y = entity.pos_y; 
     screen_x = entity.screen_x; 

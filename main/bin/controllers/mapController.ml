@@ -7,6 +7,7 @@ open Models.Trap_ground
 open Models.Generation_map
 open Models.Map_model
 open Views.PlayerView
+open Views.EntityView
 open Views.MapView
 open Views.EnemyView
 open Views.ItemView
@@ -25,8 +26,7 @@ open Utils.Settings_map
 *)
 let init_map_controller filename =
   let map_textures = init_map_textures () in
-  let player_textures = init_player_textures () in
-  let enemy_textures = init_enemy_textures () in
+  let entity_textures = init_entity_textures () in
   let items_textures = init_items_textures () in
   let bag_textures = init_bag_textures items_textures in
   let shadow_cast_texture = init_shadow_cast_view () in
@@ -37,7 +37,7 @@ let init_map_controller filename =
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, player_textures, enemy_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, map, new_player, enemy, loots, traps_and_grounds)
+  (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, map, new_player, enemy, loots, traps_and_grounds)
 
 (**
   [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
@@ -63,7 +63,7 @@ let draw_open_bag player bag_textures select =
   @param bag_textures The textures of the bag.
   @param select The selected item.
 *)
-let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_and_grounds map_textures player_textures enemy_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures select =
+let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_and_grounds map_textures entity_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures select =
   if is_stairs traps_and_grounds player then begin
     begin_drawing ();
     clear_background Color.black;
@@ -75,8 +75,8 @@ let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_a
     draw_map map player map_textures;
     draw_trap_ground traps_and_grounds player trap_and_ground_texures;
     draw_items items player items_textures;
-    draw_player player player_textures;
-    draw_enemy enemy enemy_textures player;
+    draw_player player entity_textures;
+    draw_enemy enemy entity_textures player;
     draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
     draw_player_stats player;
     draw_open_bag player bag_textures select;
@@ -196,32 +196,32 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
     | None -> (map, player, traps_and_grounds, enemys, item, last_time)
     | Some trap_and_ground ->
       let traps_and_grounds = set_trap_ground_pos_visibility pos_x pos_y true traps_and_grounds in
-      match trap_and_ground.nature with
-      | Stairs_Up -> 
+      match trap_and_ground.nature, trap_and_ground.visibility with
+      | Stairs_Up, true -> 
         Unix.sleep 1;
         let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor in
-        let list_of_last_time = List.init (3 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
+        let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
         let new_map = set_map_floor new_map (new_map.floor + 1) in
         (new_map, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
-      | Stairs_Down ->
+      | Stairs_Down, true ->
         Unix.sleep 1;
         let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor in
-        let list_of_last_time = List.init (3 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
+        let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
         let new_map = set_map_floor new_map (new_map.floor - 1) in
         (new_map, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
-      | Bug_Switch ->
+      | Bug_Switch, false ->
         let player = set_entity_step_cpt 3 player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Chestnut_Switch ->
+      | Chestnut_Switch, false ->
         let player = set_entity_current_hp (player.current_hp - 10) player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Drop_Hole ->
+      | Drop_Hole, false ->
         (* FIXME *)
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Explosion_Switch ->
+      | Explosion_Switch, false ->
         let player = set_entity_current_hp (player.current_hp - 20) player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Fan_Switch ->
+      | Fan_Switch, false ->
         let random_x = Random.int 4 in
         let direction = 
           match random_x with
@@ -247,7 +247,7 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
               | None -> player
         in
         (map, player, traps_and_grounds, enemys, item, last_time)    
-      | Glue_Switch ->
+      | Glue_Switch, false ->
         let length = List.length player.bag.items in
         if length = 0 then 
           (map, player, traps_and_grounds, enemys, item, last_time)
@@ -258,35 +258,35 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
           let rand = Random.int length in
           let player = set_usable_item_bag rand false player in
           (map, player, traps_and_grounds, enemys, item, last_time)
-      | Grimer_Switch ->
+      | Grimer_Switch, false ->
         (* FIXME *)
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Imprison_Switch ->
+      | Imprison_Switch, false ->
         let player = set_entity_current_hp (player.current_hp - 1) player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Mud_Switch ->
+      | Mud_Switch, false ->
         (* FIXME *)
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Poison_Sting_Switch ->
+      | Poison_Sting_Switch, false ->
         let player = set_entity_current_hp (player.current_hp - 1) player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Pokemon_Switch ->
+      | Pokemon_Switch, false ->
         (* FIXME *)
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Self_Destruct_Switch ->
+      | Self_Destruct_Switch, false ->
         let player = set_entity_current_hp (player.current_hp - 20) player in
         let map = set_map_exploded pos_x pos_y map in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Skill_Drop_Switch ->
+      | Skill_Drop_Switch, false ->
         (* FIXME *)
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Slowpoke_Switch ->
+      | Slowpoke_Switch, false ->
         let player = set_entity_speed 0.5 player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Spin_Swith ->
+      | Spin_Swith, false ->
         let player = set_entity_step_cpt 3 player in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Summon_Switch ->
+      | Summon_Switch, false ->
         let rec add_random_enemy player map enemys =
           let random_x = player.pos_x +. float_of_int (Random.int 11 - 5) in
           let random_y = player.pos_y +. float_of_int (Random.int 11 - 5) in
@@ -299,7 +299,7 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         let last_time = last_time @ [0.0; 0.0] in
         let enemys = add_random_enemy player map enemys in
         (map, player, traps_and_grounds, enemys, item, last_time)
-      | Warp_Trap ->
+      | Warp_Trap, false ->
         let rec find_random_position () =
           let random_x = float_of_int (Random.int map.width) in
           let random_y = float_of_int (Random.int map.height) in
@@ -314,6 +314,8 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
           |> set_entity_pos new_x new_y
           |> set_entity_target new_x new_y
         in
+        (map, player, traps_and_grounds, enemys, item, last_time)
+      | _ ->
         (map, player, traps_and_grounds, enemys, item, last_time)
   end else
     (map, player, traps_and_grounds, enemys, item, last_time)

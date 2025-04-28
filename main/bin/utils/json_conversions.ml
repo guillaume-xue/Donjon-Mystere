@@ -32,6 +32,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
   } in
 
   let player = {
+    number = player_json |> member "number" |> to_int;
     pos_x = player_json |> member "pos_x" |> to_float;
     pos_y = player_json |> member "pos_y" |> to_float;
     screen_x = player_json |> member "screen_x" |> to_int;
@@ -71,6 +72,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
     {
+      number = enemy_json |> member "number" |> to_int;
       pos_x = enemy_json |> member "pos_x" |> to_float;
       pos_y = enemy_json |> member "pos_y" |> to_float;
       screen_x = enemy_json |> member "screen_x" |> to_int;
@@ -215,6 +217,7 @@ let bag_to_yojson bag =
 *)
 let pokemon_to_yojson (player: pokemon) =
   `Assoc [
+    ("number", `Int player.number);
     ("pos_x", `Float player.pos_x);
     ("pos_y", `Float player.pos_y);
     ("screen_x", `Int player.screen_x);
