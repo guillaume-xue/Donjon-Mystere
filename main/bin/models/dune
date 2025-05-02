@@ -12,5 +12,7 @@
   itemModel
   entity_gen
   shadowcaster
+  combat
+  a_star
   trap_ground
   map_model))

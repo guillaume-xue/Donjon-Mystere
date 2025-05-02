@@ -2,6 +2,36 @@ open Utils.Types
 open Map_model
 open Utils.Settings_map
 open Trap_ground
+open Utils.Competences_data
+open Combat
+open A_star
+
+let entity_base_value = (50, 55, 45, 60, 50)
+
+let randLvl pokemon = 
+  let r = Random.int 1 in
+  match r with
+    | 0 -> pokemon.level + Random.int 1
+    | _ -> pokemon.level - Random.int 4
+
+let genIV () = 
+  let pv = Random.int 25 in
+  let att = Random.int 25 in
+  let def = Random.int 25 in
+  let att_sp = Random.int 25 in
+  let def_sp = Random.int 25 in
+  (pv, att, def, att_sp, def_sp)
+
+let finalGen lvl () =
+  let const1, const2 = (20, 5) in
+  let (pv, att, def, att_sp, def_sp) = genIV () in
+  let (pv_base, att_base, def_base, att_sp_base, def_sp_base) = entity_base_value in
+  let pv_final = int_of_float ((float_of_int pv +. float_of_int pv_base) *. (lvl /. 50.0) +. float_of_int const1) in
+  let att_final = int_of_float ((float_of_int att +. float_of_int att_base) *. (lvl /. 50.0) +. float_of_int const2) in
+  let def_final = int_of_float ((float_of_int def +. float_of_int def_base) *. (lvl /. 50.0) +. float_of_int const2) in
+  let att_sp_final = int_of_float ((float_of_int att_sp +. float_of_int att_sp_base) *. (lvl /. 50.0) +. float_of_int const2) in
+  let def_sp_final = int_of_float ((float_of_int def_sp +. float_of_int def_sp_base) *. (lvl /. 50.0) +. float_of_int const2) in
+  (pv_final, att_final, def_final, att_sp_final, def_sp_final)
 
 (**
   [spawn_player] génère une position aléatoire pour le joueur sur la carte.
@@ -9,10 +39,13 @@ open Trap_ground
   @return Le joueur généré.
 *)
 let spawn_player map =
+  let (cur_hp, att, def, att_sp, def_sp) = finalGen 25.0 () in
   let rec tile_rand () =
     let zone_rand = Random.int (List.length map.regions) in
     let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
-    let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+    
+  (* Printf.printf "cur_hp: %d, att: %d, def: %d, att_sp: %d, def_sp: %d\n" cur_hp att def att_sp def_sp; *)
+  let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
     if is_wall tile.x tile.y map then
       tile_rand ()
     else
@@ -20,6 +53,8 @@ let spawn_player map =
   in
   let (zone_rand, tile) = tile_rand () in
   ({
+    id = 0;
+    last_id = 0;
     number = 0;
     pos_x = float_of_int tile.x;
     pos_y = float_of_int tile.y;
@@ -31,16 +66,24 @@ let spawn_player map =
     moving = false;
     state = Idle;
     direction = Down;
-    current_hp = 20;
-    max_hp = 20;
-    level = 1;
+    current_hp = cur_hp;
+    max_hp = cur_hp;
+    level = 5;
     current_xp = 0;
-    max_xp = 100;
-    attacking = false;
+    max_xp = neededXp 5;
     action = Nothing;
     bag = { items = []; max_size = 10 };
     step_cpt = 0;
-    speed = 1.0
+    speed = 1.0;
+    
+    attaque = att;
+    defense = def;
+    attaque_speciale = att_sp;
+    defense_speciale = def_sp;
+    element = Feu;
+    competence = [attaque_charge()];
+    path = [];
+    your_turn = true;
   }, zone_rand)
 
 (**
@@ -49,17 +92,21 @@ let spawn_player map =
   @return La liste d'ennemis générée.
 *)
 let spawn_list_of_enemys map (player: pokemon) =
-  let rec aux regions acc =
+  let rec aux regions acc cpt =
     match regions with
-    | [] -> acc
+    | [] -> acc, cpt
     | region :: rest ->
       let case_rand = Random.int region.size in
       let tile = List.nth region.tiles case_rand in
       let rand = (Random.int 8) + 3 in
-      if player.pos_x = float_of_int tile.x && player.pos_y = float_of_int tile.y then
-        aux rest acc
+      if List.exists (fun e -> e.pos_x = float_of_int tile.x && e.pos_y = float_of_int tile.y) (player :: acc) then
+        aux regions acc cpt
       else
+        let lvl = randLvl player in
+        let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
         let enemy = {
+          id = cpt;
+          last_id = 0;
           number = rand;
           pos_x = float_of_int tile.x;
           pos_y = float_of_int tile.y;
@@ -71,20 +118,27 @@ let spawn_list_of_enemys map (player: pokemon) =
           moving = false;
           state = Idle;
           direction = Down;
-          current_hp = 10;
-          max_hp = 10;
-          level = 1;
+          current_hp = cur_hp;
+          max_hp = cur_hp;
+          level = lvl;
           current_xp = 0;
-          max_xp = 100;
-          attacking = false;
+          max_xp = 0;
           action = Nothing;
           bag = { items = []; max_size = 5 };
           step_cpt = 0;
-          speed = 1.0
+          speed = 1.0;
+          attaque = att;
+          defense = def;
+          attaque_speciale = att_sp;
+          defense_speciale = def_sp;
+          element = Feu;
+          competence = [attaque_grosyeux()];
+          path = a_star map.tiles (tile.x, tile.y) (int_of_float player.pos_x, int_of_float player.pos_y);
+          your_turn = false;
         } in
-        aux rest (enemy :: acc)
+        aux rest (enemy :: acc) (cpt+1)
   in
-  aux map.regions []
+  aux map.regions [] 1
 
 let spawn_list_of_loot map =
   let rec aux regions cpt acc =

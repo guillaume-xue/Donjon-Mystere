@@ -52,7 +52,7 @@ let calcul_arete zones =
   @return Une liste d'arêtes représentant le MST.
 *)
 
-let prim zones aretes =
+let prim (zones: zone list) aretes =
   let visited = Hashtbl.create (List.length zones) in
   let pq = PriorityQueue.create () in
 
