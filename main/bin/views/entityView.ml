@@ -6,9 +6,8 @@ open Utils.Funcs
   @return The list of entity textures.
 *)
 let init_entity_textures () =
-  let image_paths = Sys.readdir "resources/images/player/" |> Array.to_list |> List.filter (fun file -> Filename.check_suffix file ".png") in
   let player_textures = [] in
-  let images = List.map (fun file -> load_image (Printf.sprintf "resources/images/player/%s" file)) image_paths in
+  let images = List.mapi (fun i _ -> load_image (Printf.sprintf "resources/images/player/pokemon_%d.png" i)) (List.init 11 (fun _ -> ())) in
   let player_textures = 
     let rec load_textures acc = function
       | [] -> List.rev acc

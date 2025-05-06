@@ -73,7 +73,7 @@ type entityState =
   @param Select_New Écran de sélection de nouvelle partie.
   @param Select_Other Écran de sélection d'autre partie.
   @param NewGame Écran de nouvelle partie.
-  @param LoadGame Écran de chargement de partie.
+  @param ChoosePokemon Écran de choix de pokemon.
   @param Game Écran de jeu.
 *)
 type screenState = 
@@ -82,7 +82,7 @@ type screenState =
   | Select_New
   | Select_Other 
   | NewGame 
-  | LoadGame 
+  | ChoosePokemon
   | Game
 
 (** 
