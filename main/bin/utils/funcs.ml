@@ -31,6 +31,19 @@ let rec init_textures x max image textures =
   else
     textures
 
+let rec init_textures_size x max image textures size =
+  if x < max then
+    begin
+      let image_width = float_of_int(Image.width image) in
+      let source_rec = Rectangle.create 0.0 (image_width *. float_of_int(x)) image_width image_width in
+      let sub_image = image_from_image image source_rec in
+      image_resize (addr sub_image) size size; (* Resize the sub-image to 24x24 pixels *)
+      let tex = load_texture_from_image sub_image in
+      init_textures_size (x + 1) max image (tex :: textures) size
+    end
+  else
+    textures
+
 let trap_ground_to_int trap_ground =
   match trap_ground with 
   | Stairs_Up -> 0

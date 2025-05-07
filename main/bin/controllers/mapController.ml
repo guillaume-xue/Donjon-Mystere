@@ -199,13 +199,13 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
       match trap_and_ground.nature, trap_and_ground.visibility with
       | Stairs_Up, true -> 
         Unix.sleep 1;
-        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor in
+        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor player.number in
         let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
         let new_map = set_map_floor new_map (new_map.floor + 1) in
         (new_map, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
       | Stairs_Down, true ->
         Unix.sleep 1;
-        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor in
+        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor player.number in
         let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
         let new_map = set_map_floor new_map (new_map.floor - 1) in
         (new_map, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)

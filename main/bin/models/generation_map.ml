@@ -119,7 +119,7 @@ let copy_map_add_marge tiles =
   new_map tiles 0 0 []
 
 (* Main *)
-let generation_map floor =
+let generation_map floor num_pokemon =
   (* Trois en un, init -> auto cell -> supp petite zone *)
   let tiles_tmp1 = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
   (* Ajout de la marge *)
@@ -141,7 +141,7 @@ let generation_map floor =
   } in
 
   (* Spawning du joueur *)
-  let (player, zone_rand) = spawn_player map in
+  let (player, zone_rand) = spawn_player map num_pokemon in
   let trap_and_ground = spawn_list_of_trap_and_ground map zone_rand in
   let enemys = spawn_list_of_enemys map player in
   let items = spawn_list_of_loot map in
@@ -158,9 +158,9 @@ let generation_map floor =
 
   @param filename Le nom du fichier (sans extension) dans lequel la carte sera enregistrée.
 *)
-let create_map_json filename =
+let create_map_json filename num_pokemon =
   (* Génération de la map *)
-  let (map, player, trap_and_ground, enemys, items) = generation_map 0 in
+  let (map, player, trap_and_ground, enemys, items) = generation_map 0 num_pokemon in
   (* Sérialisation en JSON *)
   let json = map_player_to_json map player enemys items trap_and_ground in
   (* Écriture dans un fichier *)

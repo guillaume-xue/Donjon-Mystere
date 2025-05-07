@@ -162,12 +162,29 @@ let check_new_map_name (map_name: string) list_of_maps =
     else (Select_New, map_name)
   end else if is_key_pressed Key.Enter then begin (* Enter *)
     if not (List.exists (fun map -> map = map_name) list_of_maps) && map_name <> "map " then begin
-      create_map_json map_name;
-      (Game, map_name)
+      (ChoosePokemon, map_name)
     end else
       (Select_New, map_name)
   end else
     (Select_New, map_name)
+
+
+let check_choose_pokemon map_name index_select_x index_select_y  =
+  if is_key_pressed Key.Up then
+    if (index_select_y - 1) >= 0 then
+      (ChoosePokemon, (index_select_x, index_select_y - 1))
+    else
+      (ChoosePokemon, (index_select_x, index_select_y))
+  else if is_key_pressed Key.Down then
+    if (index_select_y + 1) < 3 then
+      (ChoosePokemon, (index_select_x, index_select_y + 1))
+    else
+      (ChoosePokemon, (index_select_x, index_select_y))
+  else if is_key_pressed Key.Enter then begin
+    create_map_json map_name index_select_y;
+    (Game, (index_select_x, index_select_y))
+  end else
+    (ChoosePokemon, (index_select_x, index_select_y))
 
 (**
   [update_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y] updates the intro screen.
@@ -271,7 +288,7 @@ let update_select_other map_name list_of_maps index_select_x index_select_y back
 *)
 let check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time =
   let (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y) = menu_item_info in
-  let (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y) = menu_stats in
+  let (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, choose_pokemon_texture, pokemon_icon_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y) = menu_stats in
   match screen_state with
   | Intro ->
     begin
@@ -300,6 +317,13 @@ let check_screen_state screen_state map_name menu_item_info menu_stats list_of_m
       let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
       update_select_other new_map_name list_of_maps index_select_x index_select_y background_texture select_other_texture arrow_texture arrow_pos_x arrow_pos_y;
       (state, new_map_name , (x, y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | ChoosePokemon ->
+    begin
+      let (state, (x, y)) = check_choose_pokemon map_name index_select_x index_select_y in
+      let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
+      draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture pokemon_icon_texture arrow_pos_y y;
+      (state, map_name , (x, y, arrow_pos_x, arrow_pos_y), last_time)
     end
   | Game ->
     begin

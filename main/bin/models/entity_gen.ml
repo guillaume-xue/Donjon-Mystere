@@ -8,7 +8,7 @@ open Trap_ground
   @param map La carte sur laquelle le joueur doit être généré.
   @return Le joueur généré.
 *)
-let spawn_player map =
+let spawn_player map num_pokemon =
   let rec tile_rand () =
     let zone_rand = Random.int (List.length map.regions) in
     let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
@@ -20,7 +20,7 @@ let spawn_player map =
   in
   let (zone_rand, tile) = tile_rand () in
   ({
-    number = 0;
+    number = num_pokemon;
     pos_x = float_of_int tile.x;
     pos_y = float_of_int tile.y;
     screen_x = (screen_width / 2);

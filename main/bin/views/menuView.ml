@@ -1,5 +1,6 @@
 open Raylib
 open Utils.Settings_map
+open Utils.Funcs
 
 (**
   [init_menu_textures ()] initialise les textures du menu.
@@ -53,7 +54,17 @@ let init_menu_textures () =
   image_resize (addr arrow) 20 20;
   let arrow_texture = Some (load_texture_from_image arrow) in
   unload_image arrow;
-  (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y)
+
+  let choose_pokemon = load_image "resources/images/menu/choose_pokemon.png" in
+  image_resize (addr choose_pokemon) screen_width screen_height;
+  let choose_pokemon_texture = Some (load_texture_from_image choose_pokemon) in
+  unload_image choose_pokemon;
+
+  let pokemon_icon = load_image "resources/images/menu/pokemon.png" in
+  let pokemon_icon_texture = init_textures_size 0 3 pokemon_icon [] 126 |> List.rev in
+  
+
+  (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, choose_pokemon_texture, pokemon_icon_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y)
 
 (**
   [draw_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y] dessine l'écran d'introduction.
@@ -197,6 +208,43 @@ let draw_select_new map_name text_talk background_texture select_new_texture arr
   (* Dessiner texte *)
   draw_text map_name 270 210 20 Color.white;
   draw_text text_talk 100 450 20 Color.white;
+  draw_text "[Entrer]" 640 510 20 Color.white;
+  end_drawing ()
+
+let draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture pokemon_icon_texture arrow_pos_y y =
+  let time = get_time () in
+  let blink = int_of_float (time *. 3.0) mod 2 = 0 in
+
+  begin_drawing ();
+  clear_background Color.raywhite;
+  (* Dessiner le fond *)
+  (match background_texture with
+  | Some texture -> draw_texture texture 0 0 Color.white
+  | None -> ());
+
+  let pokemon_icon = List.nth pokemon_icon_texture y in
+  draw_texture pokemon_icon 555 65 Color.white;
+
+  
+  (* Dessiner le fond *)
+  (match choose_pokemon_texture with
+  | Some texture -> draw_texture texture 0 0 Color.white
+  | None -> ());
+  
+  (* Dessiner une fleche *)
+  if blink then 
+    (* Dessiner une fleche *)
+    (match arrow_texture with
+    | Some texture -> draw_texture texture 70 arrow_pos_y  Color.white
+    | None -> ());
+
+  (* Dessiner texte *)
+  draw_text "Choisir un Pokemon" 100 450 20 Color.white;
+  draw_text "[Entrer]" 640 510 20 Color.white;
+  draw_text "Germignon" 100 60 20 Color.white;
+  draw_text "Héricendre" 100 90 20 Color.white;
+  draw_text "Kaiminus" 100 120 20 Color.white;
+  
   end_drawing ()
 
 (**
