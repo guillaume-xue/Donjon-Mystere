@@ -186,7 +186,8 @@ let is_obstacle map (entity: pokemon) (enemy: pokemon list) =
   let target_x = int_of_float entity.target_x in
   let target_y = int_of_float entity.target_y in
   List.exists (fun (e: pokemon) -> int_of_float e.pos_x = target_x && int_of_float e.pos_y = target_y) enemy ||
-  not (List.exists (fun tile -> tile.x = target_x && tile.y = target_y && tile.texture_id = 1) tiles)
+  not (List.exists (fun tile -> tile.x = target_x && tile.y = target_y && tile.texture_id = 1) tiles) ||
+  List.exists (fun (e: pokemon) -> int_of_float e.target_x = target_x && int_of_float e.target_y = target_y) enemy
 
 (**
   [move direction entity key_pressed] moves the entity in the given direction.
@@ -196,7 +197,7 @@ let is_obstacle map (entity: pokemon) (enemy: pokemon list) =
   @return The updated entity.
 *)
 let move direction (entity: pokemon) key_pressed _in_range =
-  if key_pressed && not _in_range && entity.action <> OpenBag && entity.action <> PickUp && not(entity.moving) then begin
+  if key_pressed && not _in_range && entity.action <> OpenBag && entity.action <> PickUp && not(entity.moving) && entity.your_turn then begin
     let new_entity = 
       entity
       |> set_entity_target direction
@@ -205,7 +206,7 @@ let move direction (entity: pokemon) key_pressed _in_range =
       |> set_entity_state Moving
     in
     new_entity
-  end else if _in_range && key_pressed then
+  end else if _in_range && key_pressed && entity.your_turn then
     let new_entity = 
     entity
     |> set_entity_target No_move

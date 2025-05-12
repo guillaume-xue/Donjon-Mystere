@@ -32,7 +32,7 @@ let run () =
         let (enemy, last_time, player, status_fin) = update_enemy enemy player my_map last_time in
         let player = if status_fin then set_your_turn true player else player in *)
 
-        let rec aux entity acc select loots last_time traps_and_grounds msgs =
+        (* let rec aux entity acc select loots last_time traps_and_grounds msgs =
           match entity with
           | [] -> let acc = List.sort (fun e1 e2 -> compare e1.id e2.id) acc in
             (* List.iter (fun e -> Printf.printf "Enemy %d is your turn\n%!" e.id) acc; *)
@@ -61,17 +61,32 @@ let run () =
             end else begin
               (* Printf.printf "Enemy %d is not your turn\n%!" e.id; *)
               aux rest (e :: acc) select loots last_time traps_and_grounds msgs
+            end in *)
+
+        let player =
+        if List.for_all (fun e -> not e.your_turn) enemy && not my_player.your_turn then
+          set_your_turn true my_player
+        else
+          my_player in
+
+
+        let (player, select, loots, enemy, traps_and_grounds, last_time, msg) = update_player player enemy my_map select loots traps_and_grounds last_time in
+        let msgs = add_msg msg msgs in
+
+        let rec aux player enemy (other:pokemon list) map last_time msgs =
+          match enemy with
+          | [] -> (other, last_time, msgs)
+          | e :: rest ->
+            if e.your_turn then begin
+              let (enemy, player, last_time, msg) = update_enemy e (player :: rest) map last_time in
+              let msgs = add_msg msg msgs in
+              aux player rest (enemy :: other) map last_time msgs
+            end else begin
+              aux player rest (e :: other) map last_time msgs
             end in
 
 
-
-        let all_entity = my_player :: enemy in
-        let (res, select, loots, last_time, traps_and_grounds, msgs) = aux all_entity [] select loots last_time traps_and_grounds msgs in
-        let res = List.sort (fun e1 e2 -> compare e1.id e2.id) res in
-        (* List.iter (fun e -> Printf.printf "Entity %d is your turn\n%!" e.id) res; *)
-        
-        let player = List.hd res in
-        let enemy = List.tl res in
+        let (enemy, last_time, msgs) = aux player enemy [] my_map last_time msgs in
         let grid_shadow_cast = update_shadow_cast player my_map in
         draw_game my_map player enemy loots grid_shadow_cast traps_and_grounds map_textures entity_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures attack_msg_textures select msgs;
         game_loop (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, player, enemy, loots, traps_and_grounds, select) last_time name msgs

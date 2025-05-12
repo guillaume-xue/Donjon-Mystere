@@ -136,7 +136,7 @@ let check_key_pressed_action player =
 *)
 let check_key_pressed_bag player select =
   let len = (List.length player.bag.items) - 1 in
-  if (player.action = OpenBag) then begin
+  if (player.action = OpenBag)  && player.your_turn then begin
     if is_key_pressed Key.Up && select - 7 >= 0 then begin
       (false, select - 7)
     end else if is_key_pressed Key.Down && (select + 7 <= len && select + 7 <= 27) then begin
@@ -192,7 +192,7 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   @return The updated map, player, trap and ground, enemy and items.
 *)
 let update_trap_and_ground map player traps_and_grounds enemys item last_time =
-  if is_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) then begin
+  if is_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) && player.your_turn then begin
     let pos_x = int_of_float player.pos_x in
     let pos_y = int_of_float player.pos_y in
     match get_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) with
@@ -402,8 +402,8 @@ let add_msg msg msgs =
   else
     msgs @ [msg]
 
-let set_your_turn player your_turn =
-  set_your_turn player your_turn
+let set_your_turn your_turn player =
+  set_your_turn your_turn player
 
 (**
   [update_shadow_cast player map] update the shadow casting
