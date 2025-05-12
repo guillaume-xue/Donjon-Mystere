@@ -143,11 +143,12 @@ let generation_map floor num_pokemon =
   (* Spawning du joueur *)
   let (player, zone_rand) = spawn_player map num_pokemon in
   let trap_and_ground = spawn_list_of_trap_and_ground map zone_rand in
-  let enemys = spawn_list_of_enemys map player in
+  let (enemys, cpt) = spawn_list_of_enemys map player in
+  let player = { player with last_id = cpt } in
   let items = spawn_list_of_loot map in
 
   (* Affichage préliminaire avec l'automate cellulaire *)
-  print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2);
+  (* print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2); *)
   
   (* Affichage final *)
   print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);

@@ -20,6 +20,7 @@ type direction =
   | DiagonalUpRight
   | DiagonalDownLeft
   | DiagonalDownRight
+  | No_move
 
 type trap_and_ground_type =
   | Stairs_Up             (* proceed to the next up floor of a dungeon *)
@@ -170,6 +171,26 @@ type loot = {
   usable: bool;
 }
 
+type element = 
+  | Feu
+  | Eau
+  | Plante
+  | Normal
+
+type attaqueType =
+  | Attaque
+  | AttaqueSpeciale
+  | Passive
+
+type competence = {
+  id: int;
+  name: string;
+  description: string;
+  element: element;
+  puissance: int;
+  precision: int;
+  attaqueType: attaqueType;
+}
 
 (**
   Type [bag] représentant un sac à dos.
@@ -200,6 +221,8 @@ type bag = {
   @param max_xp Points d'expérience maximum du pokemon.
 *)
 type pokemon = {
+  id: int;
+  last_id: int;
   number: int;
   pos_x: float;
   pos_y: float;
@@ -216,11 +239,18 @@ type pokemon = {
   level: int;
   current_xp: int;
   max_xp: int;
-  attacking: bool;
   action: interaction;
   bag: bag;
   step_cpt : int;
   speed : float;
+  attaque : int;
+  defense : int;
+  attaque_speciale : int;
+  defense_speciale : int;
+  element : element;
+  competence : competence list;
+  path : (int * int) list;
+  your_turn : bool;
 }
 
 (** 
@@ -261,3 +291,17 @@ module PriorityQueue = struct
   let is_empty pq = !pq = []
 end
 
+(** [print_direction dir] affiche une direction sous forme de chaîne de caractères. *)
+let print_direction dir =
+  let direction_to_string = function
+    | Up -> "Up"
+    | Down -> "Down"
+    | Left -> "Left"
+    | Right -> "Right"
+    | DiagonalUpLeft -> "DiagonalUpLeft"
+    | DiagonalUpRight -> "DiagonalUpRight"
+    | DiagonalDownLeft -> "DiagonalDownLeft"
+    | DiagonalDownRight -> "DiagonalDownRight"
+    | No_move -> "No_move"
+  in
+  print_endline (direction_to_string dir)

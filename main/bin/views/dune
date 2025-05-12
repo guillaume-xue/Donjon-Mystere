@@ -11,4 +11,5 @@
   itemView
   bagView
   shadowCastView
-  trapGroundView))
+  trapGroundView
+  attackView))

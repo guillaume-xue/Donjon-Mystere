@@ -32,6 +32,8 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
   } in
 
   let player = {
+    id = player_json |> member "id" |> to_int;
+    last_id = player_json |> member "last_id" |> to_int;
     number = player_json |> member "number" |> to_int;
     pos_x = player_json |> member "pos_x" |> to_float;
     pos_y = player_json |> member "pos_y" |> to_float;
@@ -48,7 +50,6 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     level = player_json |> member "level" |> to_int;
     current_xp = player_json |> member "current_xp" |> to_int;
     max_xp = player_json |> member "max_xp" |> to_int;
-    attacking = false;
     action = Nothing;
     bag = {
       items = player_json |> member "bag" |> member "items" |> to_list |> List.map (fun item ->
@@ -68,10 +69,45 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     };
     step_cpt = player_json |> member "step_cpt" |> to_int;
     speed = player_json |> member "speed" |> to_float;
+
+    attaque = player_json |> member "attaque" |> to_int;
+    defense = player_json |> member "defense" |> to_int;
+    attaque_speciale = player_json |> member "attaque_speciale" |> to_int;
+    defense_speciale = player_json |> member "defense_speciale" |> to_int;
+    element = (player_json |> member "element" |> to_string |> function
+      | "Feu" -> Feu
+      | "Eau" -> Eau
+      | "Plante" -> Plante
+      | "Normal" -> Normal
+      | _ -> failwith "Unknown element");
+    competence = player_json |> member "competence" |> to_list |> List.map (fun competence_json ->
+      {
+        id = competence_json |> member "id" |> to_int;
+        name = competence_json |> member "name" |> to_string;
+        description = competence_json |> member "description" |> to_string;
+        element = (competence_json |> member "element" |> to_string |> function
+          | "Feu" -> Feu
+          | "Eau" -> Eau
+          | "Plante" -> Plante
+          | "Normal" -> Normal
+          | _ -> failwith "Unknown element");
+        puissance = competence_json |> member "puissance" |> to_int;
+        precision = competence_json |> member "precision" |> to_int;
+        attaqueType = (competence_json |> member "attaqueType" |> to_string |> function
+          | "Attaque" -> Attaque
+          | "AttaqueSpeciale" -> AttaqueSpeciale
+          | "Passive" -> Passive
+          | _ -> failwith "Unknown attaqueType");
+      }
+    );
+    path = [];
+    your_turn = player_json |> member "your_turn" |> to_bool;
   } in
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
     {
+      id = enemy_json |> member "id" |> to_int;
+      last_id = enemy_json |> member "last_id" |> to_int;
       number = enemy_json |> member "number" |> to_int;
       pos_x = enemy_json |> member "pos_x" |> to_float;
       pos_y = enemy_json |> member "pos_y" |> to_float;
@@ -88,7 +124,6 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       level = enemy_json |> member "level" |> to_int;
       current_xp = enemy_json |> member "current_xp" |> to_int;
       max_xp = enemy_json |> member "max_xp" |> to_int;
-      attacking = false;
       action = Nothing;
       bag = {
         items = enemy_json |> member "bag" |> member "items" |> to_list |> List.map (fun item ->
@@ -108,6 +143,41 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       };
       step_cpt = enemy_json |> member "step_cpt" |> to_int;
       speed = enemy_json |> member "speed" |> to_float;
+      attaque = enemy_json |> member "attaque" |> to_int;
+      defense = enemy_json |> member "defense" |> to_int;
+      attaque_speciale = enemy_json |> member "attaque_speciale" |> to_int;
+      defense_speciale = enemy_json |> member "defense_speciale" |> to_int;
+      element = (enemy_json |> member "element" |> to_string |> function
+        | "Feu" -> Feu
+        | "Eau" -> Eau
+        | "Plante" -> Plante
+        | "Normal" -> Normal
+        | _ -> failwith "Unknown element");
+      competence = enemy_json |> member "competence" |> to_list |> List.map (fun competence_json ->
+        {
+          id = competence_json |> member "id" |> to_int;
+          name = competence_json |> member "name" |> to_string;
+          description = competence_json |> member "description" |> to_string;
+          element = (competence_json |> member "element" |> to_string |> function
+            | "Feu" -> Feu
+            | "Eau" -> Eau
+            | "Plante" -> Plante
+            | "Normal" -> Normal
+            | _ -> failwith "Unknown element");
+          puissance = competence_json |> member "puissance" |> to_int;
+          precision = competence_json |> member "precision" |> to_int;
+          attaqueType = (competence_json |> member "attaqueType" |> to_string |> function
+            | "Attaque" -> Attaque
+            | "AttaqueSpeciale" -> AttaqueSpeciale
+            | "Passive" -> Passive
+            | _ -> failwith "Unknown attaqueType");
+        }
+      );
+      path = enemy_json |> member "path" |> to_list |> List.map (function
+      | `List [`Int x; `Int y] -> (x, y)
+      | _ -> failwith "Invalid path format"
+    );
+      your_turn = enemy_json |> member "your_turn" |> to_bool;
     }) in
 
   let loot = loot_json |> List.map (fun loot_json ->
@@ -198,6 +268,33 @@ let bag_to_yojson bag =
     ("max_size", `Int bag.max_size)
   ]
 
+  let element_to_json (element: element) =
+    `String (match element with
+      | Feu -> "Feu"
+      | Eau -> "Eau"
+      | Plante -> "Plante"
+      | Normal -> "Normal"
+    )
+  
+let competence_to_json (competence: competence) =
+  `Assoc [
+    ("id", `Int competence.id);
+    ("name", `String competence.name);
+    ("description", `String competence.description);
+    ("element", element_to_json competence.element);
+    ("puissance", `Int competence.puissance);
+    ("precision", `Int competence.precision);
+    ("attaqueType", `String (match competence.attaqueType with
+      | Attaque -> "Attaque"
+      | AttaqueSpeciale -> "AttaqueSpeciale"
+      | Passive -> "Passive"
+    ))
+  ]
+
+let competences_to_json (competences: competence list) =
+  `List (List.map competence_to_json competences)
+
+
 (**
   [pokemon_to_yojson player] converts a player to a JSON representation.
   @param player The player to convert.
@@ -217,6 +314,8 @@ let bag_to_yojson bag =
 *)
 let pokemon_to_yojson (player: pokemon) =
   `Assoc [
+    ("id", `Int player.id);
+    ("last_id", `Int player.last_id);
     ("number", `Int player.number);
     ("pos_x", `Float player.pos_x);
     ("pos_y", `Float player.pos_y);
@@ -233,6 +332,19 @@ let pokemon_to_yojson (player: pokemon) =
     ("bag", bag_to_yojson player.bag);
     ("step_cpt", `Int player.step_cpt);
     ("speed", `Float player.speed);
+    ("attaque", `Int player.attaque);
+    ("defense", `Int player.defense);
+    ("attaque_speciale", `Int player.attaque_speciale);
+    ("defense_speciale", `Int player.defense_speciale);
+    ("element", `String (match player.element with
+      | Feu -> "Feu"
+      | Eau -> "Eau"
+      | Plante -> "Plante"
+      | Normal -> "Normal"
+    ));
+    ("competence", competences_to_json player.competence);
+    ("path", `List (List.map (fun (x, y) -> `List [`Int x; `Int y]) player.path));
+    ("your_turn", `Bool player.your_turn);
   ]
 
 let pokemons_to_yojson (pokemons: pokemon list) =
@@ -298,6 +410,7 @@ let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items
     ("loot", loots_to_json items);
     ("trap_and_ground", traps_and_grounds_to_json traps_and_grounds)
   ]
+
 
 (** 
   [write_json_to_file] écrit le JSON [json] dans un fichier nommé [filename].
