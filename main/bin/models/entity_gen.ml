@@ -38,7 +38,7 @@ let finalGen lvl () =
   @param map La carte sur laquelle le joueur doit être généré.
   @return Le joueur généré.
 *)
-let spawn_player map =
+let spawn_player map num_pokemon =
   let (cur_hp, att, def, att_sp, def_sp) = finalGen 25.0 () in
   let rec tile_rand () =
     let zone_rand = Random.int (List.length map.regions) in
@@ -53,7 +53,7 @@ let spawn_player map =
   in
   let (zone_rand, tile) = tile_rand () in
   ({
-    id = 0;
+    id = num_pokemon;
     last_id = 0;
     number = 0;
     pos_x = float_of_int tile.x;

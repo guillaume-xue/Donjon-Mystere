@@ -53,8 +53,18 @@ let set_entity_target_pos (target_x: float) (target_y: float) (entity: pokemon) 
       entity with
       bag = new_bag
     }
-  
 
+
+(**
+  Set the i th competence of the entity
+  @param i: int
+  @param puissance: int
+  @param entity: pokemon
+  @return entity
+*)
+let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) =
+  let new_competence = List.mapi (fun j c -> if j = i then {c with puissance = puissance} else c) entity.competence in
+  {entity with competence = new_competence}
 
 (**
   Set the entity can moving

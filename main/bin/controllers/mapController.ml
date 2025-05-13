@@ -4,8 +4,6 @@ open Models.EnemyModel
 open Models.ItemModel
 open Models.Shadowcaster
 open Models.Trap_ground
-open Models.Generation_map
-open Models.Map_model
 open Views.PlayerView
 open Views.EntityView
 open Views.MapView
@@ -15,6 +13,7 @@ open Views.BagView
 open Views.TrapGroundView
 open Views.ShadowCastView
 open Views.AttackView
+open TrapController
 open Utils.Types
 open Utils.Json_conversions
 open Utils.Funcs
@@ -181,148 +180,6 @@ let check_pickup_item (player: pokemon) (items: loot list) =
     | _ -> (player, items)
   end else
     (player, items)
-
-(**
-  [update_trap_and_ground map player trap_and_ground enemys items] updates the trap and ground.
-  @param map The map.
-  @param player The player.
-  @param trap_and_ground The trap and ground.
-  @param enemys The enemy.
-  @param items The items.
-  @return The updated map, player, trap and ground, enemy and items.
-*)
-let update_trap_and_ground map player traps_and_grounds enemys item last_time =
-  if is_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) && player.your_turn then begin
-    let pos_x = int_of_float player.pos_x in
-    let pos_y = int_of_float player.pos_y in
-    match get_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) with
-    | None -> (map, player, traps_and_grounds, enemys, item, last_time)
-    | Some trap_and_ground ->
-      let traps_and_grounds = set_trap_ground_pos_visibility pos_x pos_y true traps_and_grounds in
-      match trap_and_ground.nature, trap_and_ground.visibility with
-      | Stairs_Up, true -> 
-        Unix.sleep 1;
-        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor player.number in
-        let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
-        let new_map = set_map_floor new_map (new_map.floor + 1) in
-        (new_map, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
-      | Stairs_Down, true ->
-        Unix.sleep 1;
-        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map map.floor player.number in
-        let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
-        let new_map = set_map_floor new_map (new_map.floor - 1) in
-        (new_map, new_player, new_trap_and_ground, new_enemys, new_items, list_of_last_time)
-      | Bug_Switch, false ->
-        let player = set_entity_step_cpt 3 player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Chestnut_Switch, false ->
-        let player = set_entity_current_hp (player.current_hp - 10) player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Drop_Hole, false ->
-        (* FIXME *)
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Explosion_Switch, false ->
-        let player = set_entity_current_hp (player.current_hp - 20) player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Fan_Switch, false ->
-        let random_x = Random.int 4 in
-        let direction = 
-          match random_x with
-          | 0 -> 
-            Right
-          | 1 -> 
-            Left
-          | 2 -> 
-            Up
-          | 3 -> 
-            Down
-          | _ -> 
-            Down
-        in
-        let player = 
-          match find_wall_in_direction pos_x pos_y direction map with
-              | Some (x, y) -> 
-                let x = float_of_int x in
-                let y = float_of_int y in
-                player 
-                |> set_entity_pos x y
-                |> set_entity_target_pos x y
-              | None -> player
-        in
-        (map, player, traps_and_grounds, enemys, item, last_time)    
-      | Glue_Switch, false ->
-        let length = List.length player.bag.items in
-        if length = 0 then 
-          (map, player, traps_and_grounds, enemys, item, last_time)
-        else if length = 1 then
-          let player = set_usable_item_bag 0 false player in
-          (map, player, traps_and_grounds, enemys, item, last_time)
-        else
-          let rand = Random.int length in
-          let player = set_usable_item_bag rand false player in
-          (map, player, traps_and_grounds, enemys, item, last_time)
-      | Grimer_Switch, false ->
-        (* FIXME *)
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Imprison_Switch, false ->
-        let player = set_entity_current_hp (player.current_hp - 1) player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Mud_Switch, false ->
-        (* FIXME *)
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Poison_Sting_Switch, false ->
-        let player = set_entity_current_hp (player.current_hp - 1) player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Pokemon_Switch, false ->
-        (* FIXME *)
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Self_Destruct_Switch, false ->
-        let player = set_entity_current_hp (player.current_hp - 20) player in
-        let map = set_map_exploded pos_x pos_y map in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Skill_Drop_Switch, false ->
-        (* FIXME *)
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Slowpoke_Switch, false ->
-        let player = set_entity_speed 0.5 player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Spin_Swith, false ->
-        let player = set_entity_step_cpt 3 player in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Summon_Switch, false ->
-        let rec add_random_enemy player map enemys =
-          let random_x = player.pos_x +. float_of_int (Random.int 11 - 5) in
-          let random_y = player.pos_y +. float_of_int (Random.int 11 - 5) in
-          if not(is_wall (int_of_float random_x) (int_of_float random_y) map) then
-            let new_enemy, player = create_enemy random_x random_y player in
-            new_enemy :: enemys, player
-          else
-            add_random_enemy player map enemys
-        in
-        let last_time = last_time @ [0.0; 0.0] in
-        let enemys, player = add_random_enemy player map enemys in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | Warp_Trap, false ->
-        let rec find_random_position () =
-          let random_x = float_of_int (Random.int map.width) in
-          let random_y = float_of_int (Random.int map.height) in
-          if not (is_wall (int_of_float random_x) (int_of_float random_y) map) && not (List.exists (fun e -> e.pos_x = random_x && e.pos_y = random_y) enemys) then
-            (random_x, random_y)
-          else
-            find_random_position ()
-        in
-        let (new_x, new_y) = find_random_position () in
-        let player =
-          player
-          |> set_entity_pos new_x new_y
-          |> set_entity_target_pos new_x new_y
-        in
-        (map, player, traps_and_grounds, enemys, item, last_time)
-      | _ ->
-        (map, player, traps_and_grounds, enemys, item, last_time)
-  end else
-    (map, player, traps_and_grounds, enemys, item, last_time)
-
   
 (**
   [update_player player enemy map last_time] updates the player.
@@ -333,10 +190,12 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
   @return The updated player.
 *)
 let update_player player enemy map select items trap_and_ground last_time =
-  let (map, player, trap_and_ground, enemy, items, last_time) = update_trap_and_ground map player trap_and_ground enemy items last_time in
+  let (map, player, trap_and_ground, enemy, items, last_time, msg) = update_trap_and_ground map player trap_and_ground enemy items last_time in
+  let msg_res = msg in
   let (action , key_pressed) = check_key_pressed_action player in
   let player = action_player action player key_pressed in
   let (player, enemy, _action1, msg) = player_attack player enemy in
+  let msg_res = msg_res ^ msg in
   let (player, items) = check_pickup_item player items in
   let (direction, key_pressed) = check_key_pressed player in
   let player = move direction player key_pressed false in
@@ -361,7 +220,7 @@ let update_player player enemy map select items trap_and_ground last_time =
   let player = if (_action2 && _action3) || _action1 then set_your_turn false player else player in
   let enemy = if (_action2 && _action3) || _action1 then List.map (fun e -> set_your_turn true e) enemy else enemy in
 
-  (player, nb_select, items, enemy, trap_and_ground, last_time, msg)
+  (player, nb_select, items, enemy, trap_and_ground, last_time, msg_res)
 
 (**
   [update_enemy enemies player map key_pressed last_time] updates the enemy.
