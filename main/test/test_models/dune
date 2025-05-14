@@ -12,3 +12,23 @@
  (name test_entity_model)
  (modules test_entity_model)
  (libraries ounit2 models utils))
+
+(library
+ (name test_trap_ground)
+ (modules test_trap_ground)
+ (libraries ounit2 models utils))
+
+(library
+ (name test_bag_model)
+ (modules test_bag_model)
+ (libraries ounit2 models utils))
+
+(library
+ (name test_a_star)
+ (modules test_a_star)
+ (libraries ounit2 models utils))
+
+(library
+ (name test_shadowcaster)
+ (modules test_shadowcaster)
+ (libraries ounit2 models utils))

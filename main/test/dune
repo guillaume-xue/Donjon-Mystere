@@ -7,4 +7,8 @@
   utils
   test_map_model
   test_item_model
-  test_entity_model))
+  test_entity_model
+  test_trap_ground
+  test_bag_model
+  test_a_star
+  test_shadowcaster))
