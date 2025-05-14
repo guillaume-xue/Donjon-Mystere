@@ -2,6 +2,7 @@ open Raylib
 open Utils.Types
 open Utils.Settings_map
 open Utils.Funcs
+open Models.EntityModel
 
 (**
   [init_items_textures ()] initializes the textures for the items.
@@ -21,8 +22,10 @@ let init_items_textures () =
 let draw_items (loots : loot list) (player : pokemon) loots_textures =
   List.iter (fun loot ->
     let texture = List.nth loots_textures loot.item_skin_id in
+    let (screen_x, screen_y) = get_entity_screen player in
+    let (pos_x, pos_y) = get_entity_position player in
     draw_texture texture 
-      (int_of_float (float_of_int player.screen_x +. loot.pos_x *. tile_texture_size -. player.pos_x *. tile_texture_size)) 
-      (int_of_float (float_of_int player.screen_y +. loot.pos_y *. tile_texture_size -. player.pos_y *. tile_texture_size)) 
+      (int_of_float (float_of_int screen_x +. loot.pos_x *. tile_texture_size -. pos_x *. tile_texture_size)) 
+      (int_of_float (float_of_int screen_y +. loot.pos_y *. tile_texture_size -. pos_y *. tile_texture_size)) 
       Color.white
   ) loots

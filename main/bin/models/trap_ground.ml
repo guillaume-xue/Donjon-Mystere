@@ -1,4 +1,5 @@
 open Utils.Types
+open EntityModel
 
 let set_trap_ground_visibility (visibility: bool) (trap_and_ground: trap_and_ground) =
   {
@@ -31,7 +32,8 @@ let is_stairs (trap_and_ground: trap_and_ground list) (player: pokemon) =
     match res with
     | [] -> false
     | {nature; tag_pos_x; tag_pos_y; _} :: rest ->
-      if (nature = Stairs_Up || nature = Stairs_Down) && int_of_float player.pos_x = tag_pos_x && int_of_float player.pos_y = tag_pos_y then
+      let (pos_x, pos_y) = get_entity_position player in
+      if (nature = Stairs_Up || nature = Stairs_Down) && int_of_float pos_x = tag_pos_x && int_of_float pos_y = tag_pos_y then
         true
       else
         aux rest

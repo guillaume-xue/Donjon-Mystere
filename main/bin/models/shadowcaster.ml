@@ -1,4 +1,5 @@
 open Utils.Types
+open EntityModel
 
 (* Multipliers for octants *)
 let multipliers = [|
@@ -95,8 +96,9 @@ let rec process_octants x y x_max y_max radius set_visible is_blocked visibility
   @return A matrix representing visibility for each tile.
 *)
 let compute_fov player radius grid max_x max_y =
-  let x = int_of_float (player.pos_x) in
-  let y = int_of_float (player.pos_y) in
+  let (pos_x, pos_y) = get_entity_position player in
+  let x = int_of_float pos_x in
+  let y = int_of_float pos_y in
   let visibility = Array.make_matrix max_y max_x (0.0) in
   let set_visible x y visibility_value =
     if x >= 0 && x < max_x && y >= 0 && y < max_y then

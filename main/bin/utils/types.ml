@@ -202,15 +202,18 @@ type bag = {
   max_size: int;
 }
 
+type position = {
+  world_x : float;
+  world_y : float;
+  screen_x : int;
+  screen_y : int;
+  target_x : float;
+  target_y : float;
+}
+
 (** 
   Type [pokemon] représentant un pokemon.
-  @param pos_x Position x du pokemon.
-  @param pos_y Position y du pokemon.
-  @param screen_x Position x du pokemon sur l'écran.
-  @param screen_y Position y du pokemon sur l'écran.
   @param entity_textures_id Identifiant de la texture associée au pokemon.
-  @param target_x Position x de la cible du pokemon.
-  @param target_y Position y de la cible du pokemon.
   @param moving Booléen indiquant si le pokemon est en mouvement.
   @param state État du pokemon.
   @param direction Direction du pokemon.
@@ -224,13 +227,8 @@ type pokemon = {
   id: int;
   last_id: int;
   number: int;
-  pos_x: float;
-  pos_y: float;
-  screen_x: int;
-  screen_y: int;
+  position: position;
   entity_textures_id: int;
-  target_x: float;
-  target_y: float;
   moving: bool;
   state: entityState;
   direction: direction;

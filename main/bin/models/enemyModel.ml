@@ -1,6 +1,7 @@
 open Utils.Types
 open A_star
 open Entity_gen
+open EntityModel
 open Utils.Competences_data
 
 let random_direction () =
@@ -33,11 +34,13 @@ let auto_target (x1,y1) (x2,y2) =
 
 let update_target_enemy enemy player =
   if enemy.your_turn && not(enemy.moving) then
-      if List.length enemy.path <= 1 && manhattan_distance (int_of_float (floor enemy.pos_x), int_of_float (floor enemy.pos_y)) (int_of_float (floor player.pos_x), int_of_float (floor player.pos_y)) <= 1  then
-        auto_target (int_of_float (floor enemy.pos_x), int_of_float (floor enemy.pos_y)) (int_of_float (floor player.pos_x), int_of_float (floor player.pos_y)), true
+      let (e_pos_x, e_pos_y) = get_entity_position enemy in
+      let (p_pos_x, p_pos_y) = get_entity_position player in
+      if List.length enemy.path <= 1 && manhattan_distance (int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)) (int_of_float (floor p_pos_x), int_of_float (floor p_pos_y)) <= 1  then
+        auto_target (int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)) (int_of_float (floor p_pos_x), int_of_float (floor p_pos_y)), true
       else
         let (x,y) = List.hd enemy.path in
-        auto_target (int_of_float (floor enemy.pos_x), int_of_float (floor enemy.pos_y)) (x,y), false
+        auto_target (int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)) (x,y), false
   else
       enemy.direction, false
 
@@ -47,18 +50,21 @@ let update_target_enemy enemy player =
 let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) =
   let lvl = randLvl player in
   let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
+  let (p_pos_x, p_pos_y) = get_entity_position player in
   let random = (Random.int 8) + 3 in
   {
     id = player.last_id;
     last_id = 0;
     number = random;
-    pos_x = pos_x;
-    pos_y = pos_y;
-    screen_x = 0;
-    screen_y = 0;
+    position = {
+      world_x = pos_x;
+      world_y = pos_y;
+      screen_x = 0;
+      screen_y = 0;
+      target_x = pos_x;
+      target_y = pos_y;
+    };
     entity_textures_id = 0;
-    target_x = pos_x;
-    target_y = pos_y;
     moving = false;
     state = Idle;
     direction = Down;
@@ -77,6 +83,6 @@ let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) =
     defense_speciale = def_sp;
     element = Feu;
     competence = [attaque_grosyeux()];
-    path = a_star [] (int_of_float pos_x, int_of_float pos_y) (int_of_float player.pos_x, int_of_float player.pos_y);
+    path = a_star [] (int_of_float pos_x, int_of_float pos_y) (int_of_float p_pos_x, int_of_float p_pos_y);
     your_turn = false;
   }, {player with last_id = player.last_id + 1}

@@ -5,7 +5,7 @@ let manhattan_distance (x1, y1) (x2, y2) =
   abs (x1 - x2) + abs (y1 - y2)
 
 (* Fonction A* pour trouver le meilleur chemin entre deux tuiles *)
-let a_star tiles start goal : (int * int) list=
+let a_star tiles start goal : (int * int) list =
 
   let pq = PriorityQueue.create () in
   let visited = ref [] in
@@ -55,44 +55,3 @@ let a_star tiles start goal : (int * int) list=
       )
   in
   search ()
-
-let update_a_star tiles start goal =
-  (* match start.mode_combat.path with
-  | Some path1 ->
-    if List.length path1.nodes > 2 then begin
-      let index = List.length path1.nodes - 3 in
-      let nodes = List.nth path1.nodes index in
-      let new_path = a_star tiles nodes (int_of_float goal.pos_x, int_of_float goal.pos_y) in
-      (match new_path with
-      | Some path ->
-        let dist = manhattan_distance (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y) in
-        Printf.printf "Pokemon %d\n%!" dist;
-          { start with
-            mode_combat = {
-              on_off = false;
-              tour = 0;
-              text = [];
-              path = Some { 
-                nodes = (List.rev (List.tl (List.tl (List.rev path1.nodes)))) @ path.nodes; 
-                cost = 0.0;
-              };
-            }
-          }
-      | None -> start)
-      end
-    else begin
-      { start with
-        mode_combat = {
-          on_off = false;
-          tour = 0;
-          text = [];
-          path = a_star tiles (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y);
-        }
-      }
-    end
-  | None ->
-    start *)
-  { start with
-    path = a_star tiles (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y);
-  }
-

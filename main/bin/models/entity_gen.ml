@@ -5,6 +5,7 @@ open Trap_ground
 open Utils.Competences_data
 open Combat
 open A_star
+open EntityModel
 
 let entity_base_value = (50, 55, 45, 60, 50)
 
@@ -56,13 +57,15 @@ let spawn_player map num_pokemon =
     id = num_pokemon;
     last_id = 0;
     number = 0;
-    pos_x = float_of_int tile.x;
-    pos_y = float_of_int tile.y;
-    screen_x = (screen_width / 2);
-    screen_y = (screen_height / 2);
+    position = {
+      world_x = float_of_int tile.x;
+      world_y = float_of_int tile.y;
+      screen_x = (screen_width / 2);
+      screen_y = (screen_height / 2);
+      target_x = float_of_int tile.x;
+      target_y = float_of_int tile.y;
+    };
     entity_textures_id = 24;
-    target_x = float_of_int tile.x;
-    target_y = float_of_int tile.y;
     moving = false;
     state = Idle;
     direction = Down;
@@ -99,22 +102,28 @@ let spawn_list_of_enemys map (player: pokemon) =
       let case_rand = Random.int region.size in
       let tile = List.nth region.tiles case_rand in
       let rand = (Random.int 8) + 3 in
-      if List.exists (fun e -> e.pos_x = float_of_int tile.x && e.pos_y = float_of_int tile.y) (player :: acc) then
+      if List.exists (fun e -> 
+        let (e_pos_x, e_pos_y) = get_entity_position e in
+        e_pos_x = float_of_int tile.x && e_pos_y = float_of_int tile.y
+        ) (player :: acc) then
         aux regions acc cpt
       else
         let lvl = randLvl player in
         let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
+        let (pos_x, pos_y) = get_entity_position player in
         let enemy = {
           id = cpt;
           last_id = 0;
           number = rand;
-          pos_x = float_of_int tile.x;
-          pos_y = float_of_int tile.y;
-          screen_x = 0;
-          screen_y = 0;
+          position = {
+            world_x = float_of_int tile.x;
+            world_y = float_of_int tile.y;
+            screen_x = 0;
+            screen_y = 0;
+            target_x = float_of_int tile.x;
+            target_y = float_of_int tile.y;
+          };
           entity_textures_id = 0;
-          target_x = float_of_int tile.x;
-          target_y = float_of_int tile.y;
           moving = false;
           state = Idle;
           direction = Down;
@@ -133,7 +142,7 @@ let spawn_list_of_enemys map (player: pokemon) =
           defense_speciale = def_sp;
           element = Feu;
           competence = [attaque_grosyeux()];
-          path = a_star map.tiles (tile.x, tile.y) (int_of_float player.pos_x, int_of_float player.pos_y);
+          path = a_star map.tiles (tile.x, tile.y) (int_of_float pos_x, int_of_float pos_y);
           your_turn = false;
         } in
         aux rest (enemy :: acc) (cpt+1)

@@ -16,10 +16,11 @@ open Models.Map_model
 *)
 let update_trap_and_ground map player traps_and_grounds enemys item last_time =
   let msg = "" in
-  if is_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) && player.your_turn then begin
-    let pos_x = int_of_float player.pos_x in
-    let pos_y = int_of_float player.pos_y in
-    match get_trap_ground traps_and_grounds (int_of_float player.pos_x) (int_of_float player.pos_y) with
+  let (pos_x, pos_y) = get_entity_position player in
+  let pos_x = int_of_float pos_x in
+  let pos_y = int_of_float pos_y in
+  if is_trap_ground traps_and_grounds pos_x pos_y && player.your_turn then begin
+    match get_trap_ground traps_and_grounds pos_x pos_y with
     | None -> (map, player, traps_and_grounds, enemys, item, last_time, msg)
     | Some trap_and_ground ->
       let traps_and_grounds = set_trap_ground_pos_visibility pos_x pos_y true traps_and_grounds in
@@ -72,8 +73,8 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
                 let x = float_of_int x in
                 let y = float_of_int y in
                 player 
-                |> set_entity_pos x y
-                |> set_entity_target_pos x y
+                |> set_entity_position x y
+                |> set_entity_target x y
               | None -> player
         in
         let msg = "You are blown away" in
@@ -83,12 +84,20 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         if length = 0 then 
           (map, player, traps_and_grounds, enemys, item, last_time, msg)
         else if length = 1 then
-          let player = set_usable_item_bag 0 false player in
+          let player = 
+            try
+              set_usable_item_bag 0 false player 
+            with _ -> player
+          in
           let msg = "You are stuck in glue" in
           (map, player, traps_and_grounds, enemys, item, last_time, msg)
         else
           let rand = Random.int length in
-          let player = set_usable_item_bag rand false player in
+          let player = 
+            try
+              set_usable_item_bag rand false player 
+            with _ -> player
+          in
           let msg = "You are stuck in glue" in
           (map, player, traps_and_grounds, enemys, item, last_time, msg)
       | Grimer_Switch, false ->
@@ -106,7 +115,9 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
           | 0 -> 
             set_entity_current_hp (player.current_hp - 1) player
           | _ -> 
-            set_i_competence_puissance 0 ((List.nth player.competence 0).puissance - 1) player
+            try 
+              set_i_competence_puissance 0 ((List.nth player.competence 0).puissance - 1) player
+            with _ -> player
         in
         let msg = "You are stuck in mud" in
         (map, player, traps_and_grounds, enemys, item, last_time, msg)
@@ -124,7 +135,11 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         let msg = "You are exploded" in
         (map, player, traps_and_grounds, enemys, item, last_time, msg)
       | Skill_Drop_Switch, false ->
-        let player = set_i_competence_puissance 0 0 player in
+        let player = 
+          try 
+            set_i_competence_puissance 0 0 player
+          with _ -> player
+        in
         let msg = "You are confused" in
         (map, player, traps_and_grounds, enemys, item, last_time, msg)
       | Slowpoke_Switch, false ->
@@ -137,8 +152,9 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         (map, player, traps_and_grounds, enemys, item, last_time, msg)
       | Summon_Switch, false ->
         let rec add_random_enemy player map enemys =
-          let random_x = player.pos_x +. float_of_int (Random.int 11 - 5) in
-          let random_y = player.pos_y +. float_of_int (Random.int 11 - 5) in
+          let (p_pos_x, p_pos_y) = get_entity_position player in
+          let random_x = p_pos_x +. float_of_int (Random.int 11 - 5) in
+          let random_y = p_pos_y +. float_of_int (Random.int 11 - 5) in
           if not(is_wall (int_of_float random_x) (int_of_float random_y) map) then
             let new_enemy, player = create_enemy random_x random_y player in
             new_enemy :: enemys, player
@@ -153,7 +169,7 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         let rec find_random_position () =
           let random_x = float_of_int (Random.int map.width) in
           let random_y = float_of_int (Random.int map.height) in
-          if not (is_wall (int_of_float random_x) (int_of_float random_y) map) && not (List.exists (fun e -> e.pos_x = random_x && e.pos_y = random_y) enemys) then
+          if not (is_wall (int_of_float random_x) (int_of_float random_y) map) && not (List.exists (fun e -> let (e_pos_x, e_pos_y) = get_entity_position e in e_pos_x = random_x && e_pos_y = random_y) enemys) then
             (random_x, random_y)
           else
             find_random_position ()
@@ -161,8 +177,8 @@ let update_trap_and_ground map player traps_and_grounds enemys item last_time =
         let (new_x, new_y) = find_random_position () in
         let player =
           player
-          |> set_entity_pos new_x new_y
-          |> set_entity_target_pos new_x new_y
+          |> set_entity_position new_x new_y
+          |> set_entity_target new_x new_y
         in
         let msg = "You are teleported" in
         (map, player, traps_and_grounds, enemys, item, last_time, msg)
