@@ -7,3 +7,8 @@
  (name test_item_model)
  (modules test_item_model)
  (libraries ounit2 models utils))
+
+(library
+ (name test_entity_model)
+ (modules test_entity_model)
+ (libraries ounit2 models utils))

@@ -15,4 +15,6 @@
   combat
   a_star
   trap_ground
-  map_model))
+  map_model
+  position
+  bag_model))

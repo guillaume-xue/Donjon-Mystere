@@ -1,8 +1,9 @@
 open Utils.Types
-open ItemModel
 open Raylib
 open Combat
 open A_star
+open Position
+open ItemModel
 
 (**
   Set the entity screen position
@@ -12,7 +13,15 @@ open A_star
   @return entity
 *)
 let set_entity_screen (screen_x: int) (screen_y: int) (entity: pokemon) =
-  {entity with screen_x = screen_x; screen_y = screen_y}
+  {entity with position = set_screen screen_x screen_y entity.position}
+
+(**
+  Get the entity screen position
+  @param entity: pokemon
+  @return screen_x, screen_y
+*)
+let get_entity_screen (entity: pokemon) =
+  entity.position.screen_x, entity.position.screen_y
 
 (**
   Set the entity target position
@@ -21,50 +30,34 @@ let set_entity_screen (screen_x: int) (screen_y: int) (entity: pokemon) =
   @param entity: pokemon
   @return entity
 *)
-let set_entity_target (dir : direction) (entity: pokemon) =
-  match dir with
-  | Up -> {entity with target_x = entity.pos_x; target_y = entity.pos_y -. 1.0}
-  | Down -> {entity with target_x = entity.pos_x; target_y = entity.pos_y +. 1.0}
-  | Left -> {entity with target_x = entity.pos_x -. 1.0; target_y = entity.pos_y}
-  | Right -> {entity with target_x = entity.pos_x +. 1.0; target_y = entity.pos_y}
-  | DiagonalUpLeft -> {entity with target_x = entity.pos_x -. 1.0; target_y = entity.pos_y -. 1.0}
-  | DiagonalUpRight -> {entity with target_x = entity.pos_x +. 1.0; target_y = entity.pos_y -. 1.0}
-  | DiagonalDownLeft -> {entity with target_x = entity.pos_x -. 1.0; target_y = entity.pos_y +. 1.0}
-  | DiagonalDownRight -> {entity with target_x = entity.pos_x +. 1.0; target_y = entity.pos_y +. 1.0}
-  | No_move -> {entity with target_x = entity.pos_x; target_y = entity.pos_y}
-
-let set_entity_target_pos (target_x: float) (target_y: float) (entity: pokemon) =
-  {entity with target_x = target_x; target_y = target_y}
-
-  let set_usable_item_bag (index : int) (usable: bool) (entity: pokemon) =
-    let bag = entity.bag in
-    let new_items = 
-      let rec aux i acc lst =
-        match lst with
-        | [] -> List.rev acc
-        | x :: xs ->
-          if i = index then List.rev_append acc ((set_item_usable x usable ) :: xs)
-          else aux (i + 1) (x :: acc) xs
-      in
-      aux 0 [] bag.items
-    in
-    let new_bag = {items = new_items; max_size = bag.max_size} in
-    {
-      entity with
-      bag = new_bag
-    }
-
+let set_entity_target (target_x: float) (target_y: float) (entity: pokemon) =
+  {entity with position = set_target target_x target_y entity.position}
 
 (**
-  Set the i th competence of the entity
-  @param i: int
-  @param puissance: int
+  Get the entity target position
+  @param entity: pokemon
+  @return target_x, target_y
+*)
+let get_entity_target (entity: pokemon) =
+  entity.position.target_x, entity.position.target_y
+
+(**
+  Set the entity position
+  @param pos_x: float
+  @param pos_y: float
   @param entity: pokemon
   @return entity
 *)
-let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) =
-  let new_competence = List.mapi (fun j c -> if j = i then {c with puissance = puissance} else c) entity.competence in
-  {entity with competence = new_competence}
+let set_entity_position (pos_x: float) (pos_y: float) (entity: pokemon) =
+  {entity with position = set_world pos_x pos_y entity.position}
+
+(**
+  Get the entity position
+  @param entity: pokemon
+  @return pos_x, pos_y
+*)
+let get_entity_position (entity: pokemon) =
+  entity.position.world_x, entity.position.world_y
 
 (**
   Set the entity can moving
@@ -74,18 +67,6 @@ let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) =
 *)
 let set_entity_moving (moving: bool) (entity: pokemon) =
   {entity with moving = moving}
-
-
-(**
-  Set the current entity position
-  @param pos_x: float
-  @param pos_y: float
-  @param entity: pokemon
-  @return entity
-*)
-let set_entity_pos (x: float) (y: float) (entity: pokemon) =
-  {entity with pos_x = x; pos_y = y}
-
 
 (**
   Set the entity direction
@@ -132,24 +113,149 @@ let set_entity_action (action: interaction) (entity: pokemon) =
 let set_entity_bag (bag: bag) (entity: pokemon) =
   {entity with bag = bag}
 
+(**
+  Set the entity turn
+  @param your_turn: bool
+  @param entity: pokemon
+  @return entity
+*)
+let set_your_turn (your_turn: bool) (entity: pokemon) =
+  {entity with your_turn = your_turn}
+
+(**
+  Set the entity step count
+  @param step_cpt: int
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_step_cpt (step_cpt: int) (entity: pokemon) =
+  {entity with step_cpt = step_cpt}
+
+(**
+  Set the entity speed
+  @param speed: float
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_speed (speed: float) (entity: pokemon) =
+  {entity with speed = speed}
+
+
+(**
+  Set the entity current hp
+  @param current_hp: int
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_current_hp (current_hp: int) (entity: pokemon) =
+  {entity with current_hp = current_hp}
+
+(**
+  Get the entity i th competence
+  @param i: int
+  @param entity: pokemon
+  @return competence
+*)
+let get_i_competence (i: int) (entity: pokemon) =
+  List.nth entity.competence i
+
+let update_a_star tiles start goal =
+  (* match start.mode_combat.path with
+  | Some path1 ->
+    if List.length path1.nodes > 2 then begin
+      let index = List.length path1.nodes - 3 in
+      let nodes = List.nth path1.nodes index in
+      let new_path = a_star tiles nodes (int_of_float goal.pos_x, int_of_float goal.pos_y) in
+      (match new_path with
+      | Some path ->
+        let dist = manhattan_distance (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y) in
+        Printf.printf "Pokemon %d\n%!" dist;
+          { start with
+            mode_combat = {
+              on_off = false;
+              tour = 0;
+              text = [];
+              path = Some { 
+                nodes = (List.rev (List.tl (List.tl (List.rev path1.nodes)))) @ path.nodes; 
+                cost = 0.0;
+              };
+            }
+          }
+      | None -> start)
+      end
+    else begin
+      { start with
+        mode_combat = {
+          on_off = false;
+          tour = 0;
+          text = [];
+          path = a_star tiles (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y);
+        }
+      }
+    end
+  | None ->
+    start *)
+  let (start_x, start_y) = get_entity_position start in
+  let (goal_x, goal_y) = get_entity_position goal in
+  { start with
+    path = a_star tiles (int_of_float start_x, int_of_float start_y) (int_of_float goal_x, int_of_float goal_y);
+  }
+
+(**
+  Set the entity target position with direction
+  @param dir: direction
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_target_with_direction (dir : direction) (entity: pokemon) =
+  let (target_x, target_y) = get_entity_target entity in
+  match dir with
+  | Up -> set_entity_target (target_x) (target_y -. 1.0) entity
+  | Down -> set_entity_target (target_x) (target_y +. 1.0) entity
+  | Left -> set_entity_target (target_x -. 1.0) (target_y) entity
+  | Right -> set_entity_target (target_x +. 1.0) (target_y) entity
+  | DiagonalUpLeft -> set_entity_target (target_x -. 1.0) (target_y -. 1.0) entity
+  | DiagonalUpRight -> set_entity_target (target_x +. 1.0) (target_y -. 1.0) entity
+  | DiagonalDownLeft -> set_entity_target (target_x -. 1.0) (target_y +. 1.0) entity
+  | DiagonalDownRight -> set_entity_target (target_x +. 1.0) (target_y +. 1.0) entity
+  | No_move -> entity
+
+(**
+  Add a competence to the entity
+  @param competence: competence
+  @param entity: pokemon
+  @return entity
+*)
+let add_competence (competence: competence) (entity: pokemon) =
+  let new_competence = competence :: entity.competence in
+  {entity with competence = new_competence}
+
+(**
+  Set the i th competence of the entity
+  @param i: int
+  @param puissance: int
+  @param entity: pokemon
+  @return entity
+*)
+let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) =
+  if i < 0 || i >= List.length entity.competence then
+    raise (Invalid_argument "Index out of bounds")
+  else
+    let new_competence = List.mapi (fun j c -> if j = i then {c with puissance = puissance} else c) entity.competence in
+    {entity with competence = new_competence}
+
+(**
+  Set the entity path
+  @param entity: pokemon
+  @param map: map
+  @param player: pokemon
+  @return entity
+*)
 let set_entity_path (entity: pokemon) (map: map) (player: pokemon) =
   if entity.your_turn && not(entity.moving) then
     update_a_star map.tiles entity player
   else
     entity
-
-let set_your_turn (your_turn: bool) (entity: pokemon) =
-  {entity with your_turn = your_turn}
-
-let set_entity_step_cpt (step_cpt: int) (entity: pokemon) =
-  {entity with step_cpt = step_cpt}
-
-let set_entity_speed (speed: float) (entity: pokemon) =
-  {entity with speed = speed}
-
-let set_entity_current_hp (current_hp: int) (entity: pokemon) =
-  {entity with current_hp = current_hp}
-
 
 (**
   Add an item to the entity bag
@@ -164,40 +270,121 @@ let add_item_bag (item: loot) (entity: pokemon) =
   set_entity_bag new_bag entity
 
 (**
+  Set the item usable
+  @param index: int
+  @param usable: bool
+  @param entity: pokemon
+  @return entity
+*)
+let set_usable_item_bag (index : int) (usable: bool) (entity: pokemon) =
+  if index < 0 || index >= List.length entity.bag.items then
+    raise (Invalid_argument "Item not found in bag")
+  else
+    let bag = entity.bag in
+    let new_items = 
+      let rec aux i acc lst =
+        match lst with
+        | [] -> List.rev acc
+        | x :: xs ->
+          if i = index then List.rev_append acc ((set_item_usable x usable ) :: xs)
+          else aux (i + 1) (x :: acc) xs
+      in
+      aux 0 [] bag.items
+    in
+    let new_bag = {items = new_items; max_size = bag.max_size} in
+    { entity with bag = new_bag }
+
+(**
+  Get the i th item in the entity bag
+  @param i: int
+  @param entity: pokemon
+  @return item
+*)
+let get_i_item_bag (i: int) (entity: pokemon) =
+  if i < 0 || i >= List.length entity.bag.items then
+    raise (Invalid_argument "Item not found in bag")
+  else
+    List.nth entity.bag.items i
+
+(**
   Remove an item from the entity bag
   @param nth: int
   @param entity: pokemon
   @return entity
 *)
 let remove_item_bag (nth: int) (entity: pokemon) =
-  let bag = entity.bag in
-  let new_items = 
-    let rec aux i acc lst =
-      match lst with
-      | [] -> List.rev acc
-      | x :: xs ->
-        if i = nth then List.rev_append acc xs
-        else aux (i + 1) (x :: acc) xs
+  if nth < 0 || nth >= List.length entity.bag.items then
+    raise (Invalid_argument "Item not found in bag")
+  else
+    let bag = entity.bag in
+    let new_items = 
+      let rec aux i acc lst =
+        match lst with
+        | [] -> List.rev acc
+        | x :: xs ->
+          if i = nth then List.rev_append acc xs
+          else aux (i + 1) (x :: acc) xs
+      in
+      aux 0 [] bag.items
     in
-    aux 0 [] bag.items
-  in
-  let new_bag = {items = new_items; max_size = bag.max_size} in
-  set_entity_bag new_bag entity
+    let new_bag = {items = new_items; max_size = bag.max_size} in
+    set_entity_bag new_bag entity
 
 (**
-  [is_objstacle map entity] checks if the entity is facing a wall.
+  [is_enemy_at_target target_x target_y enemys] checks if there is an enemy at the target position.
+  @param target_x The x coordinate of the target position.
+  @param target_y The y coordinate of the target position.
+  @param enemys The list of enemies.
+  @return True if there is an enemy at the target position, false otherwise.
+*)
+let is_enemy_at_target (target_x: int) (target_y: int) (enemys: pokemon list) =
+  List.exists (
+    fun (e: pokemon) -> 
+      let (e_pos_x, e_pos_y) = get_entity_position e in
+      int_of_float e_pos_x = target_x && int_of_float e_pos_y = target_y
+  ) enemys
+
+(**
+  [is_wall_at_target target_x target_y tiles] checks if there is a wall at the target position.
+  @param target_x The x coordinate of the target position.
+  @param target_y The y coordinate of the target position.
+  @param tiles The list of tiles.
+  @return True if there is a wall at the target position, false otherwise.
+*)
+let is_wall_at_target (target_x: int) (target_y: int) (tiles: tile list) =
+  not (List.exists (
+    fun tile -> tile.x = target_x && tile.y = target_y && tile.texture_id = 1
+  ) tiles)
+
+(**
+  [is_targeted_by_enemy target_x target_y enemys] checks if the target position is targeted by an enemy.
+  @param target_x The x coordinate of the target position.
+  @param target_y The y coordinate of the target position.
+  @param enemys The list of enemies.
+  @return True if the target position is targeted by an enemy, false otherwise.
+*)
+let is_targeted_by_enemy (target_x: int) (target_y: int) (enemys: pokemon list) =
+  List.exists (
+    fun (e: pokemon) ->
+      let (e_target_x, e_target_y) = get_entity_target e in
+      int_of_float e_target_x = target_x && int_of_float e_target_y = target_y
+  ) enemys
+
+(**
+  [is_obstacle map entity enemys] checks if the entity is facing an obstacle.
   @param map The map.
   @param entity The entity.
-  @param enemy The enemy.
-  @return True if the entity is facing a wall, false otherwise.
+  @param enemys The list of enemies.
+  @return True if the entity is facing an obstacle, false otherwise.
 *)
-let is_obstacle map (entity: pokemon) (enemy: pokemon list) =
+let is_obstacle map (entity: pokemon) (enemys: pokemon list) =
   let tiles = map.tiles in
-  let target_x = int_of_float entity.target_x in
-  let target_y = int_of_float entity.target_y in
-  List.exists (fun (e: pokemon) -> int_of_float e.pos_x = target_x && int_of_float e.pos_y = target_y) enemy ||
-  not (List.exists (fun tile -> tile.x = target_x && tile.y = target_y && tile.texture_id = 1) tiles) ||
-  List.exists (fun (e: pokemon) -> int_of_float e.target_x = target_x && int_of_float e.target_y = target_y) enemy
+  let (target_x, target_y) = get_entity_target entity in
+  let target_x = int_of_float target_x in
+  let target_y = int_of_float target_y in
+  is_enemy_at_target target_x target_y enemys ||
+  is_wall_at_target target_x target_y tiles ||
+  is_targeted_by_enemy target_x target_y enemys
 
 (**
   [move direction entity key_pressed] moves the entity in the given direction.
@@ -210,7 +397,7 @@ let move direction (entity: pokemon) key_pressed _in_range =
   if key_pressed && not _in_range && entity.action <> OpenBag && entity.action <> PickUp && not(entity.moving) && entity.your_turn then begin
     let new_entity = 
       entity
-      |> set_entity_target direction
+      |> set_entity_target_with_direction direction
       |> set_entity_direction direction
       |> set_entity_moving true
       |> set_entity_state Moving
@@ -219,7 +406,6 @@ let move direction (entity: pokemon) key_pressed _in_range =
   end else if _in_range && key_pressed && entity.your_turn then
     let new_entity = 
     entity
-    |> set_entity_target No_move
     |> set_entity_direction direction
     |> set_entity_state Idle
     |> set_entity_action Attack
@@ -229,6 +415,13 @@ let move direction (entity: pokemon) key_pressed _in_range =
   else
     entity
 
+(**
+  [action_player action entity key_pressed] sets the action of the entity.
+  @param action The action.
+  @param entity The entity.
+  @param key_pressed True if a key is pressed, false otherwise.
+  @return The updated entity.
+*)
 let action_player action (entity: pokemon) key_pressed =
   if key_pressed && entity.your_turn then
     match action with
@@ -252,8 +445,10 @@ let action_player action (entity: pokemon) key_pressed =
   @param entity The pokemon.
   @return The updated pokemon.
 *)
-let is_end_moving (entity: pokemon) (_target: pokemon) (_map: map) =
-  if entity.pos_x = entity.target_x && entity.pos_y = entity.target_y && entity.moving then 
+let is_end_moving (entity: pokemon) =
+  let (pos_x, pos_y) = get_entity_position entity in
+  let (target_x, target_y) = get_entity_target entity in
+  if pos_x = target_x && pos_y = target_y && entity.moving then 
     (entity
     |> set_entity_moving false
     |> set_entity_action Nothing,
@@ -263,22 +458,21 @@ let is_end_moving (entity: pokemon) (_target: pokemon) (_map: map) =
 
 (**
   [new_entity_pos map entity last_update_time] updates the entity position.
-  @param map The map.
   @param entity The entity.
-  @param enemy The enemy.
   @param last_update_time The last time the entity position was updated.
   @return The updated entity and the last time the entity position was updated.
 *)
-let new_entity_pos _map entity (_enemy: pokemon list) last_update_time =
+let new_entity_pos entity last_update_time =
   let current_time = get_time () in
   
   (* Check if the entity is facing a wall *)
   let new_entity = 
+    let (pos_x, pos_y) = get_entity_position entity in
     if entity.step_cpt > 0 && current_time -. last_update_time >= 3.0 then
       entity
       |> set_entity_step_cpt (entity.step_cpt - 1)
       |> set_entity_moving false
-      |> set_entity_target_pos (floor entity.pos_x) (floor entity.pos_y)
+      |> set_entity_target (floor pos_x) (floor pos_y)
     else
       entity
   in
@@ -294,16 +488,18 @@ let new_entity_pos _map entity (_enemy: pokemon list) last_update_time =
   (* new_entity *)
 
   if current_time -. last_update_time >= 0.01 && new_entity.moving && new_entity.step_cpt = 0 then
-    let dx = new_entity.target_x -. new_entity.pos_x in
-    let dy = new_entity.target_y -. new_entity.pos_y in
+    let (new_pos_x, new_pos_y) = get_entity_position new_entity in
+    let (new_target_x, new_target_y) = get_entity_target new_entity in
+    let dx = new_target_x -. new_pos_x in
+    let dy = new_target_y -. new_pos_y in
     let step = 0.05 in
-    let new_x = if abs_float dx < step then new_entity.target_x else new_entity.pos_x +. (if dx > 0.0 then step else -.step) in
-    let new_y = if abs_float dy < step then new_entity.target_y else new_entity.pos_y +. (if dy > 0.0 then step else -.step) in
+    let new_x = if abs_float dx < step then new_target_x else new_pos_x +. (if dx > 0.0 then step else -.step) in
+    let new_y = if abs_float dy < step then new_target_y else new_pos_y +. (if dy > 0.0 then step else -.step) in
     (* Printf.printf "Entity %d pos_x: %f pos_y: %f target_x: %f target_y: %f\n%!" new_entity.id new_entity.pos_x new_entity.pos_y new_entity.target_x new_entity.target_y; *)
     (* Printf.printf "new_x: %f new_y: %f\n\n%!" new_x new_y; *)
     let new_entity = 
         new_entity
-        |> set_entity_pos new_x new_y
+        |> set_entity_position new_x new_y
     in
     (new_entity, current_time)
   else
@@ -314,19 +510,21 @@ let new_entity_pos_pre_check map entity enemy last_update_time =
   if entity.direction != No_move && entity.moving then
     let obstacle = is_obstacle map entity enemy in
       if obstacle then
+        let (pos_x, pos_y) = get_entity_position entity in
         let new_entity = 
           entity
           |> set_entity_moving false
-          |> set_entity_target_pos (floor entity.pos_x) (floor entity.pos_y)
+          |> set_entity_target (floor pos_x) (floor pos_y)
         in
-        (new_entity_pos map new_entity enemy last_update_time), false
+        (new_entity_pos new_entity last_update_time), false
       else
+        let (target_x, target_y) = get_entity_target entity in
         let new_entity = 
           entity
           |> set_entity_moving true
-          |> set_entity_target_pos (floor entity.target_x) (floor entity.target_y)
+          |> set_entity_target (floor target_x) (floor target_y)
         in
-        (new_entity_pos map new_entity enemy last_update_time), true
+        (new_entity_pos new_entity last_update_time), true
   else
     (entity, last_update_time), false
         
@@ -383,16 +581,17 @@ let set_enemys_action action (entitys: pokemon list) =
   ) entitys
 
 let player_get_target (player: pokemon) =
+  let (pos_x, pos_y) = get_entity_position player in
   match player.direction with
-  | Up -> (player.pos_x, player.pos_y -. 1.0)
-  | Down -> (player.pos_x, player.pos_y +. 1.0)
-  | Left -> (player.pos_x -. 1.0, player.pos_y)
-  | Right -> (player.pos_x +. 1.0, player.pos_y)
-  | DiagonalUpLeft -> (player.pos_x -. 1.0, player.pos_y -. 1.0)
-  | DiagonalUpRight -> (player.pos_x +. 1.0, player.pos_y -. 1.0)
-  | DiagonalDownLeft -> (player.pos_x -. 1.0, player.pos_y +. 1.0)
-  | DiagonalDownRight -> (player.pos_x +. 1.0, player.pos_y +. 1.0)
-  | No_move -> (player.pos_x, player.pos_y)
+  | Up -> (pos_x, pos_y -. 1.0)
+  | Down -> (pos_x, pos_y +. 1.0)
+  | Left -> (pos_x -. 1.0, pos_y)
+  | Right -> (pos_x +. 1.0, pos_y)
+  | DiagonalUpLeft -> (pos_x -. 1.0, pos_y -. 1.0)
+  | DiagonalUpRight -> (pos_x +. 1.0, pos_y -. 1.0)
+  | DiagonalDownLeft -> (pos_x -. 1.0, pos_y +. 1.0)
+  | DiagonalDownRight -> (pos_x +. 1.0, pos_y +. 1.0)
+  | No_move -> (pos_x, pos_y)
   
 let player_attack (player: pokemon) (enemy: pokemon list) =
   if player.action = Attack && player.your_turn && not(player.moving) then begin
@@ -401,7 +600,8 @@ let player_attack (player: pokemon) (enemy: pokemon list) =
       match enemy with
       | [] -> (player |> set_entity_action Nothing, acc, true, msg)
       | e :: rest ->
-        if int_of_float e.pos_x = int_of_float target_x && int_of_float e.pos_y = int_of_float target_y then begin
+        let (e_pos_x, e_pos_y) = get_entity_position e in
+        if int_of_float e_pos_x = int_of_float target_x && int_of_float e_pos_y = int_of_float target_y then begin
           let degat = calcul_degats player e (List.nth player.competence 0) in
           let msg = Printf.sprintf "Entity id: %d Degat: %d on Cible: %d\n%!" player.id degat e.id in
           let new_enemy = {e with current_hp = e.current_hp - degat} in

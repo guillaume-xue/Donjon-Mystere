@@ -1,5 +1,6 @@
 open Raylib
 open Utils.Types
+open Models.EntityModel
 
 (**
   [draw_player player player_textures] draws the player on the screen.
@@ -8,7 +9,8 @@ open Utils.Types
 *)
 let draw_player player player_textures =
   let texture = List.nth player_textures (player.number * 40 + player.entity_textures_id) in
-  draw_texture texture (player.screen_x) (player.screen_y) Color.white
+  let (screen_x, screen_y) = get_entity_screen player in
+  draw_texture texture screen_x screen_y Color.white
 
 (**
   [draw_player_stats player] draws the player's stats on the screen.

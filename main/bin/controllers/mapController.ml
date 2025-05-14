@@ -168,15 +168,16 @@ let check_pickup_item (player: pokemon) (items: loot list) =
         else
           aux x y rest
     in
+    let (pos_x, pos_y) = get_entity_position player in
     match player.direction with
     | Up -> 
-        aux player.pos_x (player.pos_y -. 1.0) items
+        aux pos_x (pos_y -. 1.0) items
     | Down -> 
-        aux player.pos_x (player.pos_y +. 1.0) items
+        aux pos_x (pos_y +. 1.0) items
     | Left -> 
-        aux (player.pos_x -. 1.0) player.pos_y items
+        aux (pos_x -. 1.0) pos_y items
     | Right -> 
-        aux (player.pos_x +. 1.0) player.pos_y items
+        aux (pos_x +. 1.0) pos_y items
     | _ -> (player, items)
   end else
     (player, items)
@@ -205,13 +206,15 @@ let update_player player enemy map select items trap_and_ground last_time =
   let (player, last_texture_update_time) = increment_texture_id player (List.nth last_time 1) in
   let last_time = replace_nth last_time 1 last_texture_update_time in
 
-  let (player, _action3) = is_end_moving player player map in
+  let (player, _action3) = is_end_moving player in
   let (enter, nb_select) = check_key_pressed_bag player select in
   let player = 
     if enter then 
-      player
-      |> remove_item_bag select
-      |> set_entity_action Nothing
+      try 
+        player
+        |> remove_item_bag select
+        |> set_entity_action Nothing
+      with _ -> player
     else 
       player 
   in
@@ -246,7 +249,7 @@ let update_enemy enemy other map last_time =
   let (enemy, last_texture_update_time) = increment_texture_id enemy (List.nth last_time (enemy.id * 2 + 1)) in
   let last_time = replace_nth last_time (enemy.id * 2 + 1) last_texture_update_time in
 
-  let (enemy, _action3) = is_end_moving enemy player map in
+  let (enemy, _action3) = is_end_moving enemy in
   (* Printf.printf "action1: %b, action2: %b, action3: %b\n%!" _action1 _action2 _action3; *)
   (* Printf.printf "enemy: %d, player: %d posx %f posy %f\n%!" enemy.id player.id enemy.pos_x enemy.pos_y; *)
 

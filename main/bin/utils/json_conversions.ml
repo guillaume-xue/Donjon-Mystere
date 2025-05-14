@@ -35,13 +35,15 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     id = player_json |> member "id" |> to_int;
     last_id = player_json |> member "last_id" |> to_int;
     number = player_json |> member "number" |> to_int;
-    pos_x = player_json |> member "pos_x" |> to_float;
-    pos_y = player_json |> member "pos_y" |> to_float;
-    screen_x = player_json |> member "screen_x" |> to_int;
-    screen_y = player_json |> member "screen_y" |> to_int;
+    position = { 
+      world_x = player_json |> member "position" |> member "world_x" |> to_float;
+      world_y = player_json |> member "position" |> member "world_y" |> to_float;
+      screen_x = player_json |> member "position" |> member "screen_x" |> to_int;
+      screen_y = player_json |> member "position" |> member "screen_y" |> to_int;
+      target_x = player_json |> member "position" |> member "target_x" |> to_float;
+      target_y = player_json |> member "position" |> member "target_y" |> to_float;
+    };
     entity_textures_id = 0;
-    target_x = player_json |> member "target_x" |> to_float;
-    target_y = player_json |> member "target_y" |> to_float;
     moving = false;
     state = Idle;
     direction = Down;
@@ -109,13 +111,15 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       id = enemy_json |> member "id" |> to_int;
       last_id = enemy_json |> member "last_id" |> to_int;
       number = enemy_json |> member "number" |> to_int;
-      pos_x = enemy_json |> member "pos_x" |> to_float;
-      pos_y = enemy_json |> member "pos_y" |> to_float;
-      screen_x = enemy_json |> member "screen_x" |> to_int;
-      screen_y = enemy_json |> member "screen_y" |> to_int;
+      position = { 
+        world_x = enemy_json |> member "position" |> member "world_x" |> to_float;
+        world_y = enemy_json |> member "position" |> member "world_y" |> to_float;
+        screen_x = enemy_json |> member "position" |> member "screen_x" |> to_int;
+        screen_y = enemy_json |> member "position" |> member "screen_y" |> to_int;
+        target_x = enemy_json |> member "position" |> member "target_x" |> to_float;
+        target_y = enemy_json |> member "position" |> member "target_y" |> to_float;
+      };
       entity_textures_id = 0;
-      target_x = enemy_json |> member "target_x" |> to_float;
-      target_y = enemy_json |> member "target_y" |> to_float;
       moving = false;
       state = Idle;
       direction = Down;
@@ -295,6 +299,16 @@ let competences_to_json (competences: competence list) =
   `List (List.map competence_to_json competences)
 
 
+let position_to_json (position: position) =
+  `Assoc [
+    ("world_x", `Float position.world_x);
+    ("world_y", `Float position.world_y);
+    ("screen_x", `Int position.screen_x);
+    ("screen_y", `Int position.screen_y);
+    ("target_x", `Float position.target_x);
+    ("target_y", `Float position.target_y)
+  ]
+
 (**
   [pokemon_to_yojson player] converts a player to a JSON representation.
   @param player The player to convert.
@@ -317,13 +331,8 @@ let pokemon_to_yojson (player: pokemon) =
     ("id", `Int player.id);
     ("last_id", `Int player.last_id);
     ("number", `Int player.number);
-    ("pos_x", `Float player.pos_x);
-    ("pos_y", `Float player.pos_y);
-    ("screen_x", `Int player.screen_x);
-    ("screen_y", `Int player.screen_y);
+    ("position", position_to_json player.position);
     ("entity_textures_id", `Int player.entity_textures_id);
-    ("target_x", `Float player.target_x);
-    ("target_y", `Float player.target_y);
     ("current_hp", `Int player.current_hp);
     ("max_hp", `Int player.max_hp);
     ("level", `Int player.level);

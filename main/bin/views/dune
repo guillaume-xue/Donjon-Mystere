@@ -1,7 +1,7 @@
 (library
  (name views)
  (public_name main.views)
- (libraries raylib ctypes main.utils)
+ (libraries raylib ctypes main.utils main.models)
  (modules
   menuView
   mapView
