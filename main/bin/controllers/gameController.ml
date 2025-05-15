@@ -3,6 +3,7 @@ open Utils.Types
 open Utils.Json_conversions
 open Utils.Settings_map
 open Utils.Audio
+open Models.Game_state
 open MenuController
 open MapController
 
@@ -22,10 +23,10 @@ let run () =
 
   (* Game loop *)
   let rec game_loop var_game last_time name msgs = 
-    let (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, my_player, enemy, loots, traps_and_grounds, select) = var_game in
+    let (game_textures, game_states) = var_game in
     if window_should_close () then begin
       stop_music ();
-      save_game name my_map my_player enemy loots traps_and_grounds;
+      save_game name game_states;
       close_window ()
     end else
       begin
@@ -66,32 +67,31 @@ let run () =
             end in *)
 
         let player =
-        if List.for_all (fun e -> not e.your_turn) enemy && not my_player.your_turn then
-          set_your_turn true my_player
-        else
-          my_player in
+          if List.for_all (fun e -> not e.your_turn) game_states.enemies_state && not game_states.player_state.your_turn then
+            set_your_turn true game_states.player_state
+          else
+            game_states.player_state 
+        in
+        let game_states = set_game_state_player player game_states in
+        let (game_states, last_time) = update_player game_states last_time in
 
-
-        let (player, select, loots, enemy, traps_and_grounds, last_time, msg) = update_player player enemy my_map select loots traps_and_grounds last_time in
-        let msgs = add_msg msg msgs in
-
-        let rec aux player enemy (other:pokemon list) map last_time msgs =
+        let rec aux player enemy (other: pokemon list) map last_time game_states =
           match enemy with
-          | [] -> (other, last_time, msgs)
+          | [] -> (other, last_time, game_states)
           | e :: rest ->
             if e.your_turn then begin
               let (enemy, player, last_time, msg) = update_enemy e (player :: rest) map last_time in
-              let msgs = add_msg msg msgs in
-              aux player rest (enemy :: other) map last_time msgs
+              let game_states = add_game_state_msg msg game_states in
+              aux player rest (enemy :: other) map last_time game_states
             end else begin
-              aux player rest (e :: other) map last_time msgs
-            end in
-
-
-        let (enemy, last_time, msgs) = aux player enemy [] my_map last_time msgs in
-        let grid_shadow_cast = update_shadow_cast player my_map in
-        draw_game my_map player enemy loots grid_shadow_cast traps_and_grounds map_textures entity_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures attack_msg_textures select msgs;
-        game_loop (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, player, enemy, loots, traps_and_grounds, select) last_time name msgs
+              aux player rest (e :: other) map last_time game_states
+            end 
+        in
+        let (enemy, last_time, game_states) = aux game_states.player_state game_states.enemies_state [] game_states.map_state last_time game_states in
+        let game_states = set_game_state_enemy enemy game_states in
+        let grid_shadow_cast = update_shadow_cast game_states.player_state game_states.map_state in
+        draw_game game_states game_textures grid_shadow_cast;
+        game_loop (game_textures, game_states) last_time name msgs
       end
   in
 
@@ -105,14 +105,14 @@ let run () =
     else
       if screen_state = Game then
         begin          
-          let (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, my_player, enemy, loots, traps_and_grounds) = init_map_controller map_name in
+          let (game_textures, game_states) = init_map_controller map_name in
           init_audio ();
-          (match my_map.music with
+          (match  game_states.map_state.music with
           | Some file -> play_music file
           | None -> ());
-          let list_of_last_time = List.init (7 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
+          let list_of_last_time = List.init (7 + ((List.length(game_states.enemies_state))*2)) (fun _ -> 0.0) in (* Use for animations *)
           let msgs = [] in
-          game_loop (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, my_player, enemy, loots, traps_and_grounds, 0) list_of_last_time map_name msgs;
+          game_loop (game_textures, game_states) list_of_last_time map_name msgs;
         end
       else
         begin

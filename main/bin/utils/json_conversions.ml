@@ -72,6 +72,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
         }
       );
       max_size = player_json |> member "bag" |> member "max_size" |> to_int;
+      selected_item = 0;
     };
     step_cpt = player_json |> member "step_cpt" |> to_int;
     speed = player_json |> member "speed" |> to_float;
@@ -148,6 +149,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
           }
         );
         max_size = enemy_json |> member "bag" |> member "max_size" |> to_int;
+        selected_item = 0;
       };
       step_cpt = enemy_json |> member "step_cpt" |> to_int;
       speed = enemy_json |> member "speed" |> to_float;

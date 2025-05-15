@@ -75,7 +75,7 @@ let spawn_player map num_pokemon =
     current_xp = 0;
     max_xp = neededXp 5;
     action = Nothing;
-    bag = { items = []; max_size = 10 };
+    bag = { items = []; max_size = 10 ; selected_item = 0};
     step_cpt = 0;
     speed = 1.0;
     
@@ -94,7 +94,7 @@ let spawn_player map num_pokemon =
   @param map La carte sur laquelle les ennemis doivent être générés.
   @return La liste d'ennemis générée.
 *)
-let spawn_list_of_enemys map (player: pokemon) =
+let spawn_list_of_enemys (map: map) (player: pokemon) =
   let rec aux regions acc cpt =
     match regions with
     | [] -> acc, cpt
@@ -133,7 +133,7 @@ let spawn_list_of_enemys map (player: pokemon) =
           current_xp = 0;
           max_xp = 0;
           action = Nothing;
-          bag = { items = []; max_size = 5 };
+          bag = { items = []; max_size = 5 ; selected_item = 0};
           step_cpt = 0;
           speed = 1.0;
           attaque = att;

@@ -18,7 +18,7 @@ let empty_entity () =
     current_xp = 0;
     max_xp = 0;
     action = Nothing;
-    bag = { items = []; max_size = 5 };
+    bag = { items = []; max_size = 5 ; selected_item = 0};
     step_cpt  = 0;
     speed  = 0.0;
     attaque  = 0;

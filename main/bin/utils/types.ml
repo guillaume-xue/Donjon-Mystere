@@ -86,6 +86,38 @@ type screenState =
   | ChoosePokemon
   | Game
 
+(**
+  Type [bag_textures] représentant les textures du sac à dos.
+  @param bag_background_tex Texture de fond du sac.
+  @param square_tex Texture du carré.
+  @param items_tex Liste des textures des objets.
+*)
+type bag_textures = {
+  bag_background_tex: Raylib.Texture.t option;
+  square_tex: Raylib.Texture.t option;
+  items_tex: Raylib.Texture.t list;
+}
+
+(**
+  Type [game_textures] représentant les textures du jeu.
+  @param tiles_tex Liste des textures des tuiles.
+  @param entities_tex Liste des textures des entités.
+  @param items_tex Liste des textures des objets.
+  @param bag_tex Textures du sac à dos.
+  @param shadow_cast_tex Liste des textures de l'ombre projetée.
+  @param traps_and_grounds_tex Liste des textures des pièges et du sol.
+  @param attack_msg_tex Texture du message
+*)
+type game_textures = {
+  tiles_tex: Raylib.Texture.t list;
+  entities_tex: Raylib.Texture.t list;
+  items_tex: Raylib.Texture.t list;
+  bag_tex: bag_textures;
+  shadow_cast_tex: Raylib.Texture.t list;
+  traps_and_grounds_tex: Raylib.Texture.t list;
+  attack_msg_tex: Raylib.Texture.t option;
+}
+
 (** 
   Type [tile] représente une tuile de la carte.
 
@@ -201,6 +233,7 @@ type competence = {
 type bag = {
   items: loot list;
   max_size: int;
+  selected_item: int;
 }
 
 type position = {
@@ -261,6 +294,15 @@ type pokemon = {
 type entity = 
   | Player of pokemon
   | Enemy of pokemon
+
+type game_state = {
+  map_state: map;
+  player_state: pokemon;
+  enemies_state: pokemon list;
+  loots_state: loot list;
+  traps_and_grounds_state: trap_and_ground list;
+  msgs_state: string list;
+}
 
 (** 
   Module implémentant une file de priorité simple en utilisant une liste de paires (valeur, priorité). 

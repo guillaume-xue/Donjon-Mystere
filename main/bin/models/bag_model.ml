@@ -13,7 +13,7 @@ let set_usable_item_bag (index : int) (usable: bool) (entity: pokemon) =
     in
     aux 0 [] bag.items
   in
-  let new_bag = {items = new_items; max_size = bag.max_size} in
+  let new_bag = {items = new_items; max_size = bag.max_size; selected_item = bag.selected_item} in
   {
     entity with
     bag = new_bag
