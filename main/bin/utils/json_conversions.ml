@@ -32,6 +32,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
   } in
 
   let player = {
+    nom = player_json |> member "nom" |> to_string;
     id = player_json |> member "id" |> to_int;
     last_id = player_json |> member "last_id" |> to_int;
     number = player_json |> member "number" |> to_int;
@@ -81,6 +82,10 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       | "Eau" -> Eau
       | "Plante" -> Plante
       | "Normal" -> Normal
+      | "Electrique" -> Electrique
+      | "Psy" -> Psy
+      | "Tenebre" -> Tenebre
+      | "Glace" -> Glace
       | _ -> failwith "Unknown element");
     competence = player_json |> member "competence" |> to_list |> List.map (fun competence_json ->
       {
@@ -92,6 +97,10 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
           | "Eau" -> Eau
           | "Plante" -> Plante
           | "Normal" -> Normal
+          | "Electrique" -> Electrique
+          | "Psy" -> Psy
+          | "Tenebre" -> Tenebre
+          | "Glace" -> Glace
           | _ -> failwith "Unknown element");
         puissance = competence_json |> member "puissance" |> to_int;
         precision = competence_json |> member "precision" |> to_int;
@@ -108,6 +117,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
     {
+      nom = enemy_json |> member "nom" |> to_string;
       id = enemy_json |> member "id" |> to_int;
       last_id = enemy_json |> member "last_id" |> to_int;
       number = enemy_json |> member "number" |> to_int;
@@ -156,6 +166,10 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
         | "Eau" -> Eau
         | "Plante" -> Plante
         | "Normal" -> Normal
+        | "Electrique" -> Electrique
+        | "Psy" -> Psy
+        | "Tenebre" -> Tenebre
+        | "Glace" -> Glace
         | _ -> failwith "Unknown element");
       competence = enemy_json |> member "competence" |> to_list |> List.map (fun competence_json ->
         {
@@ -167,6 +181,10 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
             | "Eau" -> Eau
             | "Plante" -> Plante
             | "Normal" -> Normal
+            | "Electrique" -> Electrique
+            | "Psy" -> Psy
+            | "Tenebre" -> Tenebre
+            | "Glace" -> Glace
             | _ -> failwith "Unknown element");
           puissance = competence_json |> member "puissance" |> to_int;
           precision = competence_json |> member "precision" |> to_int;
@@ -272,13 +290,17 @@ let bag_to_yojson bag =
     ("max_size", `Int bag.max_size)
   ]
 
-  let element_to_json (element: element) =
-    `String (match element with
-      | Feu -> "Feu"
-      | Eau -> "Eau"
-      | Plante -> "Plante"
-      | Normal -> "Normal"
-    )
+let element_to_json (element: element) =
+  `String (match element with
+    | Feu -> "Feu"
+    | Eau -> "Eau"
+    | Plante -> "Plante"
+    | Normal -> "Normal"
+    | Electrique -> "Electrique"
+    | Psy -> "Psy"
+    | Tenebre -> "Tenebre"
+    | Glace -> "Glace"
+  )
   
 let competence_to_json (competence: competence) =
   `Assoc [
@@ -328,6 +350,7 @@ let position_to_json (position: position) =
 *)
 let pokemon_to_yojson (player: pokemon) =
   `Assoc [
+    ("nom", `String player.nom);
     ("id", `Int player.id);
     ("last_id", `Int player.last_id);
     ("number", `Int player.number);
@@ -345,12 +368,7 @@ let pokemon_to_yojson (player: pokemon) =
     ("defense", `Int player.defense);
     ("attaque_speciale", `Int player.attaque_speciale);
     ("defense_speciale", `Int player.defense_speciale);
-    ("element", `String (match player.element with
-      | Feu -> "Feu"
-      | Eau -> "Eau"
-      | Plante -> "Plante"
-      | Normal -> "Normal"
-    ));
+    ("element", element_to_json player.element);
     ("competence", competences_to_json player.competence);
     ("path", `List (List.map (fun (x, y) -> `List [`Int x; `Int y]) player.path));
     ("your_turn", `Bool player.your_turn);

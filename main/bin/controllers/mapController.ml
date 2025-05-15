@@ -223,7 +223,7 @@ let update_player player enemy map select items trap_and_ground last_time =
   let player = if (_action2 && _action3) || _action1 then set_your_turn false player else player in
   let enemy = if (_action2 && _action3) || _action1 then List.map (fun e -> set_your_turn true e) enemy else enemy in
 
-  (player, nb_select, items, enemy, trap_and_ground, last_time, msg_res)
+  (player, nb_select, items, enemy, trap_and_ground, last_time, msg_res, map)
 
 (**
   [update_enemy enemies player map key_pressed last_time] updates the enemy.
@@ -234,27 +234,20 @@ let update_player player enemy map select items trap_and_ground last_time =
   @param last_time The last time.
   @return The updated enemy.
 *)
-let update_enemy enemy other map last_time =
-  let other = List.sort (fun e1 e2 -> compare e1.id e2.id) other in
-  let player = List.hd other in
+let update_enemy enemy player other map last_time =
   let enemy = set_entity_path enemy map player in
   let (enemy_target, in_range) = update_target_enemy enemy player in
   let enemy = move enemy_target enemy true in_range in
   let (enemy, players, _action1, msg) = player_attack enemy [player] in
   let player = List.hd players in
-  (* Printf.printf "enemy: %d, player: %d posx %f posy %f\n%!" enemy.id player.id enemy.pos_x enemy.pos_y; *)
-
-  let ((enemy, last_update_time), _action2) = new_entity_pos_pre_check map enemy other (List.nth last_time (enemy.id * 2)) in
+  let ((enemy, last_update_time), _action2) = new_entity_pos_pre_check map enemy (player::other) (List.nth last_time (enemy.id * 2)) in
   let last_time = replace_nth last_time (enemy.id * 2) last_update_time in
+
   let (enemy, last_texture_update_time) = increment_texture_id enemy (List.nth last_time (enemy.id * 2 + 1)) in
   let last_time = replace_nth last_time (enemy.id * 2 + 1) last_texture_update_time in
-
   let (enemy, _action3) = is_end_moving enemy in
-  (* Printf.printf "action1: %b, action2: %b, action3: %b\n%!" _action1 _action2 _action3; *)
-  (* Printf.printf "enemy: %d, player: %d posx %f posy %f\n%!" enemy.id player.id enemy.pos_x enemy.pos_y; *)
-
+  let enemy = if _action3 then pop_entity_path enemy else enemy in
   let enemy = if (_action3 && _action2) || _action1 || not _action2 then set_your_turn false enemy else enemy in
-  (* Printf.printf "is your turn enemy: %b\n%!" enemy.your_turn; *)
   (enemy, player, last_time, msg) 
 
 

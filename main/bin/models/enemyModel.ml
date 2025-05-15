@@ -3,6 +3,7 @@ open A_star
 open Entity_gen
 open EntityModel
 open Utils.Competences_data
+open Combat
 
 let random_direction () =
   match Random.int 4 with
@@ -14,14 +15,6 @@ let random_direction () =
 let auto_target (x1,y1) (x2,y2) =
   let dx = x2 - x1 in
   let dy = y2 - y1 in
-  (* if dx > 0 && dy > 0 then
-    DiagonalDownRight
-  else if dx < 0 && dy > 0 then
-    DiagonalDownLeft
-  else if dx > 0 && dy < 0 then
-    DiagonalUpRight
-  else if dx < 0 && dy < 0 then
-    DiagonalUpLeft *)
   if dx > 0 then
     Right
   else if dx < 0 then
@@ -45,14 +38,13 @@ let update_target_enemy enemy player =
       enemy.direction, false
 
 
-
-
 let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) =
   let lvl = randLvl player in
   let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
   let (p_pos_x, p_pos_y) = get_entity_position player in
   let random = (Random.int 8) + 3 in
   {
+    nom = List.nth nom_pokemon random;
     id = player.last_id;
     last_id = 0;
     number = random;
@@ -81,8 +73,8 @@ let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) =
     defense = def;
     attaque_speciale = att_sp;
     defense_speciale = def_sp;
-    element = Feu;
-    competence = [attaque_grosyeux()];
+    element = List.nth element_types (random-3);
+    competence = [attaque_charge(); List.nth competences (element_to_index (List.nth element_types (random-3)))];
     path = a_star [] (int_of_float pos_x, int_of_float pos_y) (int_of_float p_pos_x, int_of_float p_pos_y);
     your_turn = false;
   }, {player with last_id = player.last_id + 1}

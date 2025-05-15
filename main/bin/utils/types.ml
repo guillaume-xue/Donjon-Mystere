@@ -176,6 +176,10 @@ type element =
   | Eau
   | Plante
   | Normal
+  | Electrique
+  | Psy
+  | Tenebre
+  | Glace
 
 type attaqueType =
   | Attaque
@@ -224,6 +228,7 @@ type position = {
   @param max_xp Points d'expérience maximum du pokemon.
 *)
 type pokemon = {
+  nom: string;
   id: int;
   last_id: int;
   number: int;

@@ -119,7 +119,7 @@ let copy_map_add_marge tiles =
   new_map tiles 0 0 []
 
 (* Main *)
-let generation_map floor num_pokemon =
+let generation_map floor  =
   (* Trois en un, init -> auto cell -> supp petite zone *)
   let tiles_tmp1 = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
   (* Ajout de la marge *)
@@ -140,19 +140,29 @@ let generation_map floor num_pokemon =
     floor = floor; (* Initial floor *)
   } in
 
+  (* Affichage final *)
+  print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
+  map
+
+
+let create_new_floor floor player =
+  let map = generation_map floor in
+  let (player, zone_rand) = spawn_player_pos map player in
+  let trap_and_ground = spawn_list_of_trap_and_ground map zone_rand in
+  let (enemys, cpt) = spawn_list_of_enemys map player in
+  let player = { player with last_id = cpt } in
+  let items = spawn_list_of_loot map in
+  (map, player, trap_and_ground, enemys, items)
+
+let generation_entity map num_pokemon =
   (* Spawning du joueur *)
   let (player, zone_rand) = spawn_player map num_pokemon in
   let trap_and_ground = spawn_list_of_trap_and_ground map zone_rand in
   let (enemys, cpt) = spawn_list_of_enemys map player in
   let player = { player with last_id = cpt } in
   let items = spawn_list_of_loot map in
-
-  (* Affichage préliminaire avec l'automate cellulaire *)
-  (* print_grid tiles_tmp (map_size_x+map_marge*2) (map_size_y+map_marge*2); *)
-  
-  (* Affichage final *)
-  print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
   (map, player, trap_and_ground, enemys, items)
+
 
 (**
   [create_map_json filename] génère une carte et l'enregistre au format JSON dans un fichier.
@@ -160,9 +170,12 @@ let generation_map floor num_pokemon =
   @param filename Le nom du fichier (sans extension) dans lequel la carte sera enregistrée.
 *)
 let create_map_json filename num_pokemon =
+  let map = generation_map 0 in
   (* Génération de la map *)
-  let (map, player, trap_and_ground, enemys, items) = generation_map 0 num_pokemon in
+  let (map, player, trap_and_ground, enemys, items) = generation_entity map num_pokemon in
   (* Sérialisation en JSON *)
   let json = map_player_to_json map player enemys items trap_and_ground in
   (* Écriture dans un fichier *)
   write_json_to_file (map_dir ^ filename ^ ".json") json;
+
+
