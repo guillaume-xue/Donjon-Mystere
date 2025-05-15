@@ -43,6 +43,14 @@ type trap_and_ground_type =
   | Summon_Switch         (* Causes several wild Pokémon to appear. Trap disappears afterwards *)
   | Warp_Trap             (* Warps to another part of the floor *)
 
+(** 
+  Type [trap_and_ground] représentant un piège ou un sol.
+
+  @param nature Type du piège.
+  @param tag_pos_x Position x de la tuile.
+  @param tag_pos_y Position y de la tuile.
+  @param visibility Visibilité du piège.
+ *)
 type trap_and_ground = {
   nature: trap_and_ground_type;
   tag_pos_x: int;
@@ -50,6 +58,14 @@ type trap_and_ground = {
   visibility : bool;
 }
 
+(**
+  Type [interaction] représentant une interaction.
+
+  @param Nothing Aucune interaction.
+  @param Attack Attaque.
+  @param PickUp Ramasser un objet.
+  @param OpenBag Ouvrir le sac.
+*)
 type interaction =
   | Nothing
   | Attack
@@ -92,6 +108,7 @@ type screenState =
   @param x Coordonnée x de la tuile.
   @param y Coordonnée y de la tuile.
   @param texture_id Identifiant de la texture associée à la tuile.
+  @param biome_id Identifiant du biome associé à la tuile.
 *)
 type tile = {
   x: int;
@@ -150,6 +167,7 @@ type arete = {
 
 (**
   Type [loot] représentant un loot.
+
   @param item_id Identifiant de l'objet.
   @param item_skin_id Identifiant de la texture associée à l'objet.
   @param quantity Quantité de l'objet.
@@ -158,6 +176,7 @@ type arete = {
   @param screen_x Position x du loot sur l'écran.
   @param screen_y Position y du loot sur l'écran.
   @param description Description de l'objet.
+  @param usable Booléen indiquant si l'objet est utilisable.
 *)
 type loot = {
   item_id: int;
@@ -171,6 +190,9 @@ type loot = {
   usable: bool;
 }
 
+(** 
+  Type [element] représentant un élément.
+*)
 type element = 
   | Feu
   | Eau
@@ -181,11 +203,25 @@ type element =
   | Tenebre
   | Glace
 
+(**
+  Type [attaqueType] représentant le type d'attaque
+*)
 type attaqueType =
   | Attaque
   | AttaqueSpeciale
   | Passive
 
+(**
+  Type [competence] représentant une compétence.
+
+  @param id Identifiant de la compétence.
+  @param name Nom de la compétence.
+  @param description Description de la compétence.
+  @param element Élément de la compétence.
+  @param puissance Puissance de la compétence.
+  @param precision Précision de la compétence.
+  @param attaqueType Type d'attaque de la compétence.
+*)
 type competence = {
   id: int;
   name: string;
@@ -198,6 +234,7 @@ type competence = {
 
 (**
   Type [bag] représentant un sac à dos.
+
   @param items Liste des objets dans le sac.
   @param max_size Taille maximum du sac.
 *)
@@ -206,6 +243,16 @@ type bag = {
   max_size: int;
 }
 
+(**
+  Type [position] représentant la position d'un pokemon.
+
+  @param world_x Coordonnée x dans le monde.
+  @param world_y Coordonnée y dans le monde.
+  @param screen_x Coordonnée x sur l'écran.
+  @param screen_y Coordonnée y sur l'écran.
+  @param target_x Coordonnée x cible.
+  @param target_y Coordonnée y cible.
+*)
 type position = {
   world_x : float;
   world_y : float;
@@ -217,6 +264,12 @@ type position = {
 
 (** 
   Type [pokemon] représentant un pokemon.
+
+  @param nom Nom du pokemon.
+  @param id Identifiant du pokemon.
+  @param last_id Dernier identifiant du pokemon.
+  @param number Numéro du pokemon (texture).
+  @param position Position du pokemon.
   @param entity_textures_id Identifiant de la texture associée au pokemon.
   @param moving Booléen indiquant si le pokemon est en mouvement.
   @param state État du pokemon.
@@ -226,6 +279,18 @@ type position = {
   @param level Niveau du pokemon.
   @param current_xp Points d'expérience actuels du pokemon.
   @param max_xp Points d'expérience maximum du pokemon.
+  @param action Action actuelle du pokemon.
+  @param bag Sac à dos du pokemon.
+  @param step_cpt Compteur de pas du pokemon.
+  @param speed Vitesse du pokemon.
+  @param attaque Attaque du pokemon.
+  @param defense Défense du pokemon.
+  @param attaque_speciale Attaque spéciale du pokemon.
+  @param defense_speciale Défense spéciale du pokemon.
+  @param element Élément du pokemon.
+  @param competence Liste des compétences du pokemon.
+  @param path Chemin du pokemon.
+  @param your_turn Booléen indiquant si c'est le tour du pokemon.
 *)
 type pokemon = {
   nom: string;

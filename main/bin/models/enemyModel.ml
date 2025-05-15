@@ -5,14 +5,26 @@ open EntityModel
 open Utils.Competences_data
 open Combat
 
-let random_direction () =
+(** 
+  [random_direction] retourne une direction aléatoire.
+
+  @return Une direction aléatoire.
+*)
+let random_direction () : direction =
   match Random.int 4 with
   | 0 -> Up
   | 1 -> Down
   | 2 -> Left
   | _ -> Right
 
-let auto_target (x1,y1) (x2,y2) =
+(** 
+  [auto_target] calcule la direction à prendre pour aller de (x1, y1) à (x2, y2).
+
+  @param (x1, y1) Position de départ.
+  @param (x2, y2) Position cible.
+  @return direction - La direction à prendre.
+*)
+let auto_target ((x1, y1): int * int) ((x2, y2): int * int) : direction =
   let dx = x2 - x1 in
   let dy = y2 - y1 in
   if dx > 0 then
@@ -25,7 +37,14 @@ let auto_target (x1,y1) (x2,y2) =
     Up
   else No_move
 
-let update_target_enemy enemy player =
+(** 
+  [update_target_enemy] met à jour la direction et l'état d'attaque d'un ennemi en fonction de la position du joueur.
+
+  @param enemy L'ennemi à mettre à jour.
+  @param player Le joueur cible.
+  @return direction * bool - La nouvelle direction et un booléen indiquant si l'ennemi est en position d'attaque.
+*)
+let update_target_enemy (enemy: pokemon) (player: pokemon) : direction * bool =
   if enemy.your_turn && not(enemy.moving) then
       let (e_pos_x, e_pos_y) = get_entity_position enemy in
       let (p_pos_x, p_pos_y) = get_entity_position player in
@@ -37,8 +56,15 @@ let update_target_enemy enemy player =
   else
       enemy.direction, false
 
-
-let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) =
+(** 
+  [create_enemy] crée un ennemi à une position donnée, basé sur le joueur.
+  
+  @param pos_x Position x de l'ennemi.
+  @param pos_y Position y de l'ennemi.
+  @param player Le joueur servant de référence pour le niveau.
+  @return pokemon * pokemon - L'ennemi créé et le joueur avec last_id mis à jour.
+*)
+let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) : pokemon * pokemon =
   let lvl = randLvl player in
   let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
   let (p_pos_x, p_pos_y) = get_entity_position player in

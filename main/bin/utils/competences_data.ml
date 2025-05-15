@@ -1,6 +1,10 @@
 open Types
 
-let attaque_charge() : competence = 
+(** 
+  [attaque_charge] retourne la compétence "Charge".
+  @return La compétence "Charge".
+*)
+let attaque_charge () : competence = 
   {
     id = 0;
     name = "Charge";
@@ -11,7 +15,11 @@ let attaque_charge() : competence =
     element = Normal;
   }
 
-let attaque_grosyeux() : competence = 
+(** 
+  [attaque_grosyeux] retourne la compétence "Gros Yeux".
+  @return La compétence "Gros Yeux".
+*)
+let attaque_grosyeux () : competence = 
   {
     id = 1;
     name = "Gros Yeux";
@@ -22,7 +30,11 @@ let attaque_grosyeux() : competence =
     element = Normal;
   }
 
-let pistolet_a_eau() : competence = 
+(** 
+  [pistolet_a_eau] retourne la compétence "Pistolet à Eau".
+  @return La compétence "Pistolet à Eau".
+*)
+let pistolet_a_eau () : competence = 
   {
     id = 2;
     name = "Pistolet à Eau";
@@ -33,7 +45,11 @@ let pistolet_a_eau() : competence =
     element = Eau;
   }
 
-let eclair() : competence = 
+(** 
+  [eclair] retourne la compétence "Éclair".
+  @return La compétence "Éclair".
+*)
+let eclair () : competence = 
   {
     id = 3;
     name = "Éclair";
@@ -44,7 +60,11 @@ let eclair() : competence =
     element = Electrique;
   }
 
-let flammeche() : competence = 
+(** 
+  [flammeche] retourne la compétence "Flammèche".
+  @return La compétence "Flammèche".
+*)
+let flammeche () : competence = 
   {
     id = 4;
     name = "Flammèche";
@@ -55,7 +75,11 @@ let flammeche() : competence =
     element = Feu;
   }
 
-let choc_mental() : competence = 
+(** 
+  [choc_mental] retourne la compétence "Choc Mental".
+  @return La compétence "Choc Mental".
+*)
+let choc_mental () : competence = 
   {
     id = 5;
     name = "Choc Mental";
@@ -66,7 +90,11 @@ let choc_mental() : competence =
     element = Psy;
   }
 
-let morsure() : competence = 
+(** 
+  [morsure] retourne la compétence "Morsure".
+  @return La compétence "Morsure".
+*)
+let morsure () : competence = 
   {
     id = 6;
     name = "Morsure";
@@ -77,7 +105,11 @@ let morsure() : competence =
     element = Tenebre;
   }
 
-let tranche_herbe() : competence = 
+(** 
+  [tranche_herbe] retourne la compétence "Tranche Herbe".
+  @return La compétence "Tranche Herbe".
+*)
+let tranche_herbe () : competence = 
   {
     id = 7;
     name = "Tranche Herbe";
@@ -88,7 +120,11 @@ let tranche_herbe() : competence =
     element = Plante;
   }
 
-let eclat_glace() : competence = 
+(** 
+  [eclat_glace] retourne la compétence "Éclat Glace".
+  @return La compétence "Éclat Glace".
+*)
+let eclat_glace () : competence = 
   {
     id = 8;
     name = "Éclat Glace";

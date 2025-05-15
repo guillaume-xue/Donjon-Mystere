@@ -4,10 +4,10 @@ open Utils.Types
   [random_biome_center] génère un centre de biome aléatoire pour chaque zone.
 
   @param zones La liste des zones distinctes.
-  @return Une liste de tuile. 
+  @return Une liste de tuiles représentant les centres de biomes.
 *)
-let random_biome_center zones =
-  let rec aux zone acc =
+let random_biome_center (zones : zone list) : tile list =
+  let rec aux (zone : zone list) (acc : tile list) : tile list =
     match zone with
     | [] -> acc
     | zone :: rest ->
@@ -23,12 +23,12 @@ let random_biome_center zones =
 
   @param tiles La liste des tuiles de la carte.
   @param zones La liste des zones distinctes.
-  @return Une liste de tuile. 
+  @return Une nouvelle liste de tuiles avec les biomes attribués.
 *)
-let generate_biomes tiles zones () =
+let generate_biomes (tiles : tile list) (zones : zone list) () : tile list =
   let all_spawn_points = random_biome_center zones in
 
-  let rec aux tiles spawn_points biomes =
+  let rec aux (tiles : tile list) (spawn_points : tile list) (biomes : tile list) : tile list =
     match tiles with
     | [] -> List.rev biomes
     | tile :: rest ->
