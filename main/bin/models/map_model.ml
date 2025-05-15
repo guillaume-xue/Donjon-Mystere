@@ -39,7 +39,8 @@ let set_map_floor map floor =
     height = map.height; 
     tiles = map.tiles; 
     regions = map.regions;
-    floor = floor
+    floor = floor;
+    music = map.music
   }
 
 let find_wall_in_direction x y direction map =
@@ -65,7 +66,18 @@ let set_map_tile (tiles : tile list) (map : map) =
     height = map.height;
     tiles = tiles;
     regions = map.regions;
-    floor = map.floor
+    floor = map.floor;
+    music = map.music
+  }
+
+let set_map_music music map =
+  {
+    width = map.width;
+    height = map.height;
+    tiles = map.tiles;
+    regions = map.regions;
+    floor = map.floor;
+    music = Some music
   }
 
 let rec take n lst =

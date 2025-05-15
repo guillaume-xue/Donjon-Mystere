@@ -2,6 +2,7 @@ open Raylib
 open Utils.Types
 open Utils.Json_conversions
 open Utils.Settings_map
+open Utils.Audio
 open MenuController
 open MapController
 
@@ -23,6 +24,7 @@ let run () =
   let rec game_loop var_game last_time name msgs = 
     let (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, my_player, enemy, loots, traps_and_grounds, select) = var_game in
     if window_should_close () then begin
+      stop_music ();
       save_game name my_map my_player enemy loots traps_and_grounds;
       close_window ()
     end else
@@ -97,12 +99,17 @@ let run () =
   let rec menu_loop screen_state map_name menu_item_info last_time_menu =
     if window_should_close () then
       begin
+        stop_music ();
         close_window ()
       end
     else
       if screen_state = Game then
         begin          
           let (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, my_player, enemy, loots, traps_and_grounds) = init_map_controller map_name in
+          init_audio ();
+          (match my_map.music with
+          | Some file -> play_music file
+          | None -> ());
           let list_of_last_time = List.init (7 + ((List.length(enemy))*2)) (fun _ -> 0.0) in (* Use for animations *)
           let msgs = [] in
           game_loop (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, my_map, my_player, enemy, loots, traps_and_grounds, 0) list_of_last_time map_name msgs;

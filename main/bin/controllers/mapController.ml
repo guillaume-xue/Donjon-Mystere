@@ -4,6 +4,7 @@ open Models.EnemyModel
 open Models.ItemModel
 open Models.Shadowcaster
 open Models.Trap_ground
+open Models.Map_model
 open Views.PlayerView
 open Views.EntityView
 open Views.MapView
@@ -33,6 +34,7 @@ let init_map_controller filename =
   let trap_and_ground_texures = init_trap_ground_textures () in
   let attack_msg_textures = init_attack_msg_textures () in
   let (map, player, enemy, loots, traps_and_grounds) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
+  let map = set_map_music "resources/audio/music1.mp3" map in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)

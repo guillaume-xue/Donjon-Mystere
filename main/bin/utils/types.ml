@@ -129,6 +129,7 @@ type map = {
   tiles: tile list;
   regions: zone list;
   floor: int;
+  music: string option;
 }
 
 (** 

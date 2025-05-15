@@ -138,6 +138,7 @@ let generation_map floor num_pokemon =
     tiles = tiles_with_biomes;
     regions = regions_tmp;
     floor = floor; (* Initial floor *)
+    music = Some (""); (* Initial music *)
   } in
 
   (* Spawning du joueur *)
