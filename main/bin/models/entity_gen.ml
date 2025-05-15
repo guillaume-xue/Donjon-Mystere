@@ -9,6 +9,20 @@ open EntityModel
 
 let entity_base_value = (50, 55, 45, 60, 50)
 
+let nom_pokemon = [
+  "Germignon";
+  "Héricendre";
+  "Kaiminus";
+  "Pyroli";
+  "Aquali";
+  "Phyllali";
+  "Evoli";
+  "Voltali";
+  "Mentali";
+  "Noctali";
+  "Givrali";
+]
+
 let randLvl pokemon = 
   let r = Random.int 1 in
   match r with
@@ -34,19 +48,40 @@ let finalGen lvl () =
   let def_sp_final = int_of_float ((float_of_int def_sp +. float_of_int def_sp_base) *. (lvl /. 50.0) +. float_of_int const2) in
   (pv_final, att_final, def_final, att_sp_final, def_sp_final)
 
+let spawn_player_pos map player =
+  let rec tile_rand () =
+    let zone_rand = Random.int (List.length map.regions) in
+    let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
+    let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+    if is_wall tile.x tile.y map then
+      tile_rand ()
+    else
+      zone_rand, tile
+  in
+  let (zone_rand, tile) = tile_rand () in
+  ({player with last_id = 0; 
+    position = {
+      world_x = float_of_int tile.x;
+      world_y = float_of_int tile.y;
+      screen_x = (screen_width / 2);
+      screen_y = (screen_height / 2);
+      target_x = float_of_int tile.x;
+      target_y = float_of_int tile.y;
+    };
+    your_turn = true;}, zone_rand)
+
+
 (**
   [spawn_player] génère une position aléatoire pour le joueur sur la carte.
   @param map La carte sur laquelle le joueur doit être généré.
   @return Le joueur généré.
 *)
 let spawn_player map num_pokemon =
-  let (cur_hp, att, def, att_sp, def_sp) = finalGen 25.0 () in
+  let (cur_hp, att, def, att_sp, def_sp) = finalGen 50.0 () in
   let rec tile_rand () =
     let zone_rand = Random.int (List.length map.regions) in
     let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
-    
-  (* Printf.printf "cur_hp: %d, att: %d, def: %d, att_sp: %d, def_sp: %d\n" cur_hp att def att_sp def_sp; *)
-  let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
+    let tile = List.nth (List.nth map.regions zone_rand).tiles case_rand in
     if is_wall tile.x tile.y map then
       tile_rand ()
     else
@@ -54,9 +89,10 @@ let spawn_player map num_pokemon =
   in
   let (zone_rand, tile) = tile_rand () in
   ({
-    id = num_pokemon;
+    nom = List.nth nom_pokemon num_pokemon;
+    id = 0;
     last_id = 0;
-    number = 0;
+    number = num_pokemon;
     position = {
       world_x = float_of_int tile.x;
       world_y = float_of_int tile.y;
@@ -78,13 +114,12 @@ let spawn_player map num_pokemon =
     bag = { items = []; max_size = 10 ; selected_item = 0};
     step_cpt = 0;
     speed = 1.0;
-    
     attaque = att;
     defense = def;
     attaque_speciale = att_sp;
     defense_speciale = def_sp;
-    element = Feu;
-    competence = [attaque_charge()];
+    element = List.nth [Plante; Feu; Eau] num_pokemon;
+    competence = [attaque_charge(); List.nth competences (element_to_index (List.nth [Plante; Feu; Eau] num_pokemon))];
     path = [];
     your_turn = true;
   }, zone_rand)
@@ -112,6 +147,7 @@ let spawn_list_of_enemys (map: map) (player: pokemon) =
         let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
         let (pos_x, pos_y) = get_entity_position player in
         let enemy = {
+          nom = List.nth nom_pokemon rand;
           id = cpt;
           last_id = 0;
           number = rand;
@@ -140,8 +176,8 @@ let spawn_list_of_enemys (map: map) (player: pokemon) =
           defense = def;
           attaque_speciale = att_sp;
           defense_speciale = def_sp;
-          element = Feu;
-          competence = [attaque_grosyeux()];
+          element = List.nth element_types (rand-3);
+          competence = [attaque_charge(); List.nth competences (element_to_index (List.nth element_types (rand-3)))];
           path = a_star map.tiles (tile.x, tile.y) (int_of_float pos_x, int_of_float pos_y);
           your_turn = false;
         } in

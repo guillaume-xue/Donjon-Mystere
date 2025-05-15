@@ -30,41 +30,6 @@ let run () =
       close_window ()
     end else
       begin
-        (* let (my_map, player, _key_pressed, last_time, select, loots, enemy, status_fin, traps_and_grounds, enemy) = update_player my_player enemy my_map last_time select loots traps_and_grounds in
-        let enemy = if status_fin then List.map (fun e -> set_your_turn true e) enemy else enemy in
-        let (enemy, last_time, player, status_fin) = update_enemy enemy player my_map last_time in
-        let player = if status_fin then set_your_turn true player else player in *)
-
-        (* let rec aux entity acc select loots last_time traps_and_grounds msgs =
-          match entity with
-          | [] -> let acc = List.sort (fun e1 e2 -> compare e1.id e2.id) acc in
-            (* List.iter (fun e -> Printf.printf "Enemy %d is your turn\n%!" e.id) acc; *)
-            let player = List.hd acc in
-            let enemy = List.tl acc in
-            let player = set_your_turn true player in
-            (player :: enemy, select, loots, last_time, traps_and_grounds, msgs)
-          | e :: rest ->
-            if e.your_turn then begin
-              if e.id = 0 then begin
-                let (player, select, loots, enemy, traps_and_grounds, last_time, msg) = update_player e rest my_map select loots traps_and_grounds last_time in
-                  let msgs = add_msg msg msgs in
-                  (player :: enemy, select, loots, last_time, traps_and_grounds, msgs)                  
-              end else begin
-                (* Printf.printf "Enemy %d is not your turn\n%!" e.id; *)
-                let (enemy, player, last_time, msg) = update_enemy e (acc @ rest) my_map last_time in
-                let msgs = add_msg msg msgs in
-                (* Printf.printf "Enemy %d is your turn\n\n%!" e.id; *)
-                let acc = List.sort (fun e1 e2 -> compare e1.id e2.id) acc in
-                let other = List.tl acc in
-                let acc = player :: other in
-                (* Printf.printf "Enemy %d your turn\n\n%!" e.id; *)
-                (acc @ (enemy :: rest), select, loots, last_time, traps_and_grounds, msgs)
-
-              end
-            end else begin
-              (* Printf.printf "Enemy %d is not your turn\n%!" e.id; *)
-              aux rest (e :: acc) select loots last_time traps_and_grounds msgs
-            end in *)
 
         let player =
           if List.for_all (fun e -> not e.your_turn) game_states.enemies_state && not game_states.player_state.your_turn then
@@ -80,7 +45,7 @@ let run () =
           | [] -> (other, last_time, game_states)
           | e :: rest ->
             if e.your_turn then begin
-              let (enemy, player, last_time, msg) = update_enemy e (player :: rest) map last_time in
+              let (enemy, player, last_time, msg) = update_enemy e player (rest @ other) map last_time in
               let game_states = add_game_state_msg msg game_states in
               aux player rest (enemy :: other) map last_time game_states
             end else begin

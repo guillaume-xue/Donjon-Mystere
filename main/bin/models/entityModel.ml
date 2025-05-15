@@ -169,41 +169,6 @@ let get_i_competence (i: int) (entity: pokemon) =
   List.nth entity.competence i
 
 let update_a_star tiles start goal =
-  (* match start.mode_combat.path with
-  | Some path1 ->
-    if List.length path1.nodes > 2 then begin
-      let index = List.length path1.nodes - 3 in
-      let nodes = List.nth path1.nodes index in
-      let new_path = a_star tiles nodes (int_of_float goal.pos_x, int_of_float goal.pos_y) in
-      (match new_path with
-      | Some path ->
-        let dist = manhattan_distance (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y) in
-        Printf.printf "Pokemon %d\n%!" dist;
-          { start with
-            mode_combat = {
-              on_off = false;
-              tour = 0;
-              text = [];
-              path = Some { 
-                nodes = (List.rev (List.tl (List.tl (List.rev path1.nodes)))) @ path.nodes; 
-                cost = 0.0;
-              };
-            }
-          }
-      | None -> start)
-      end
-    else begin
-      { start with
-        mode_combat = {
-          on_off = false;
-          tour = 0;
-          text = [];
-          path = a_star tiles (int_of_float start.pos_x, int_of_float start.pos_y) (int_of_float goal.pos_x, int_of_float goal.pos_y);
-        }
-      }
-    end
-  | None ->
-    start *)
   let (start_x, start_y) = get_entity_position start in
   let (goal_x, goal_y) = get_entity_position goal in
   { start with
@@ -261,10 +226,25 @@ let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) =
   @return entity
 *)
 let set_entity_path (entity: pokemon) (map: map) (player: pokemon) =
-  if entity.your_turn && not(entity.moving) then
-    update_a_star map.tiles entity player
+  let (pos_x, pos_y) = get_entity_position entity in
+  let (player_x, player_y) = get_entity_position player in
+  if (List.length entity.path <= 2 || manhattan_distance ((int_of_float (floor pos_x), int_of_float (floor pos_y)), (int_of_float (floor player_x), int_of_float (floor player_y))) <= 5)  && entity.your_turn && not(entity.moving) then
+    if entity.your_turn && not(entity.moving) then
+      update_a_star map.tiles entity player
+    else
+      entity
   else
     entity
+
+(**
+  Remove the first pair from entity.path
+  @param entity: pokemon
+  @return entity with path without the first pair
+*)
+let pop_entity_path (entity: pokemon) =
+  match entity.path with
+  | [] -> entity
+  | _ :: rest -> { entity with path = rest }
 
 (**
   Add an item to the entity bag
@@ -457,7 +437,7 @@ let action_player action (entity: pokemon) key_pressed =
 let is_end_moving (entity: pokemon) =
   let (pos_x, pos_y) = get_entity_position entity in
   let (target_x, target_y) = get_entity_target entity in
-  if pos_x = target_x && pos_y = target_y && entity.moving then 
+  if pos_x = target_x && pos_y = target_y && entity.moving then
     (entity
     |> set_entity_moving false
     |> set_entity_action Nothing,
@@ -610,9 +590,10 @@ let player_attack (player: pokemon) (enemy: pokemon list) =
       | [] -> (player |> set_entity_action Nothing, acc, true, msg)
       | e :: rest ->
         let (e_pos_x, e_pos_y) = get_entity_position e in
+        let choose_competence = List.nth player.competence (Random.int (List.length player.competence)) in
         if int_of_float e_pos_x = int_of_float target_x && int_of_float e_pos_y = int_of_float target_y then begin
-          let degat = calcul_degats player e (List.nth player.competence 0) in
-          let msg = Printf.sprintf "Entity id: %d Degat: %d on Cible: %d\n%!" player.id degat e.id in
+          let degat = calcul_degats player e choose_competence in
+          let msg = Printf.sprintf "%s utilise %s inflige %d dégâts à %s !\n%!" player.nom choose_competence.name degat e.nom in
           let new_enemy = {e with current_hp = e.current_hp - degat} in
           if new_enemy.current_hp <= 0 then begin
             let updated_player = is_level_up player new_enemy in

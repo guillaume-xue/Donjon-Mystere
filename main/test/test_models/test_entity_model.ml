@@ -4,6 +4,7 @@ open Utils.Types
 
 let empty_entity () = 
   {
+    nom = "";
     id = 0;
     last_id = 0;
     number = 0;

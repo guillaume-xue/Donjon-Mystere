@@ -31,8 +31,8 @@ let update_trap_and_ground game_states last_time =
       match trap_and_ground.nature, trap_and_ground.visibility with
       | Stairs_Up, true -> 
         Unix.sleep 1;
-        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map game_states.map_state.floor game_states.player_state.number in
-        let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
+        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = create_new_floor game_states.map_state.floor game_states.player_state in
+        let list_of_last_time = List.init (100 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
         let new_map = set_map_floor new_map (new_map.floor + 1) in
         let game_states = 
           game_states 
@@ -46,8 +46,8 @@ let update_trap_and_ground game_states last_time =
         (game_states, list_of_last_time)
       | Stairs_Down, true ->
         Unix.sleep 1;
-        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = generation_map game_states.map_state.floor game_states.player_state.number in
-        let list_of_last_time = List.init (7 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
+        let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = create_new_floor game_states.map_state.floor game_states.player_state in
+        let list_of_last_time = List.init (100 + ((List.length(new_enemys))*2)) (fun _ -> 0.0) in (* Use for animations *)
         let new_map = set_map_floor new_map (new_map.floor - 1) in
         let game_states = 
           game_states 

@@ -1,11 +1,24 @@
 open Utils.Types
 
-(* Calcul de la distance de Manhattan entre deux points *)
-let manhattan_distance (x1, y1) (x2, y2) =
+(**
+  [manhattan_distance] calcule la distance de Manhattan entre deux points.
+
+  @param (x1, y1) La première coordonnée.
+  @param (x2, y2) La deuxième coordonnée.
+  @return La distance de Manhattan entre les deux points.
+*)
+let manhattan_distance (((x1, y1): int * int), ((x2, y2): int * int)) : int =
   abs (x1 - x2) + abs (y1 - y2)
 
-(* Fonction A* pour trouver le meilleur chemin entre deux tuiles *)
-let a_star tiles start goal : (int * int) list =
+(**
+  [a_star] implémente l'algorithme A* pour trouver le chemin le plus court entre deux points.
+
+  @param tiles La liste des tuiles.
+  @param start La position de départ.
+  @param goal La position d'arrivée.
+  @return Une liste de coordonnées représentant le chemin trouvé.
+*)
+let a_star (tiles: tile list) (start: int * int) (goal: int * int) : (int * int) list =
 
   let pq = PriorityQueue.create () in
   let visited = ref [] in
@@ -15,17 +28,17 @@ let a_star tiles start goal : (int * int) list =
 
   (* Initialisation *)
   Hashtbl.add g_score start 0;
-  Hashtbl.add f_score start (manhattan_distance start goal);
-  PriorityQueue.add pq (manhattan_distance start goal) start;
+  Hashtbl.add f_score start (manhattan_distance (start, goal));
+  PriorityQueue.add pq (manhattan_distance (start, goal)) start;
 
-  let rec reconstruct_path current path =
+  let rec reconstruct_path (current: int * int) (path: (int * int) list) : (int * int) list =
     if Hashtbl.mem came_from current then
       reconstruct_path (Hashtbl.find came_from current) (current :: path)
     else
       List.filter (fun (x, y) -> (x, y) <> start && (x, y) <> goal) (current :: path)
     in
 
-  let rec search () =
+  let rec search () : (int * int) list =
     if PriorityQueue.is_empty pq then
       []
     else
@@ -47,7 +60,7 @@ let a_star tiles start goal : (int * int) list =
           if not (Hashtbl.mem g_score neighbor_pos) || tentative_g_score < Hashtbl.find g_score neighbor_pos then (
             Hashtbl.replace came_from neighbor_pos current;
             Hashtbl.replace g_score neighbor_pos tentative_g_score;
-            Hashtbl.replace f_score neighbor_pos (tentative_g_score + manhattan_distance neighbor_pos goal);
+            Hashtbl.replace f_score neighbor_pos (tentative_g_score + manhattan_distance (neighbor_pos, goal));
             PriorityQueue.add pq (Hashtbl.find f_score neighbor_pos) neighbor_pos
           )
         ) neighbors;
