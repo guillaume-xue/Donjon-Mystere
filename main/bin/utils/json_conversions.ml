@@ -29,6 +29,10 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     );
     regions = [];
     floor = map_json |> member "floor" |> to_int;
+    music = 
+      match map_json |> member "music" with
+      | `String s -> Some s
+      | _ -> None;
   } in
 
   let player = {
