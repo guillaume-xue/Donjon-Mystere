@@ -17,4 +17,5 @@
   trap_ground
   map_model
   position
-  bag_model))
+  bag_model
+  game_state))

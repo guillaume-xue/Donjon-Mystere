@@ -85,7 +85,7 @@ let rec take n lst =
   | [] -> []
   | hd :: tl -> if n > 0 then hd :: take (n - 1) tl else []
 
-let set_map_exploded x y map =
+let set_map_exploded x y (map: map) =
   let radius = 8 in
   let tiles_in_radius =
     List.filter

@@ -41,8 +41,7 @@ let init_bag_textures items_textures =
   @param player The player.
 *)
 let draw_bag player bag_textures select =
-  let (bag_texture, squarte_texture, items_tex) = bag_textures in
-  match bag_texture with
+  match bag_textures.bag_background_tex with
   | None -> ()
   | Some texture ->
     (* Draw the bag texture *)
@@ -56,7 +55,7 @@ let draw_bag player bag_textures select =
     | [] -> ()
     | _ ->
       List.iteri (fun i item ->
-        let item_texture = List.nth items_tex item.item_skin_id in
+        let item_texture = List.nth bag_textures.items_tex item.item_skin_id in
         draw_texture item_texture (85 + (i mod 7 * 60)) (125 + (i / 7 * 60 + 50)) Color.white;
         
       ) player.bag.items;
@@ -80,7 +79,7 @@ let draw_bag player bag_textures select =
         draw_text line 80 (480 + j * 20) 20 Color.white;
       ) description_lines;
     (* Draw the square around the selected item *)
-    match squarte_texture with
+    match bag_textures.square_tex with
     | None -> ()
     | Some square_texture ->
       draw_texture square_texture (78 + (select mod 7 * 60)) (168 + (select / 7 * 60)) Color.white;

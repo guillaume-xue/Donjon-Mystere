@@ -29,7 +29,7 @@ let init_map_textures () =
   @param player The player.
   @param textures The textures of the map.
 *)
-let draw_map map (player: pokemon) textures =
+let draw_map (map: map) (player: pokemon) textures =
   let rec draw_textures (tiles: tile list) (x: float) (y: float) =
     match tiles with
     | [] -> ()

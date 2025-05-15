@@ -5,6 +5,7 @@ open Models.ItemModel
 open Models.Shadowcaster
 open Models.Trap_ground
 open Models.Map_model
+open Models.Game_state
 open Views.PlayerView
 open Views.EntityView
 open Views.MapView
@@ -26,13 +27,22 @@ open Utils.Settings_map
   @return The map textures, player textures, enemy textures, items textures, bag textures, map, player, enemy and loots.
 *)
 let init_map_controller filename =
-  let map_textures = init_map_textures () in
-  let entity_textures = init_entity_textures () in
   let items_textures = init_items_textures () in
-  let bag_textures = init_bag_textures items_textures in
-  let shadow_cast_texture = init_shadow_cast_view () in
-  let trap_and_ground_texures = init_trap_ground_textures () in
-  let attack_msg_textures = init_attack_msg_textures () in
+  let (bag, square, items) = init_bag_textures items_textures in
+  let bag_textures = {
+    bag_background_tex = bag;
+    square_tex = square;
+    items_tex = items;
+  } in
+  let game_textures = {
+    tiles_tex = init_map_textures ();
+    entities_tex = init_entity_textures ();
+    items_tex = items_textures;
+    bag_tex = bag_textures;
+    shadow_cast_tex = init_shadow_cast_view ();
+    traps_and_grounds_tex = init_trap_ground_textures ();
+    attack_msg_tex = init_attack_msg_textures ();
+  } in
   let (map, player, enemy, loots, traps_and_grounds) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
   let map = set_map_music "resources/audio/music1.mp3" map in
   let new_player = 
@@ -40,7 +50,15 @@ let init_map_controller filename =
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
     |> set_entity_texture_id 24
   in
-  (map_textures, entity_textures, items_textures, bag_textures, shadow_cast_texture, trap_and_ground_texures, attack_msg_textures, map, new_player, enemy, loots, traps_and_grounds)
+  let game_states = {
+    map_state = map;
+    player_state = new_player;
+    enemies_state = enemy;
+    loots_state = loots;
+    traps_and_grounds_state = traps_and_grounds;
+    msgs_state = [];
+  } in
+  (game_textures, game_states)
 
 (**
   [draw_open_bag player bag_textures select] draws the bag if the player is opening it.
@@ -59,31 +77,26 @@ let draw_open_bag player bag_textures select =
   @param enemy The enemy.
   @param items The items.
   @param visibility The grid for shadowcasting
-  @param map_textures The textures of the map.
-  @param player_textures The textures of the player.
-  @param enemy_textures The textures of the enemy.
-  @param items_textures The textures of the items.
-  @param bag_textures The textures of the bag.
   @param select The selected item.
 *)
-let draw_game map (player: pokemon) enemy (items : loot list) visibility traps_and_grounds map_textures entity_textures items_textures bag_textures shadow_cast_texture trap_and_ground_texures attack_msg_textures select msgs =
-  if is_stairs traps_and_grounds player then begin
+let draw_game game_states game_textures visibility =
+  if is_stairs game_states.traps_and_grounds_state game_states.player_state then begin
     begin_drawing ();
     clear_background Color.black;
-    draw_floor_intro map;
+    draw_floor_intro game_states.map_state;
     end_drawing ()
   end else begin
     begin_drawing ();
     clear_background Color.black;
-    draw_map map player map_textures;
-    draw_trap_ground traps_and_grounds player trap_and_ground_texures;
-    draw_items items player items_textures;
-    draw_player player entity_textures;
-    draw_enemy enemy entity_textures player;
-    draw_shadow_cast shadow_cast_texture visibility player (map.width) (map.height);
-    draw_player_stats player;
-    draw_open_bag player bag_textures select;
-    draw_attack_msg msgs attack_msg_textures;
+    draw_map game_states.map_state game_states.player_state game_textures.tiles_tex;
+    draw_trap_ground game_states.traps_and_grounds_state game_states.player_state game_textures.traps_and_grounds_tex;
+    draw_items game_states.loots_state game_states.player_state game_textures.items_tex;
+    draw_player game_states.player_state game_textures.entities_tex;
+    draw_enemy game_states.enemies_state game_textures.entities_tex game_states.player_state;
+    draw_shadow_cast game_textures.shadow_cast_tex visibility game_states.player_state (game_states.map_state.width) (game_states.map_state.height);
+    draw_player_stats game_states.player_state;
+    draw_open_bag game_states.player_state game_textures.bag_tex game_states.player_state.bag.selected_item;
+    draw_attack_msg game_states.msgs_state game_textures.attack_msg_tex;
     end_drawing ()
   end
 
@@ -192,40 +205,44 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   @param last_time The last time.
   @return The updated player.
 *)
-let update_player player enemy map select items trap_and_ground last_time =
-  let (map, player, trap_and_ground, enemy, items, last_time, msg) = update_trap_and_ground map player trap_and_ground enemy items last_time in
-  let msg_res = msg in
-  let (action , key_pressed) = check_key_pressed_action player in
-  let player = action_player action player key_pressed in
-  let (player, enemy, _action1, msg) = player_attack player enemy in
-  let msg_res = msg_res ^ msg in
-  let (player, items) = check_pickup_item player items in
+let update_player game_states last_time =
+  let (game_states, last_time) = update_trap_and_ground game_states last_time in
+  let (action , key_pressed) = check_key_pressed_action game_states.player_state in
+  let player = action_player action game_states.player_state key_pressed in
+  let (player, enemy, _action1, msg) = player_attack player game_states.enemies_state in
+  let game_states = add_game_state_msg msg game_states in
+  let (player, items) = check_pickup_item player game_states.loots_state in
   let (direction, key_pressed) = check_key_pressed player in
   let player = move direction player key_pressed false in
   
-  let ((player, last_update_time), _action2) = new_entity_pos_pre_check map player enemy (List.nth last_time 0) in
+  let ((player, last_update_time), _action2) = new_entity_pos_pre_check game_states.map_state player enemy (List.nth last_time 0) in
   let last_time = replace_nth last_time 0 last_update_time in
   let (player, last_texture_update_time) = increment_texture_id player (List.nth last_time 1) in
   let last_time = replace_nth last_time 1 last_texture_update_time in
 
   let (player, _action3) = is_end_moving player in
-  let (enter, nb_select) = check_key_pressed_bag player select in
+  let (enter, nb_select) = check_key_pressed_bag player game_states.player_state.bag.selected_item in
   let player = 
     if enter then 
       try 
         player
-        |> remove_item_bag select
+        |> remove_item_bag game_states.player_state.bag.selected_item
         |> set_entity_action Nothing
+        |> set_entity_bag_selected 0
       with _ -> player
     else 
-      player 
+      player |> set_entity_bag_selected nb_select
   in
-(*  *)
   (* Printf.printf "key_pressed: %b, action1: %b, action2: %b, action3: %b\n%!" key_pressed _action1 _action2 _action3; *)
   let player = if (_action2 && _action3) || _action1 then set_your_turn false player else player in
   let enemy = if (_action2 && _action3) || _action1 then List.map (fun e -> set_your_turn true e) enemy else enemy in
-
-  (player, nb_select, items, enemy, trap_and_ground, last_time, msg_res)
+  let game_states = 
+    game_states
+    |> set_game_state_player player
+    |> set_game_state_enemy enemy
+    |> set_game_state_loots items
+  in
+  (game_states, last_time)
 
 (**
   [update_enemy enemies player map key_pressed last_time] updates the enemy.
@@ -259,13 +276,6 @@ let update_enemy enemy other map last_time =
   (* Printf.printf "is your turn enemy: %b\n%!" enemy.your_turn; *)
   (enemy, player, last_time, msg) 
 
-
-let add_msg msg msgs =
-  if msg = "" then
-    msgs
-  else
-    msgs @ [msg]
-
 let set_your_turn your_turn player =
   set_your_turn your_turn player
 
@@ -286,6 +296,6 @@ let update_shadow_cast player map =
   @param loots The loots.
   @param traps_and_grounds The traps and grounds.
 *)
-let save_game filename map player enemy loots traps_and_grounds =
-  let json = map_player_to_json map player enemy loots traps_and_grounds in
+let save_game filename game_states =
+  let json = map_player_to_json game_states.map_state game_states.player_state game_states.enemies_state game_states.loots_state game_states.traps_and_grounds_state in
   write_json_to_file (map_dir ^ filename ^ ".json") json

@@ -151,6 +151,15 @@ let set_entity_current_hp (current_hp: int) (entity: pokemon) =
   {entity with current_hp = current_hp}
 
 (**
+  Set the bag selected item
+  @param selected: int
+  @param entity: pokemon
+  @return entity
+*)
+let set_entity_bag_selected (selected: int) (entity: pokemon) =
+  {entity with bag = {entity.bag with selected_item = selected}}
+
+(**
   Get the entity i th competence
   @param i: int
   @param entity: pokemon
@@ -266,7 +275,7 @@ let set_entity_path (entity: pokemon) (map: map) (player: pokemon) =
 let add_item_bag (item: loot) (entity: pokemon) =
   let bag = entity.bag in
   let new_items = item :: bag.items in
-  let new_bag = {items = new_items; max_size = bag.max_size} in
+  let new_bag = {items = new_items; max_size = bag.max_size; selected_item = bag.selected_item} in
   set_entity_bag new_bag entity
 
 (**
@@ -291,7 +300,7 @@ let set_usable_item_bag (index : int) (usable: bool) (entity: pokemon) =
       in
       aux 0 [] bag.items
     in
-    let new_bag = {items = new_items; max_size = bag.max_size} in
+    let new_bag = {items = new_items; max_size = bag.max_size; selected_item = bag.selected_item} in
     { entity with bag = new_bag }
 
 (**
@@ -327,7 +336,7 @@ let remove_item_bag (nth: int) (entity: pokemon) =
       in
       aux 0 [] bag.items
     in
-    let new_bag = {items = new_items; max_size = bag.max_size} in
+    let new_bag = {items = new_items; max_size = bag.max_size; selected_item = bag.selected_item} in
     set_entity_bag new_bag entity
 
 (**
@@ -377,7 +386,7 @@ let is_targeted_by_enemy (target_x: int) (target_y: int) (enemys: pokemon list) 
   @param enemys The list of enemies.
   @return True if the entity is facing an obstacle, false otherwise.
 *)
-let is_obstacle map (entity: pokemon) (enemys: pokemon list) =
+let is_obstacle (map: map) (entity: pokemon) (enemys: pokemon list) =
   let tiles = map.tiles in
   let (target_x, target_y) = get_entity_target entity in
   let target_x = int_of_float target_x in

@@ -74,7 +74,7 @@ let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) =
     current_xp = 0;
     max_xp = 100;
     action = Nothing;
-    bag = { items = []; max_size = 5 };
+    bag = { items = []; max_size = 5; selected_item = 0};
     step_cpt = 0;
     speed = 1.0;
     attaque = att;

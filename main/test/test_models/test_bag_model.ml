@@ -18,7 +18,7 @@ let empty_entity () =
     current_xp = 0;
     max_xp = 0;
     action = Nothing;
-    bag = { items = []; max_size = 5 };
+    bag = { items = []; max_size = 5; selected_item = 0};
     step_cpt  = 0;
     speed  = 0.0;
     attaque  = 0;
@@ -37,7 +37,7 @@ let test_set_usable_item_bag _ =
   (* Création d'un Pokémon fictif avec un sac contenant des objets *)
   let item1 = { item_id = 1; item_skin_id = 101; quantity = 1; pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; description = "Potion"; usable = false } in
   let item2 = { item_id = 2; item_skin_id = 102; quantity = 1; pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; description = "Antidote"; usable = false } in
-  let bag = { items = [item1; item2]; max_size = 10 } in
+  let bag = { items = [item1; item2]; max_size = 10; selected_item = 0} in
   let pokemon = { (empty_entity ()) with bag = bag } in
 
   (* Test : rendre le premier objet utilisable *)
