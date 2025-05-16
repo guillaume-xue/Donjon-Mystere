@@ -318,10 +318,9 @@ let remove_item_bag (nth: int) (entity: pokemon) =
     in
     let item_use = List.nth bag.items item in
     let entity = item_effets entity item_use in
-    let entity = if item_use.item_id = 3 then level_up entity else entity in
+    let entity = if item_use.item_skin_id = 3 then level_up entity else entity in
     let new_bag = {items = new_items; max_size = bag.max_size; selected_item = bag.selected_item} in
-    (* Printf.printf "Item %s removed from bag\n%!" item_use.description; *)
-    set_entity_bag new_bag entity
+    (set_entity_bag new_bag entity, item_use)
 
 (**
   [is_enemy_at_target target_x target_y enemys] checks if there is an enemy at the target position.

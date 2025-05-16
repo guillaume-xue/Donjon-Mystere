@@ -188,19 +188,19 @@ let test_remove_item_bag _ =
 
   (* Test : retirer le premier item *)
   Printf.printf "- Testing remove first item\n";
-  let updated_entity = remove_item_bag 0 new_entity in
+  let updated_entity, _ = remove_item_bag 0 new_entity in
   assert_equal 2 (List.length updated_entity.bag.items);
   assert_equal item2 (List.nth updated_entity.bag.items 0);
 
   (* Test : retirer le dernier item *)
   Printf.printf "- Testing remove last item\n";
-  let updated_entity = remove_item_bag 1 updated_entity in
+  let updated_entity, _ = remove_item_bag 1 updated_entity in
   assert_equal 1 (List.length updated_entity.bag.items);
   assert_equal item2 (List.nth updated_entity.bag.items 0);
 
   (* Test : retirer l'item restant *)
   Printf.printf "- Testing remove remaining item\n";
-  let updated_entity = remove_item_bag 0 updated_entity in
+  let updated_entity, _ = remove_item_bag 0 updated_entity in
   assert_equal 0 (List.length updated_entity.bag.items);
 
   Printf.printf "remove_item_bag test passed\n"

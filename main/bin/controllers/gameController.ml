@@ -47,6 +47,7 @@ let run () =
             if e.your_turn then begin
               let (enemy, player, last_time, msg) = update_enemy e player (rest @ other) map last_time in
               let game_states = add_game_state_msg msg game_states in
+              let game_states = set_game_state_player player game_states in
               aux player rest (enemy :: other) map last_time game_states
             end else begin
               aux player rest (e :: other) map last_time game_states
@@ -75,7 +76,13 @@ let run () =
           (match  game_states.map_state.music with
           | Some file -> play_music file
           | None -> ());
-          let list_of_last_time = List.init (100 + ((List.length(game_states.enemies_state))*2)) (fun _ -> 0.0) in (* Use for animations *)
+            let id_max =
+            List.fold_left
+              (fun acc enemy ->
+              if enemy.id > acc then enemy.id else acc)
+              0 game_states.enemies_state
+            in
+          let list_of_last_time = List.init (7 + (id_max*2)) (fun _ -> 0.0) in (* Use for animations *)
           let msgs = [] in
           game_loop (game_textures, game_states) list_of_last_time map_name msgs;
         end

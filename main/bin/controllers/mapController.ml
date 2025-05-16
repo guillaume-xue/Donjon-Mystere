@@ -176,7 +176,8 @@ let check_pickup_item (player: pokemon) (items: loot list) =
   if player.action = PickUp && player.your_turn then begin
     let rec aux x y (list: loot list) =
       match list with
-      | [] -> (player, items)
+      | [] -> let player = set_entity_action Nothing player in
+        (player, items)
       | item :: rest ->
         if x = item.pos_x && y = item.pos_y then
           let new_player = 
@@ -184,13 +185,14 @@ let check_pickup_item (player: pokemon) (items: loot list) =
             |> add_item_bag item
             |> set_entity_action Nothing
           in
+
           let new_list = remove_item_in_list item items in
           (new_player, new_list)
         else
           aux x y rest
     in
     let (pos_x, pos_y) = get_entity_position player in
-    match player.direction with
+    (* match player.direction with
     | Up -> 
         aux pos_x (pos_y -. 1.0) items
     | Down -> 
@@ -199,7 +201,8 @@ let check_pickup_item (player: pokemon) (items: loot list) =
         aux (pos_x -. 1.0) pos_y items
     | Right -> 
         aux (pos_x +. 1.0) pos_y items
-    | _ -> (player, items)
+    | _ -> (player, items) *)
+    aux pos_x pos_y items
   end else
     (player, items)
   
@@ -228,16 +231,19 @@ let update_player game_states last_time =
 
   let (player, _action3) = is_end_moving player in
   let (enter, nb_select) = check_key_pressed_bag player game_states.player_state.bag.selected_item in
-  let player = 
+  let (player, game_states) = 
     if enter then 
       try 
-        player
-        |> remove_item_bag game_states.player_state.bag.selected_item
-        |> set_entity_action Nothing
-        |> set_entity_bag_selected 0
-      with _ -> player
+        let (player, item) = remove_item_bag game_states.player_state.bag.selected_item player in
+        let game_states = add_game_state_msg (use_item_print item player) game_states in
+        (player
+          |> set_entity_action Nothing
+          |> set_entity_bag_selected 0,
+          game_states)
+        
+      with _ -> player, game_states
     else 
-      player |> set_entity_bag_selected nb_select
+      (player |> set_entity_bag_selected nb_select, game_states)
   in
   (* Printf.printf "key_pressed: %b, action1: %b, action2: %b, action3: %b\n%!" key_pressed _action1 _action2 _action3; *)
   let player = if (_action2 && _action3) || _action1 then set_your_turn false player else player in

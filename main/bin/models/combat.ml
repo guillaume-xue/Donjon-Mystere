@@ -24,7 +24,7 @@ let element_types = [
 ]
 
 let item_effets pokemon loot =
-  match loot.item_id with
+  match loot.item_skin_id with
   | 0 -> potion pokemon
   | 1 -> super_potion pokemon
   | 2 -> hyper_potion pokemon

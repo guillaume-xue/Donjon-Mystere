@@ -24,3 +24,8 @@ let remove_item_in_list (loot: loot) (items: loot list) =
         aux (item :: acc) res
   in
   aux [] items
+
+let use_item_print (item: loot) (entity: pokemon) =
+  let msg = Printf.sprintf "%s a utilisé l'item %s" entity.nom item.description
+  in 
+  msg 
