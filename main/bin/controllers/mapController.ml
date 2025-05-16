@@ -69,7 +69,13 @@ let init_map_controller filename =
 let draw_open_bag player bag_textures select =
   if player.action = OpenBag then
     draw_bag player bag_textures select
-  
+
+let draw_msgs_state player msgs msgs_tex =
+  if player.action = OpenBag then
+    ()
+  else
+    draw_attack_msg msgs msgs_tex
+    
 (**
   [draw_game map player enemy items map_textures player_textures enemy_textures items_textures bag_textures select] draws the game.
   @param map The map.
@@ -96,7 +102,7 @@ let draw_game game_states game_textures visibility =
     draw_shadow_cast game_textures.shadow_cast_tex visibility game_states.player_state (game_states.map_state.width) (game_states.map_state.height);
     draw_player_stats game_states.player_state;
     draw_open_bag game_states.player_state game_textures.bag_tex game_states.player_state.bag.selected_item;
-    draw_attack_msg game_states.msgs_state game_textures.attack_msg_tex;
+    draw_msgs_state game_states.player_state game_states.msgs_state game_textures.attack_msg_tex;
     end_drawing ()
   end
 
