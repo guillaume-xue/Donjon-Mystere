@@ -9,6 +9,8 @@ open Models.EntityModel
   @return The textures of the map.
 *)
 let init_map_textures () =
+   let cwd = Sys.getcwd () in
+      print_endline ("Current working directory: " ^ cwd);
   let image_paths = Sys.readdir "resources/images/map/biome/" |> Array.to_list |> List.filter (fun file -> Filename.check_suffix file ".png") in
   let map_textures = [] in
   let images = List.map (fun file -> load_image (Printf.sprintf "resources/images/map/biome/%s" file)) image_paths in
@@ -22,6 +24,28 @@ let init_map_textures () =
     load_textures map_textures images
   in
   map_textures
+
+let draw_map_view tiles textures =
+  let rec draw_textures (tiles: tile list) (x: float) (y: float) =
+    match tiles with
+    | [] -> ()
+    | tile :: rest ->
+      if (tile.biome_id = 0) then
+        if (tile.texture_id = 0) then
+          let texture = List.nth textures (1) in (* Debug *)
+          draw_texture texture (tile.x * (int_of_float tile_texture_size) - int_of_float(x)) (tile.y * (int_of_float tile_texture_size) - int_of_float(y)) Color.white;
+          draw_textures rest x y
+        else
+          let texture = List.nth textures (0) in (* Debug *)
+          draw_texture texture (tile.x * (int_of_float tile_texture_size) - int_of_float(x)) (tile.y * (int_of_float tile_texture_size) - int_of_float(y)) Color.white;
+          draw_textures rest x y
+      else
+        (* let texture = List.nth textures ((tile.texture_id) + ((tile.biome_id - 1) * 2)) in *)
+        let texture = List.nth textures ((tile.texture_id) + ((tile.biome_id - 1) * 2)) in (* Debug *)
+        draw_texture texture (tile.x * (int_of_float tile_texture_size) - int_of_float(x)) (tile.y * (int_of_float tile_texture_size) - int_of_float(y)) Color.white;
+        draw_textures rest x y
+  in
+  draw_textures tiles 0.0 0.0
 
 (**
   [draw_map map player textures] draws the map.

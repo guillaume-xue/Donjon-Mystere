@@ -1,5 +1,7 @@
 open Raylib
 open Utils.Funcs
+open Utils.Types
+open Utils.Settings_map
 
 (**
   [init_entity_textures ()] initializes the entity textures.
@@ -18,4 +20,8 @@ let init_entity_textures () =
     load_textures player_textures images
   in
   player_textures
+
+let draw_entity_view (entity: pokemon) textures =
+  let texture = List.nth textures entity.entity_textures_id in
+  draw_texture texture ((int_of_float(entity.position.world_x)) * (int_of_float tile_texture_size)) ((int_of_float(entity.position.world_y)) * (int_of_float tile_texture_size)) Color.white;
 

@@ -9,7 +9,7 @@ open Utils.Settings_map
   @param y la coordonnée y de la cellule pour laquelle on veut compter les voisins vivants.
   @return le nombre de voisins vivants autour de la cellule située aux coordonnées (x, y). Le nombre de voisins vivants est déterminé en additionnant les [texture_id] des tuiles voisines.
 *)
-let nb_voisins_vivant (tiles: tile list) (x: int) (y: int) : int=
+let nb_voisins_vivant (tiles: tile list) (x: int) (y: int) : int =
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1); (1, 1); (-1, -1); (1, -1); (-1, 1)] in
   List.fold_left (fun acc tile ->
     if List.exists (fun (dx, dy) -> tile.x = x + dx && tile.y = y + dy) directions then
@@ -44,6 +44,21 @@ let rec regles_auto_cell (tiles: tile list) (n: int) : tile list =
       { tile with texture_id }
     ) tiles in
     regles_auto_cell new_tiles (n - 1)
+
+let regles_auto_cell_view (tiles: tile list) (n: int) : tile list =
+  if n = 0 then tiles
+  else
+    let new_tiles = List.map (fun tile ->
+      let voisins = nb_voisins_vivant tiles tile.x tile.y in
+      let texture_id =
+        match tile.texture_id with
+        | 1 -> if voisins >= 4 then 1 else 0
+        | 0 -> if voisins = 5 || voisins = 6 then 1 else 0
+        | _ -> 0
+      in
+      { tile with texture_id }
+    ) tiles in
+    new_tiles
 
 (** 
   [flood_fill] effectue un algorithme de remplissage par diffusion (flood fill) 

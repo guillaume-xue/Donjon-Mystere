@@ -41,3 +41,15 @@ let draw_trap_ground (traps_and_grounds : trap_and_ground list) (player : pokemo
         (int_of_float (float_of_int screen_y +. float_of_int trap_and_ground.tag_pos_y *. tile_texture_size -. pos_y *. tile_texture_size)) 
         Color.white
   ) traps_and_grounds
+
+let draw_trap_ground_view (traps_and_grounds : trap_and_ground list) traps_grounds_textures =
+  List.iter (fun trap_and_ground ->
+    if trap_and_ground.visibility = false then
+      ()
+    else
+      let texture = List.nth traps_grounds_textures (trap_ground_to_int trap_and_ground.nature) in
+      draw_texture texture 
+        (int_of_float (float_of_int trap_and_ground.tag_pos_x *. tile_texture_size)) 
+        (int_of_float (float_of_int trap_and_ground.tag_pos_y *. tile_texture_size)) 
+        Color.white
+  ) traps_and_grounds

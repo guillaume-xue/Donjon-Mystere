@@ -1,4 +1,4 @@
-open Controllers.GameController
+open Controllers.Generation_map_view
 
 let() = 
-  run ()
+  run_generation ()

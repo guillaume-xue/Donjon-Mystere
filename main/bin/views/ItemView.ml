@@ -29,3 +29,12 @@ let draw_items (loots : loot list) (player : pokemon) loots_textures =
       (int_of_float (float_of_int screen_y +. loot.pos_y *. tile_texture_size -. pos_y *. tile_texture_size)) 
       Color.white
   ) loots
+
+let draw_items_view (loots : loot list) loots_textures =
+  List.iter (fun loot ->
+    let texture = List.nth loots_textures loot.item_skin_id in
+    draw_texture texture 
+      (int_of_float (loot.pos_x *. tile_texture_size)) 
+      (int_of_float (loot.pos_y *. tile_texture_size)) 
+      Color.white
+  ) loots
