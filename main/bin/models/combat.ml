@@ -23,6 +23,33 @@ let element_types = [
   Glace;
 ]
 
+let item_effets pokemon loot =
+  match loot.item_id with
+  | 0 -> potion pokemon
+  | 1 -> super_potion pokemon
+  | 2 -> hyper_potion pokemon
+  | 3 -> super_bonbon pokemon
+  | 4 -> money_pokemon5 pokemon
+  | 5 -> money_pokemon10 pokemon
+  | 6 -> money_pokemon20 pokemon
+  | 7 -> money_pokemon50 pokemon
+  | 8 -> money_pokemon100 pokemon
+  | 9 -> money_pokemon200 pokemon
+  | _ -> pokemon
+
+let item_nom = function
+  | 0 -> "Potion"
+  | 1 -> "Super Potion"
+  | 2 -> "Hyper Potion"
+  | 3 -> "Super Bonbon"
+  | 4 -> "5 Poke Dollars"
+  | 5 -> "10 Poke Dollars"
+  | 6 -> "20 Poke Dollars"
+  | 7 -> "50 Poke Dollars"
+  | 8 -> "100 Poke Dollars"
+  | 9 -> "200 Poke Dollars"
+  | _ -> ""
+
 (* Fonction de génération d'un nombre aléatoire entre 0.85 et 1.0 *)
 
 let rand_value () =
@@ -108,7 +135,6 @@ let level_up (pokemon: pokemon) =
 let is_level_up (pokemon1: pokemon) (pokemon2: pokemon) =
   let xp = xp_gain pokemon1 pokemon2 in
   let new_xp = pokemon1.current_xp + xp in
-  (* Printf.printf "xp: %d, new_xp: %d, max_xp: %d\n%!" xp new_xp pokemon1.max_xp; *)
   if new_xp >= pokemon1.max_xp then
     let new_pokemon = level_up pokemon1 in
     new_pokemon

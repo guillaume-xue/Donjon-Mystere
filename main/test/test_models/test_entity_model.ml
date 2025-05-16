@@ -30,6 +30,7 @@ let empty_entity () =
     competence = [];
     path = [];
     your_turn  = false;
+    money = 0;
   }
 
 

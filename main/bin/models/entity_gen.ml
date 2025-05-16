@@ -122,6 +122,7 @@ let spawn_player map num_pokemon =
     competence = [attaque_charge(); List.nth competences (element_to_index (List.nth [Plante; Feu; Eau] num_pokemon))];
     path = [];
     your_turn = true;
+    money = 0;
   }, zone_rand)
 
 (**
@@ -180,6 +181,7 @@ let spawn_list_of_enemys (map: map) (player: pokemon) =
           competence = [attaque_charge(); List.nth competences (element_to_index (List.nth element_types (rand-3)))];
           path = a_star map.tiles (tile.x, tile.y) (int_of_float pos_x, int_of_float pos_y);
           your_turn = false;
+          money = 0;
         } in
         aux rest (enemy :: acc) (cpt+1)
   in
@@ -190,10 +192,21 @@ let spawn_list_of_loot map =
     match regions with
     | [] -> acc
     | region :: rest ->
-      let case_rand = Random.int region.size in
-      let tile = List.nth region.tiles case_rand in
-      let loot = { item_id = cpt; item_skin_id = 0; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = ""; usable = true} in
-      aux rest (cpt+1) (loot :: acc)
+      let rec spawn_multiple_loot boucle cpt (acc : loot list) memory region =
+        if boucle < 1 then (acc, cpt)
+        else
+          let case_rand = Random.int region.size in
+          let tile = List.nth region.tiles case_rand in
+          if List.exists (fun t -> t.x = tile.x && t.y = tile.y) memory then
+            spawn_multiple_loot boucle cpt acc memory region
+          else
+            let skin_id = Random.int 10 in
+            let loot = { item_id = cpt; item_skin_id = skin_id; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = item_nom skin_id; usable = true} in
+            spawn_multiple_loot (boucle - 1) (cpt + 1) (loot :: acc) (tile :: memory) region
+        in
+      let nb_loot = Random.int 5 in
+      let (loot, cpt) = spawn_multiple_loot nb_loot cpt [] [] region in
+      aux rest cpt (loot @ acc)
   in
   aux map.regions 0 []
 

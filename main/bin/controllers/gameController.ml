@@ -75,7 +75,7 @@ let run () =
           (match  game_states.map_state.music with
           | Some file -> play_music file
           | None -> ());
-          let list_of_last_time = List.init (7 + ((List.length(game_states.enemies_state))*2)) (fun _ -> 0.0) in (* Use for animations *)
+          let list_of_last_time = List.init (100 + ((List.length(game_states.enemies_state))*2)) (fun _ -> 0.0) in (* Use for animations *)
           let msgs = [] in
           game_loop (game_textures, game_states) list_of_last_time map_name msgs;
         end

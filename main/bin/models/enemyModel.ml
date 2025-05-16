@@ -103,4 +103,5 @@ let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) : pokemon * 
     competence = [attaque_charge(); List.nth competences (element_to_index (List.nth element_types (random-3)))];
     path = a_star [] (int_of_float pos_x, int_of_float pos_y) (int_of_float p_pos_x, int_of_float p_pos_y);
     your_turn = false;
+    money = 0;
   }, {player with last_id = player.last_id + 1}

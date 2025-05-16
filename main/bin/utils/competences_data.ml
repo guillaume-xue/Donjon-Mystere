@@ -134,3 +134,37 @@ let eclat_glace () : competence =
     attaqueType = Attaque;
     element = Glace;
   }
+
+let potion player =
+  if player.current_hp + 5 > player.max_hp then
+    {player with current_hp = player.max_hp}
+  else
+    {player with current_hp = player.current_hp + 5}
+
+let super_potion player =
+  if player.current_hp + 15 > player.max_hp then
+    {player with current_hp = player.max_hp}
+  else
+    {player with current_hp = player.current_hp + 15}
+
+let hyper_potion player =
+  if player.current_hp + 30 > player.max_hp then
+    {player with current_hp = player.max_hp}
+  else
+    {player with current_hp = player.current_hp + 30}
+
+let super_bonbon player =
+  { player with current_xp = player.max_xp }
+
+let money_pokemon5 player =
+  { player with money = player.money + 5 }
+let money_pokemon10 player =
+  { player with money = player.money + 10 }
+let money_pokemon20 player =
+  { player with money = player.money + 20 }
+let money_pokemon50 player =
+  { player with money = player.money + 50 }
+let money_pokemon100 player =
+  { player with money = player.money + 100 }
+let money_pokemon200 player =
+  { player with money = player.money + 200 }  

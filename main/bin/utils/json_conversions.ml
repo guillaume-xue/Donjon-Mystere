@@ -118,6 +118,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
     );
     path = [];
     your_turn = player_json |> member "your_turn" |> to_bool;
+    money = player_json |> member "money" |> to_int;
   } in
 
   let enemy = enemy_json |> List.map (fun enemy_json ->
@@ -206,6 +207,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
       | _ -> failwith "Invalid path format"
     );
       your_turn = enemy_json |> member "your_turn" |> to_bool;
+      money = enemy_json |> member "money" |> to_int;
     }) in
 
   let loot = loot_json |> List.map (fun loot_json ->
@@ -378,6 +380,7 @@ let pokemon_to_yojson (player: pokemon) =
     ("competence", competences_to_json player.competence);
     ("path", `List (List.map (fun (x, y) -> `List [`Int x; `Int y]) player.path));
     ("your_turn", `Bool player.your_turn);
+    ("money", `Int player.money);
   ]
 
 let pokemons_to_yojson (pokemons: pokemon list) =

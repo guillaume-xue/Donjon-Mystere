@@ -353,6 +353,7 @@ type pokemon = {
   competence : competence list;
   path : (int * int) list;
   your_turn : bool;
+  money: int;
 }
 
 (** 

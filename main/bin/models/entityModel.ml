@@ -306,17 +306,21 @@ let remove_item_bag (nth: int) (entity: pokemon) =
     raise (Invalid_argument "Item not found in bag")
   else
     let bag = entity.bag in
-    let new_items = 
+    let (new_items, item) = 
       let rec aux i acc lst =
         match lst with
-        | [] -> List.rev acc
+        | [] -> (List.rev acc, -1)
         | x :: xs ->
-          if i = nth then List.rev_append acc xs
+          if i = nth then (List.rev_append acc xs, i)
           else aux (i + 1) (x :: acc) xs
       in
       aux 0 [] bag.items
     in
+    let item_use = List.nth bag.items item in
+    let entity = item_effets entity item_use in
+    let entity = if item_use.item_id = 3 then level_up entity else entity in
     let new_bag = {items = new_items; max_size = bag.max_size; selected_item = bag.selected_item} in
+    (* Printf.printf "Item %s removed from bag\n%!" item_use.description; *)
     set_entity_bag new_bag entity
 
 (**
