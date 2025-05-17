@@ -16,9 +16,10 @@ let manhattan_distance (((x1, y1): int * int), ((x2, y2): int * int)) : int =
   @param tiles La liste des tuiles.
   @param start La position de départ.
   @param goal La position d'arrivée.
+  @param obstacles Une liste de coordonnées représentant les obstacles.
   @return Une liste de coordonnées représentant le chemin trouvé.
 *)
-let a_star (tiles: tile list) (start: int * int) (goal: int * int) : (int * int) list =
+let a_star (tiles: tile list) (start: int * int) (goal: int * int) (obstacles: (int * int) list) : (int * int) list =
 
   let pq = PriorityQueue.create () in
   let visited = ref [] in
@@ -26,23 +27,30 @@ let a_star (tiles: tile list) (start: int * int) (goal: int * int) : (int * int)
   let g_score = Hashtbl.create 100 in
   let f_score = Hashtbl.create 100 in
 
+  (* Pour retenir la meilleure case atteinte *)
+  let best = ref (start, manhattan_distance (start, goal)) in
+
   (* Initialisation *)
   Hashtbl.add g_score start 0;
   Hashtbl.add f_score start (manhattan_distance (start, goal));
   PriorityQueue.add pq (manhattan_distance (start, goal)) start;
 
-  let rec reconstruct_path (current: int * int) (path: (int * int) list) : (int * int) list =
+  let rec reconstruct_path (current : int * int) (path : (int * int) list) : (int * int) list =
     if Hashtbl.mem came_from current then
       reconstruct_path (Hashtbl.find came_from current) (current :: path)
     else
       List.filter (fun (x, y) -> (x, y) <> start && (x, y) <> goal) (current :: path)
-    in
+  in
 
   let rec search () : (int * int) list =
     if PriorityQueue.is_empty pq then
-      []
+      (* Si pas de chemin, retourne le chemin vers la meilleure case atteinte *)
+      let best_pos, _ = !best in
+      if best_pos = start then [] else reconstruct_path best_pos []
     else
       let _, current = PriorityQueue.pop pq in
+      let dist_to_goal = manhattan_distance (current, goal) in
+      if dist_to_goal < snd !best then best := (current, dist_to_goal);
       if current = goal then
         reconstruct_path current []
       else if List.exists ((=) current) !visited then
@@ -50,7 +58,8 @@ let a_star (tiles: tile list) (start: int * int) (goal: int * int) : (int * int)
       else (
         visited := current :: !visited;
         let neighbors = List.filter (fun tile ->
-          tile.texture_id <> 0 && (* Pas un mur *)
+          tile.texture_id <> 0 &&
+          not (List.mem (tile.x, tile.y) obstacles) &&
           List.exists (fun (dx, dy) -> tile.x = fst current + dx && tile.y = snd current + dy)
             [(1, 0); (-1, 0); (0, 1); (0, -1)]
         ) tiles in

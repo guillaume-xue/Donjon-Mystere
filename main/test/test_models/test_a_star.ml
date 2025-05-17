@@ -23,7 +23,7 @@ let test_a_star _ =
   let goal = (2, 2) in
 
   (* Appeler la fonction a_star *)
-  let path = a_star tiles start goal in
+  let path = a_star tiles start goal [] in
 
   (* Vérifier le chemin trouvé *)
   Printf.printf "Path found: %s\n" (String.concat " -> " (List.map (fun (x, y) -> Printf.sprintf "(%d, %d)" x y) path));

@@ -268,3 +268,9 @@ let set_arrow_y (y : int) : int =
 *)
 let set_arrow_x (x : int) : int =
   70 + x * 350
+
+(**
+  [draw_die_start ()] dessine l'écran de fin de jeu.
+*)
+let draw_die_end () : unit =
+  draw_text ("Tu es mort, retour au menu") (screen_width / 2 - 125) (screen_height / 2 - 50) 20 Color.white;

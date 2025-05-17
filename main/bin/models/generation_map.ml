@@ -130,32 +130,37 @@ let copy_map_add_marge (tiles : tile list) : tile list =
   @param floor Le numéro de l'étage de la carte.
   @return La carte générée.
 *)
-let generation_map (floor : int) : map  =
+let rec generation_map (floor : int) : map  =
   (* Trois en un, init -> auto cell -> supp petite zone *)
   let tiles_tmp1 = remove_small_zones (regles_auto_cell (init_map ()) iterations) in
   (* Ajout de la marge *)
   let tiles_tmp = copy_map_add_marge tiles_tmp1 in
   (* Récupération des zones distinctes *)
   let regions_tmp = get_all_zones tiles_tmp in
-  (* Connctions des zones avec l'algo de Prim *)
-  let tiles_with_paths = connect_zones tiles_tmp regions_tmp in
-  (* Génération des biomes *)
-  let tiles_with_biomes = generate_biomes tiles_with_paths regions_tmp () in
 
-  (* Création de la map *)
-  let map = {
-    width = map_size_x + map_marge * 2;
-    height = map_size_y + map_marge * 2;
-    tiles = tiles_with_biomes;
-    regions = regions_tmp;
-    floor = floor; (* Initial floor *)
-    music = Some (""); (* Initial music *)
-  } in
+  if List.length regions_tmp = 0 then begin
+    generation_map floor
+  end else begin
+    (* Connctions des zones avec l'algo de Prim *)
+    let tiles_with_paths = connect_zones tiles_tmp regions_tmp in
+    (* Génération des biomes *)
+    let tiles_with_biomes = generate_biomes tiles_with_paths regions_tmp () in
 
-  (* Affichage final *)
-  print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
-  map
+    (* Création de la map *)
+    let map = {
+      width = map_size_x + map_marge * 2;
+      height = map_size_y + map_marge * 2;
+      tiles = tiles_with_biomes;
+      regions = regions_tmp;
+      floor = floor; (* Initial floor *)
+      music = Some (""); (* Initial music *)
+    } in
 
+    (* Affichage final *)
+    print_grid tiles_with_biomes (map_size_x+map_marge*2) (map_size_y+map_marge*2);
+    map
+  end
+  
 (**
   [create_new_floor floor player] génère un nouvel étage de la carte en utilisant la fonction [generation_map].
   Elle initialise le joueur, les pièges, les ennemis et les objets sur la nouvelle carte.

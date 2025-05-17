@@ -176,11 +176,11 @@ let get_i_competence (i: int) (entity: pokemon) : competence =
   @param goal: pokemon
   @return entity
 *)
-let update_a_star (tiles : tile list) (start : pokemon) (goal : pokemon) : pokemon =
+let update_a_star (tiles : tile list) (start : pokemon) (goal : pokemon) (other : pokemon list) : pokemon =
   let (start_x, start_y) = get_entity_position start in
   let (goal_x, goal_y) = get_entity_position goal in
   { start with
-    path = a_star tiles (int_of_float start_x, int_of_float start_y) (int_of_float goal_x, int_of_float goal_y);
+    path = a_star tiles (int_of_float start_x, int_of_float start_y) (int_of_float goal_x, int_of_float goal_y) (List.map (fun e -> let (x, y) = get_entity_position e in (int_of_float x, int_of_float y)) other);
   }
 
 (**
@@ -208,7 +208,7 @@ let set_entity_target_with_direction (dir : direction) (entity: pokemon) : pokem
   @param entity: pokemon
   @return entity
 *)
-let add_competence (competence: competence) (entity: pokemon) : pokemon =
+let add_competence (competence : competence) (entity : pokemon) : pokemon =
   let new_competence = competence :: entity.competence in
   {entity with competence = new_competence}
 
@@ -219,7 +219,7 @@ let add_competence (competence: competence) (entity: pokemon) : pokemon =
   @param entity: pokemon
   @return entity
 *)
-let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) : pokemon =
+let set_i_competence_puissance (i : int) (puissance: int) (entity : pokemon) : pokemon =
   if i < 0 || i >= List.length entity.competence then
     raise (Invalid_argument "Index out of bounds")
   else
@@ -233,15 +233,12 @@ let set_i_competence_puissance (i: int) (puissance: int) (entity: pokemon) : pok
   @param player: pokemon
   @return entity
 *)
-let set_entity_path (entity: pokemon) (map: map) (player: pokemon) : pokemon =
+let set_entity_path (entity : pokemon) (map : map) (player : pokemon) (other : pokemon list) : pokemon =
   let (pos_x, pos_y) = get_entity_position entity in
   let (player_x, player_y) = get_entity_position player in
-  if (List.length entity.path <= 2 || manhattan_distance ((int_of_float (floor pos_x), int_of_float (floor pos_y)), (int_of_float (floor player_x), int_of_float (floor player_y))) <= range_a_star_enemy)  && entity.your_turn && not(entity.moving) then
-    if entity.your_turn && not(entity.moving) then
-      update_a_star map.tiles entity player
-    else
-      entity
-  else
+  if (List.length entity.path <= range_a_star_enemy || manhattan_distance ((int_of_float (floor pos_x), int_of_float (floor pos_y)), (int_of_float (floor player_x), int_of_float (floor player_y))) <= range_a_star_enemy) && entity.your_turn && not(entity.moving) then begin
+    update_a_star map.tiles entity player other
+  end else
     entity
 
 (**
@@ -249,7 +246,7 @@ let set_entity_path (entity: pokemon) (map: map) (player: pokemon) : pokemon =
   @param entity: pokemon
   @return entity with path without the first pair
 *)
-let pop_entity_path (entity: pokemon) : pokemon =
+let pop_entity_path (entity : pokemon) : pokemon =
   match entity.path with
   | [] -> entity
   | _ :: rest -> { entity with path = rest }
@@ -632,7 +629,7 @@ let player_attack (player: pokemon) (enemy: pokemon list) : pokemon * pokemon li
           let degat = calcul_degats player e choose_competence in
           let msg = Printf.sprintf "%s utilise %s inflige %d dégâts à %s !\n%!" player.nom choose_competence.name degat e.nom in
           let new_enemy = {e with current_hp = e.current_hp - degat} in
-          if new_enemy.current_hp <= 0 then begin
+          if new_enemy.current_hp <= 0 && player.id = 0 then begin
             let updated_player = is_level_up player new_enemy in
             aux updated_player rest acc msg
           end else begin
