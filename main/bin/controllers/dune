@@ -2,4 +2,4 @@
  (name controllers)
  (public_name main.controllers)
  (libraries raylib ctypes tsdl tsdl-mixer main.views main.models main.utils)
- (modules gameController mapController menuController trapController))
+ (modules gameController mapController menuController))
