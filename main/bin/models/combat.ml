@@ -24,18 +24,18 @@ let element_types = [
   Glace;
 ]
 
-let item_effets pokemon loot =
-  match loot.item_skin_id with
-  | 0 -> potion pokemon
-  | 1 -> super_potion pokemon
-  | 2 -> hyper_potion pokemon
-  | 3 -> super_bonbon pokemon
-  | 4 -> money_pokemon5 pokemon
-  | 5 -> money_pokemon10 pokemon
-  | 6 -> money_pokemon20 pokemon
-  | 7 -> money_pokemon50 pokemon
-  | 8 -> money_pokemon100 pokemon
-  | 9 -> money_pokemon200 pokemon
+let item_effets pokemon (loot: loot) =
+  match loot.description with
+  | "Potion" -> potion pokemon
+  | "Super Potion" -> super_potion pokemon
+  | "Hyper Potion" -> hyper_potion pokemon
+  | "Super Bonbon" -> super_bonbon pokemon
+  | "5 Poke Dollars" -> money_pokemon5 pokemon
+  | "10 Poke Dollars" -> money_pokemon10 pokemon
+  | "20 Poke Dollars" -> money_pokemon20 pokemon
+  | "50 Poke Dollars" -> money_pokemon50 pokemon
+  | "100 Poke Dollars" -> money_pokemon100 pokemon
+  | "200 Poke Dollars" -> money_pokemon200 pokemon
   | _ -> pokemon
 
 let item_nom = function
