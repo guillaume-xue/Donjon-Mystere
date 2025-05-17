@@ -3,12 +3,14 @@ open Models.Generation_map
 open Utils.Types
 open Utils.Funcs
 open Raylib
+open Utils.Audio
 
 (**
   [init_menu_controller ()] initializes the menu controller.
   @return The menu controller stats.
 *)
 let init_menu_controller () =
+  play_music "resources/audio/music/intro.mp3";
   let index_select_x = 0 in (* Variable of cursor x *)
   let index_select_y = 0 in (* Variable of cursor y *)
   let arrow_pos_x = 70 in
@@ -31,7 +33,8 @@ let get_map_selected list_of_maps index_select_y =
   @return [Select] if the screen is clicked within the window bounds, [Intro] otherwise.
 *)
 let check_intro_screen_click () =
-  if is_mouse_button_pressed MouseButton.Left then
+  if is_mouse_button_pressed MouseButton.Left then begin
+    play_sound "resources/audio/sound/click.mp3";
     let mouse_x = get_mouse_x () in
     let mouse_y = get_mouse_y () in
     if mouse_x >= 0 && mouse_x <= 800 then (* Largeur de la fenêtre *)
@@ -41,7 +44,7 @@ let check_intro_screen_click () =
         Intro
     else
       Intro
-  else
+  end else
     Intro
 
 (**
@@ -59,6 +62,7 @@ let check_select_screen_selected screenState list_of_maps index_select_x index_s
   if current_time -. last_key_press_time > 0.1 then begin
     match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right with
     | true, _, _, _, _ -> (* Enter *)
+      play_sound "resources/audio/sound/select.mp3";
       if index_select_x = 0 && index_select_y = 0 then begin (* New game *)
         (Select_New, 3, index_select_y, current_time, map_name)
       end else if index_select_x = 1 then begin (* Continue *)
@@ -66,6 +70,7 @@ let check_select_screen_selected screenState list_of_maps index_select_x index_s
       end else
         (Select_Other, index_select_x, index_select_y, current_time, map_name)
     | _, true, _, _, _ -> (* Down *)
+      play_sound "resources/audio/sound/select.mp3";
       if (index_select_y = 1 && index_select_x = 0) || 
          (index_select_y = (List.length list_of_maps) - 1 && index_select_x = 1) then
         (screenState, index_select_x, index_select_y, current_time, map_name)
@@ -73,6 +78,7 @@ let check_select_screen_selected screenState list_of_maps index_select_x index_s
         (Select_Other, index_select_x, index_select_y + 1, current_time, map_name)
       end
     | _, _, true, _, _ -> (* Up *)
+      play_sound "resources/audio/sound/select.mp3";
       if index_select_x = 0 && index_select_y = 0 then begin
         (Select, index_select_x, index_select_y, current_time, map_name)
       end else if index_select_x = 0 && index_select_y = 1 then begin
@@ -83,12 +89,14 @@ let check_select_screen_selected screenState list_of_maps index_select_x index_s
         (screenState, index_select_x, index_select_y - 1, current_time, map_name)
       end
     | _, _, _, true, _ -> (* Left *)
+      play_sound "resources/audio/sound/select.mp3";
       if index_select_x = 0 then
         (Select, index_select_x, index_select_y, current_time, map_name)
       else begin
         (Select, 0, 0, current_time, map_name)
       end
     | _, _, _, _, true -> (* Right *)
+      play_sound "resources/audio/sound/select.mp3";
       if List.length list_of_maps = 0 then
         (Select_Other, index_select_x, index_select_y, current_time, map_name)
       else if index_select_x = 0 && index_select_y = 0 then
@@ -161,7 +169,8 @@ let check_new_map_name (map_name: string) list_of_maps =
     if String.length map_name > 0 then (Select_New, String.sub map_name 0 (String.length map_name - 1))
     else (Select_New, map_name)
   end else if is_key_pressed Key.Enter then begin (* Enter *)
-    if not (List.exists (fun map -> map = map_name) list_of_maps) && map_name <> "map " then begin
+    play_sound "resources/audio/sound/select.mp3";
+    if not (List.exists (fun map -> map = map_name) list_of_maps) && map_name <> "map " && map_name <> "" then begin
       (ChoosePokemon, map_name)
     end else
       (Select_New, map_name)
@@ -170,17 +179,20 @@ let check_new_map_name (map_name: string) list_of_maps =
 
 
 let check_choose_pokemon map_name index_select_x index_select_y  =
-  if is_key_pressed Key.Up then
+  if is_key_pressed Key.Up then begin
+    play_sound "resources/audio/sound/select.mp3";
     if (index_select_y - 1) >= 0 then
       (ChoosePokemon, (index_select_x, index_select_y - 1))
     else
       (ChoosePokemon, (index_select_x, index_select_y))
-  else if is_key_pressed Key.Down then
+  end else if is_key_pressed Key.Down then begin
+    play_sound "resources/audio/sound/select.mp3";
     if (index_select_y + 1) < 3 then
       (ChoosePokemon, (index_select_x, index_select_y + 1))
     else
       (ChoosePokemon, (index_select_x, index_select_y))
-  else if is_key_pressed Key.Enter then begin
+  end else if is_key_pressed Key.Enter then begin
+    play_sound "resources/audio/sound/select.mp3";
     create_map_json map_name index_select_y;
     (Game, (index_select_x, index_select_y))
   end else

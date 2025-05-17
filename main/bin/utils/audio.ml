@@ -18,6 +18,15 @@ let play_music file =
       end
   | Error (`Msg e) -> failwith ("Failed to load music: " ^ e)
 
+let play_sound file =
+  match Mixer.load_wav file with
+  | Ok chunk ->
+      begin match Mixer.play_channel (-1) chunk 0 with
+      | Ok _ -> ()
+      | Error (`Msg e) -> failwith ("Failed to play sound: " ^ e)
+      end
+  | Error (`Msg e) -> failwith ("Failed to load sound: " ^ e)
+
 let stop_music () =
   match Mixer.halt_music () with
   | Ok () -> ()

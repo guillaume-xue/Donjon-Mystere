@@ -1,5 +1,6 @@
 open Utils.Types
 open Utils.Competences_data
+open Utils.Audio
 
 let competences = [
   flammeche ();
@@ -114,6 +115,7 @@ let xp_gain (pokemon1: pokemon) (pokemon2: pokemon)=
   int_of_float (float_of_int pokemon2.level *. 4.5 *. (Float.max 1.0 (float_of_int pokemon2.level -. float_of_int pokemon1.level)))
 
 let level_up (pokemon: pokemon) =
+  play_sound "resources/audio/sound/levelUp.mp3";
   let new_hp = pokemon.max_hp + Random.int 5 in
   let new_att = pokemon.attaque + Random.int 5 in 
   let new_def = pokemon.defense + Random.int 5 in

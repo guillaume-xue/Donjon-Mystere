@@ -4,6 +4,7 @@ open Combat
 open A_star
 open Position
 open ItemModel
+open Utils.Audio
 
 (**
   Set the entity screen position
@@ -587,6 +588,7 @@ let player_get_target (player: pokemon) =
   
 let player_attack (player: pokemon) (enemy: pokemon list) =
   if player.action = Attack && player.your_turn && not(player.moving) then begin
+    play_sound "resources/audio/sound/attack.mp3";
     let target_x, target_y = player_get_target player in
     let rec aux player enemy acc msg =
       match enemy with

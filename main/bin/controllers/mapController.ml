@@ -20,6 +20,7 @@ open Utils.Types
 open Utils.Json_conversions
 open Utils.Funcs
 open Utils.Settings_map
+open Utils.Audio
 
 (**
   [init_map_controller filename] initializes the map controller.
@@ -44,7 +45,7 @@ let init_map_controller filename =
     attack_msg_tex = init_attack_msg_textures ();
   } in
   let (map, player, enemy, loots, traps_and_grounds) = load_map_player_from_json (map_dir ^ filename ^ ".json") in
-  let map = set_map_music "resources/audio/music1.mp3" map in
+  let map = set_map_music "resources/audio/music/music1.mp3" map in
   let new_player = 
     player
     |> set_entity_screen (screen_width / 2) (screen_height / 2)
@@ -158,14 +159,19 @@ let check_key_pressed_bag player select =
   let len = (List.length player.bag.items) - 1 in
   if (player.action = OpenBag)  && player.your_turn then begin
     if is_key_pressed Key.Up && select - 7 >= 0 then begin
+      play_sound "resources/audio/select.mp3";
       (false, select - 7)
     end else if is_key_pressed Key.Down && (select + 7 <= len && select + 7 <= 27) then begin
+      play_sound "resources/audio/select.mp3";
       (false, select + 7)
     end else if is_key_pressed Key.Left && select - 1 >= 0 then begin
+      play_sound "resources/audio/select.mp3";
       (false, select - 1)
     end else if is_key_pressed Key.Right && (select + 1 <= len && select + 1 <= 27) then begin
+      play_sound "resources/audio/select.mp3";
       (false, select + 1)
     end else if is_key_pressed Key.Enter then begin
+      play_sound "resources/audio/select.mp3";
       (true, select)
     end else
       (false, select)

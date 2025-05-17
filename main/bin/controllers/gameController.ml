@@ -16,6 +16,7 @@ let run () =
   set_target_fps 0;
 
   (* Variables *)
+  init_audio ();
   let screen_state = Intro in
   let map_name = "map " in
   let list_of_maps = read_json_files_in_directory map_dir in
@@ -30,7 +31,6 @@ let run () =
       close_window ()
     end else
       begin
-
         let player =
           if List.for_all (fun e -> not e.your_turn) game_states.enemies_state && not game_states.player_state.your_turn then
             set_your_turn true game_states.player_state
@@ -72,16 +72,15 @@ let run () =
       if screen_state = Game then
         begin          
           let (game_textures, game_states) = init_map_controller map_name in
-          init_audio ();
           (match  game_states.map_state.music with
           | Some file -> play_music file
           | None -> ());
-            let id_max =
-            List.fold_left
-              (fun acc enemy ->
-              if enemy.id > acc then enemy.id else acc)
-              0 game_states.enemies_state
-            in
+          let id_max =
+          List.fold_left
+            (fun acc enemy ->
+            if enemy.id > acc then enemy.id else acc)
+            0 game_states.enemies_state
+          in
           let list_of_last_time = List.init (7 + (id_max*2)) (fun _ -> 0.0) in (* Use for animations *)
           let msgs = [] in
           game_loop (game_textures, game_states) list_of_last_time map_name msgs;
