@@ -10,7 +10,7 @@ open MapController
 (**
   [run ()] runs the game.
 *)
-let run () =
+let run () : unit =
 
   init_window screen_width screen_height "Mystery Dungeon";
   set_target_fps 0;
@@ -40,7 +40,7 @@ let run () =
         let game_states = set_game_state_player player game_states in
         let (game_states, last_time) = update_player game_states last_time in
 
-        let rec aux player enemy (other: pokemon list) map last_time game_states =
+        let rec aux (player : pokemon) (enemy : pokemon list) (other: pokemon list) (map : map) (last_time : float list) (game_states : game_state) : pokemon list * float list * game_state =
           match enemy with
           | [] -> (other, last_time, game_states)
           | e :: rest ->
@@ -62,7 +62,7 @@ let run () =
   in
 
   (* Menu loop *)
-  let rec menu_loop screen_state map_name menu_item_info last_time_menu =
+  let rec menu_loop (screen_state : screenState) (map_name : string) (menu_item_info : int * int * int * int) (last_time_menu : float list) : unit =
     if window_should_close () then
       begin
         stop_music ();

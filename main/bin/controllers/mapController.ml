@@ -27,7 +27,7 @@ open Utils.Audio
   @param filename The name of the map file.
   @return The map textures, player textures, enemy textures, items textures, bag textures, map, player, enemy and loots.
 *)
-let init_map_controller filename =
+let init_map_controller (filename : string) : game_textures * game_state =
   let items_textures = init_items_textures () in
   let (bag, square, items) = init_bag_textures items_textures in
   let bag_textures = {
@@ -67,26 +67,29 @@ let init_map_controller filename =
   @param bag_textures The textures of the bag.
   @param select The selected item.
 *)
-let draw_open_bag player bag_textures select =
+let draw_open_bag (player : pokemon) (bag_textures : bag_textures) (select : int) : unit =
   if player.action = OpenBag then
     draw_bag player bag_textures select
 
-let draw_msgs_state player msgs msgs_tex =
+(**
+  [draw_msgs_state player msgs msgs_tex] draws the messages.
+  @param player The player.
+  @param msgs The messages.
+  @param msgs_tex The textures of the messages.
+*)
+let draw_msgs_state (player : pokemon) (msgs : string list) (msgs_tex : Texture2D.t option) : unit =
   if player.action = OpenBag then
     ()
   else
     draw_attack_msg msgs msgs_tex
     
 (**
-  [draw_game map player enemy items map_textures player_textures enemy_textures items_textures bag_textures select] draws the game.
-  @param map The map.
-  @param player The player.
-  @param enemy The enemy.
-  @param items The items.
-  @param visibility The grid for shadowcasting
-  @param select The selected item.
+  [draw_game game_states game_textures visibility] draws the game.
+  @param game_states The game states.
+  @param game_textures The game textures.
+  @param visibility The visibility.
 *)
-let draw_game game_states game_textures visibility =
+let draw_game (game_states : game_state) (game_textures : game_textures) (visibility : float array array) : unit =
   if is_stairs game_states.traps_and_grounds_state game_states.player_state then begin
     begin_drawing ();
     clear_background Color.black;
@@ -107,13 +110,12 @@ let draw_game game_states game_textures visibility =
     end_drawing ()
   end
 
-
 (**
   [check_key_pressed player] checks if a key is pressed.
   @param player The player.
   @return The direction and if a key is pressed.
 *)
-let check_key_pressed player =
+let check_key_pressed (player : pokemon) : direction * bool =
   if player.your_turn && not(player.moving) && player.action = Nothing then begin
     if is_key_down Key.Right then begin
       (Right, true)
@@ -133,7 +135,7 @@ let check_key_pressed player =
   @param player The player.
   @return The action and if a key is pressed.
 *)
-let check_key_pressed_action player =
+let check_key_pressed_action (player : pokemon) : interaction * bool =
   if player.your_turn && not(player.moving) then begin
     if is_key_pressed Key.J then begin
       (Attack, true)
@@ -155,7 +157,7 @@ let check_key_pressed_action player =
   @param select The selected item.
   @return The action and the selected item.
 *)
-let check_key_pressed_bag player select =
+let check_key_pressed_bag (player : pokemon) (select : int) : bool * int =
   let len = (List.length player.bag.items) - 1 in
   if (player.action = OpenBag)  && player.your_turn then begin
     if is_key_pressed Key.Up && select - 7 >= 0 then begin
@@ -178,11 +180,16 @@ let check_key_pressed_bag player select =
   end else
     (false, 0)
 
-let check_pickup_item game_states =
+(**
+  [check_pickup_item game_states] checks if the player is picking up an item.
+  @param game_states The game states.
+  @return The updated game states.
+*)
+let check_pickup_item (game_states : game_state) : game_state =
   let player = game_states.player_state in
   let items = game_states.loots_state in
   if player.action = PickUp && player.your_turn then begin
-    let rec aux x y (list: loot list) =
+    let rec aux (x : float) (y : float) (list: loot list) : game_state=
       match list with
       | [] -> 
         let player = set_entity_action Nothing player in
@@ -194,7 +201,6 @@ let check_pickup_item game_states =
             |> add_item_bag item
             |> set_entity_action Nothing
           in
-
           let new_list = remove_item_in_list item items in
           game_states
           |> set_game_state_loots new_list
@@ -209,14 +215,12 @@ let check_pickup_item game_states =
     game_states
   
 (**
-  [update_player player enemy map last_time] updates the player.
-  @param player The player.
-  @param enemy The enemy.
-  @param map The map.
+  [update_player game_states last_time] updates the player.
+  @param game_states The game states.
   @param last_time The last time.
-  @return The updated player.
+  @return The updated game states and last time.
 *)
-let update_player game_states last_time =
+let update_player (game_states : game_state) (last_time : float list) : game_state * float list =
   let (game_states, last_time) = update_trap_and_ground game_states last_time in
   let (action , key_pressed) = check_key_pressed_action game_states.player_state in
   let player = action_player action game_states.player_state key_pressed in
@@ -263,15 +267,15 @@ let update_player game_states last_time =
   (game_states, last_time)
 
 (**
-  [update_enemy enemies player map key_pressed last_time] updates the enemy.
-  @param enemies The enemy.
+  [update_enemy enemy player other map last_time] updates the enemy.
+  @param enemy The enemy.
   @param player The player.
+  @param other The other players.
   @param map The map.
-  @param key_pressed True if a key is pressed, false otherwise.
   @param last_time The last time.
-  @return The updated enemy.
+  @return The updated enemy, player, last time and message.
 *)
-let update_enemy enemy player other map last_time =
+let update_enemy (enemy : pokemon) (player : pokemon) (other : pokemon list) (map : map) (last_time : float list) : pokemon * pokemon * float list * string =
   let enemy = set_entity_path enemy map player in
   let (enemy_target, in_range) = update_target_enemy enemy player in
   let enemy = move enemy_target enemy true in_range in
@@ -287,7 +291,13 @@ let update_enemy enemy player other map last_time =
   let enemy = if (_action3 && _action2) || _action1 || not _action2 then set_your_turn false enemy else enemy in
   (enemy, player, last_time, msg) 
 
-let set_your_turn your_turn player =
+(**
+  [set_your_turn your_turn player] sets the player's turn.
+  @param your_turn The player's turn.
+  @param player The player.
+  @return The updated player.
+*)
+let set_your_turn (your_turn : bool) (player : pokemon) : pokemon =
   set_your_turn your_turn player
 
 (**
@@ -295,18 +305,15 @@ let set_your_turn your_turn player =
   @param player The player.
   @param map The map.
 *)
-let update_shadow_cast player map =
+let update_shadow_cast (player : pokemon) (map : map) : float array array =
   compute_fov player 10 map.tiles map.width map.height
 
 (**
-  [save_game filename map player enemy] saves the game.
-  @param filename The name of the file.
-  @param map The map.
-  @param player The player.
-  @param enemy The enemy.
-  @param loots The loots.
-  @param traps_and_grounds The traps and grounds.
+  [update_game game_states last_time] updates the game.
+  @param game_states The game states.
+  @param last_time The last time.
+  @return The updated game states and last time.
 *)
-let save_game filename game_states =
+let save_game (filename : string) (game_states : game_state) : unit =
   let json = map_player_to_json game_states.map_state game_states.player_state game_states.enemies_state game_states.loots_state game_states.traps_and_grounds_state in
   write_json_to_file (map_dir ^ filename ^ ".json") json

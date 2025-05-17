@@ -10,7 +10,7 @@ let multipliers = [|
 |]
 
 (**
-  Casts light in a given octant.
+  [cast_light] casts light in a specific octant.
   @param x The x coordinate of the light source.
   @param y The y coordinate of the light source.
   @param x_max The maximum x coordinate of the grid.
@@ -24,13 +24,13 @@ let multipliers = [|
   @param end_slope The ending slope for the current row.
   @param xx, xy, yx, yy Multipliers for the octant transformation.
 *)
-let rec cast_light x y x_max y_max radius set_visible is_blocked octant row start_slope end_slope xx xy yx yy =
+let rec cast_light (x : int) (y : int) (x_max : int) (y_max : int) (radius : int) set_visible is_blocked (octant : int) (row : int) (start_slope : float) (end_slope : float) (xx : int) (xy : int) (yx : int) (yy : int) : unit =
   if start_slope < end_slope then ()
   else
-    let rec process_row i start_slope =
+    let rec process_row (i : int) (start_slope : float) : unit =
       if i > radius then ()
       else
-        let rec process_column dx start_slope blocked =
+        let rec process_column (dx : int) (start_slope : float) (blocked : bool) : float =
           if dx > 0 then start_slope
           else
             let dy = -i in
@@ -68,7 +68,7 @@ let rec cast_light x y x_max y_max radius set_visible is_blocked octant row star
     process_row row start_slope
 
 (** 
-  Process all octants for a given tile.
+  [process_octants] processes all octants for light casting.
   @param x The x coordinate of the light source.
   @param y The y coordinate of the light source.
   @param x_max The maximum x coordinate of the grid.
@@ -77,7 +77,7 @@ let rec cast_light x y x_max y_max radius set_visible is_blocked octant row star
   @param visibility A function to set visibility for a tile.
   @param i The current octant being processed (0-7).
 *)
-let rec process_octants x y x_max y_max radius set_visible is_blocked visibility i =
+let rec process_octants (x : int) (y : int) (x_max : int) (y_max : int) (radius : int) set_visible is_blocked (visibility : float array array) (i : int) : float array array =
   if i > 7 then visibility
   else (
     cast_light x y x_max y_max radius set_visible is_blocked i 1 1.0 0.0
@@ -87,7 +87,7 @@ let rec process_octants x y x_max y_max radius set_visible is_blocked visibility
   )
 
 (**
-  Compute the field of view for a player.
+  [compute_fov] computes the field of view for a player.
   @param player The player object.
   @param radius The radius of the light.
   @param grid The grid of tiles.
@@ -95,7 +95,7 @@ let rec process_octants x y x_max y_max radius set_visible is_blocked visibility
   @param max_y The maximum y coordinate of the grid.
   @return A matrix representing visibility for each tile.
 *)
-let compute_fov player radius grid max_x max_y =
+let compute_fov (player : pokemon) (radius : int) (grid : tile list) (max_x : int) (max_y : int) : float array array =
   let (pos_x, pos_y) = get_entity_position player in
   let x = int_of_float pos_x in
   let y = int_of_float pos_y in
@@ -105,7 +105,7 @@ let compute_fov player radius grid max_x max_y =
       visibility.(y).(x) <- visibility_value
   in
   let is_blocked x y = 
-    let rec is_this_tile x y grid =
+    let rec is_this_tile (x : int) (y : int) (grid : tile list) : bool =
       match grid with
       | [] -> false
       | tile :: rest ->

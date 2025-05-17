@@ -66,7 +66,7 @@ let update_target_enemy (enemy: pokemon) (player: pokemon) : direction * bool =
 *)
 let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) : pokemon * pokemon =
   let lvl = randLvl player in
-  let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) () in
+  let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) in
   let (p_pos_x, p_pos_y) = get_entity_position player in
   let random = (Random.int 8) + 3 in
   {

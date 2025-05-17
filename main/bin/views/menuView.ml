@@ -6,7 +6,7 @@ open Utils.Funcs
   [init_menu_textures ()] initialise les textures du menu.
   @return Les textures du menu.
 *)
-let init_menu_textures () =
+let init_menu_textures () : Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t list * int * int * int * int =
   (* Charger et redimensionner l'image du titre *)
   let title = load_image "resources/images/menu/title.png" in
   let image_width = Image.width title in
@@ -75,7 +75,7 @@ let init_menu_textures () =
   @param text_pos_x La position x du texte.
   @param text_pos_y La position y du texte.
 *)
-let draw_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y =
+let draw_intro (title_texture : Texture2D.t option) (background_texture : Texture2D.t option) (title_pos_x : int) (title_pos_y : int) (text_pos_x : int) (text_pos_y : int) : unit =
   let time = get_time () in
   let blink = int_of_float (time *. 2.0) mod 3 = 0 in
 
@@ -104,7 +104,7 @@ let draw_intro title_texture background_texture title_pos_x title_pos_y text_pos
   @param arrow_pos_x La position x de la flèche.
   @param arrow_pos_y La position y de la flèche.
 *)
-let draw_select text_talk background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y =
+let draw_select (text_talk : string) (background_texture : Texture2D.t option) (select_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) (arrow_pos_x : int) (arrow_pos_y : int) : unit =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
@@ -140,7 +140,7 @@ let draw_select text_talk background_texture select_texture arrow_texture arrow_
   @param arrow_pos_x La position x de la flèche.
   @param arrow_pos_y La position y de la flèche.
 *)
-let draw_select_other text_talk background_texture select_other_texture list_of_maps arrow_texture arrow_pos_x arrow_pos_y =
+let draw_select_other (text_talk : string) (background_texture : Texture2D.t option) (select_other_texture : Texture2D.t option) (list_of_maps : string list) (arrow_texture : Texture2D.t option) (arrow_pos_x : int) (arrow_pos_y : int) : unit =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
@@ -184,7 +184,7 @@ let draw_select_other text_talk background_texture select_other_texture list_of_
   @param select_new_texture La texture de la sélection.
   @param arrow_texture La texture de la flèche.
 *)
-let draw_select_new map_name text_talk background_texture select_new_texture arrow_texture =
+let draw_select_new (map_name : string) (text_talk : string) (background_texture : Texture2D.t option) (select_new_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) : unit =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
   begin_drawing ();
@@ -211,7 +211,16 @@ let draw_select_new map_name text_talk background_texture select_new_texture arr
   draw_text "[Entrer]" 640 510 20 Color.white;
   end_drawing ()
 
-let draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture pokemon_icon_texture arrow_pos_y y =
+(**
+  [draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture pokemon_icon_texture arrow_pos_y y] dessine le menu de sélection de Pokémon.
+  @param background_texture La texture de l'arrière-plan.
+  @param choose_pokemon_texture La texture de la sélection.
+  @param arrow_texture La texture de la flèche.
+  @param pokemon_icon_texture La liste des textures des icônes de Pokémon.
+  @param arrow_pos_y La position y de la flèche.
+  @param y La position y du Pokémon sélectionné.
+*)
+let draw_pokemon_chooser (background_texture : Texture2D.t option) (choose_pokemon_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) (pokemon_icon_texture : Texture2D.t list) (arrow_pos_y : int) (y : int) : unit =
   let time = get_time () in
   let blink = int_of_float (time *. 3.0) mod 2 = 0 in
 
@@ -225,7 +234,6 @@ let draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture
   let pokemon_icon = List.nth pokemon_icon_texture y in
   draw_texture pokemon_icon 555 65 Color.white;
 
-  
   (* Dessiner le fond *)
   (match choose_pokemon_texture with
   | Some texture -> draw_texture texture 0 0 Color.white
@@ -251,12 +259,12 @@ let draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture
   [set_arrow_y y] récupère la position y de la flèche.
   @return La position y de la flèche.
 *)
-let set_arrow_y (y : int) =
+let set_arrow_y (y : int) : int =
   58 + y * 30
 
 (**
   [set_arrow_x x] récupère la position x de la flèche.
   @return La position x de la flèche.
 *)
-let set_arrow_x (x : int) =
+let set_arrow_x (x : int) : int =
   70 + x * 350

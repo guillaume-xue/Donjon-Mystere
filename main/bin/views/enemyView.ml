@@ -9,7 +9,7 @@ open Models.EntityModel
   @param enemy_textures The textures of the enemy.
   @param player The player.
 *)
-let draw_enemy enemies enemy_textures (player: pokemon)=
+let draw_enemy (enemies : pokemon list) (enemy_textures : Texture2D.t list) (player: pokemon) : unit =
   List.iter (fun enemy ->
     if enemy.current_hp <= 0 then
       ()

@@ -61,7 +61,7 @@ let rec regles_auto_cell (tiles: tile list) (n: int) : tile list =
 *)
 let flood_fill (tiles: tile list) (visited: (int * int) list ref) (x: int) (y: int) : int =
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1)] in
-  let rec dfs stack zone_size =
+  let rec dfs (stack : (int * int) list) (zone_size : int) : int =
     match stack with
     | [] -> zone_size
     | (cx, cy) :: rest ->

@@ -8,15 +8,12 @@ open Models.Map_model
 open Models.Game_state
 
 (**
-  [update_trap_and_ground map player trap_and_ground enemys items] updates the trap and ground.
-  @param map The map.
-  @param player The player.
-  @param trap_and_ground The trap and ground.
-  @param enemys The enemy.
-  @param items The items.
-  @return The updated map, player, trap and ground, enemy and items.
+  [update_trap_and_ground game_states last_time] updates the traps and grounds in the game.
+  @param game_states The current game states.
+  @param last_time The last time the game was updated.
+  @return The updated game states and last time.
 *)
-let update_trap_and_ground game_states last_time =
+let update_trap_and_ground (game_states : game_state) (last_time : float list) : game_state * float list =
   let (pos_x, pos_y) = get_entity_position game_states.player_state in
   let pos_x = int_of_float pos_x in
   let pos_y = int_of_float pos_y in

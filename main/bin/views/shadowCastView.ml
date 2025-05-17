@@ -7,8 +7,7 @@ open Models.EntityModel
   [init_shadow_cast_view ()] initializes the shadow cast view.
   @return The shadow cast texture.
 *)
-
-let init_shadow_cast_view () =
+let init_shadow_cast_view () :Texture2D.t list =
   let image_path = "resources/images/map/light_cast.png" in
   init_textures 0 10 (load_image image_path) []
 
@@ -20,13 +19,13 @@ let init_shadow_cast_view () =
   @param max_x The maximum x coordinate of the grid.
   @param max_y The maximum y coordinate of the grid.
 *)
-let draw_shadow_cast shadow_cast_texture visibility player max_x max_y =
+let draw_shadow_cast (shadow_cast_texture : Texture2D.t list) (visibility : float array array) (player : Utils.Types.pokemon) (max_x : int) (max_y : int) : unit =
   let (screen_x, screen_y) = get_entity_screen player in
   let (pos_x, pos_y) = get_entity_position player in
-  let rec print_grid visibility start_x start_y y =
+  let rec print_grid (visibility : float array array) (start_x : float) (start_y : float) (y : int) : unit =
     if y >= max_y then ()
     else (
-      let rec print_row x =
+      let rec print_row (x : int) : unit =
         if x >= max_x then ()
         else (
           if visibility.(y).(x) > 0.0 then begin

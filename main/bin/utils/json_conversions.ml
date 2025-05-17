@@ -234,7 +234,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
   (map, player, enemy, loot, trap_and_ground)
 
 (** 
-  [tile_to_yojson] convertit une tuile en une représentation JSON.
+  [tile_to_yojson tile ] convertit une tuile en une représentation JSON.
 
   @param tile La tuile à convertir.
 
@@ -244,7 +244,7 @@ let load_map_player_from_json (filename: string): (map * pokemon * pokemon list 
   - ["texture_id"] : l'identifiant de la texture associée à la tuile.
   - ["biome_id"] : l'identifiant du biome associé à la tuile.
 *)
-let tile_to_yojson tile =
+let tile_to_yojson (tile : tile) =
   `Assoc [
     ("x", `Int tile.x);
     ("y", `Int tile.y);
@@ -253,7 +253,7 @@ let tile_to_yojson tile =
   ]
 
 (** 
-  [map_to_yojson] convertit une carte en une représentation JSON.
+  [map_to_yojson map] convertit une carte en une représentation JSON.
 
   @param map La carte à convertir.
 
@@ -263,7 +263,7 @@ let tile_to_yojson tile =
     - ["tiles"] : une liste de tuiles converties en JSON.
     - ["floor"] : l'étage de la carte.
 *)
-let map_to_yojson map =
+let map_to_yojson (map : map) =
   `Assoc [
     ("width", `Int map.width);
     ("height", `Int map.height);
@@ -280,7 +280,7 @@ let map_to_yojson map =
   - ["items"] : une liste d'objets convertis en JSON.
   - ["max_size"] : la taille maximale du sac.
 *)
-let bag_to_yojson bag =
+let bag_to_yojson (bag : bag) =
   `Assoc [
     ("items", `List (List.map (fun item ->
       `Assoc [
@@ -298,6 +298,13 @@ let bag_to_yojson bag =
     ("max_size", `Int bag.max_size)
   ]
 
+(**
+  [element_to_json element] convertit un élément en une représentation JSON.
+
+  @param element L'élément à convertir.
+
+  @return Une valeur JSON de type [`String] représentant l'élément.
+*)
 let element_to_json (element: element) =
   `String (match element with
     | Feu -> "Feu"
@@ -310,6 +317,20 @@ let element_to_json (element: element) =
     | Glace -> "Glace"
   )
   
+(**
+  [competence_to_json competence] convertit une compétence en une représentation JSON.
+
+  @param competence La compétence à convertir.
+
+  @return Une valeur JSON de type [`Assoc] représentant la compétence, avec les clés suivantes :
+  - ["id"] : l'identifiant de la compétence.
+  - ["name"] : le nom de la compétence.
+  - ["description"] : la description de la compétence.
+  - ["element"] : l'élément de la compétence.
+  - ["puissance"] : la puissance de la compétence.
+  - ["precision"] : la précision de la compétence.
+  - ["attaqueType"] : le type d'attaque de la compétence.
+*)
 let competence_to_json (competence: competence) =
   `Assoc [
     ("id", `Int competence.id);
@@ -325,10 +346,29 @@ let competence_to_json (competence: competence) =
     ))
   ]
 
+(**
+  [competences_to_json competences] convertit une liste de compétences en une représentation JSON.
+
+  @param competences La liste de compétences à convertir.
+
+  @return Une valeur JSON de type [`List] représentant la liste de compétences.
+*)
 let competences_to_json (competences: competence list) =
   `List (List.map competence_to_json competences)
 
+(**
+  [position_to_json position] convertit une position en une représentation JSON.
 
+  @param position La position à convertir.
+
+  @return Une valeur JSON de type [`Assoc] représentant la position, avec les clés suivantes :
+  - ["world_x"] : la position x dans le monde.
+  - ["world_y"] : la position y dans le monde.
+  - ["screen_x"] : la position x à l'écran.
+  - ["screen_y"] : la position y à l'écran.
+  - ["target_x"] : la position cible x.
+  - ["target_y"] : la position cible y.
+*)
 let position_to_json (position: position) =
   `Assoc [
     ("world_x", `Float position.world_x);
@@ -341,20 +381,33 @@ let position_to_json (position: position) =
 
 (**
   [pokemon_to_yojson player] converts a player to a JSON representation.
+
   @param player The player to convert.
+
   @return A JSON value of type [`Assoc] representing the player, with the following keys:
-  - ["pos_x"]: the x position of the player.
-  - ["pos_y"]: the y position of the player.
-  - ["screen_x"]: the x screen position of the player.
-  - ["screen_y"]: the y screen position of the player.
+  - ["nom"]: the name of the player.
+  - ["id"]: the id of the player.
+  - ["last_id"]: the last id of the player.
+  - ["number"]: the number of the player.
+  - ["position"]: the position of the player.
   - ["entity_textures_id"]: the texture id of the player.
-  - ["target_x"]: the x target position of the player.
-  - ["target_y"]: the y target position of the player.
   - ["current_hp"]: the current HP of the player.
   - ["max_hp"]: the maximum HP of the player.
   - ["level"]: the level of the player.
   - ["current_xp"]: the current XP of the player.
   - ["max_xp"]: the maximum XP of the player.
+  - ["bag"]: the bag of the player.
+  - ["step_cpt"]: the step count of the player.
+  - ["speed"]: the speed of the player.
+  - ["attaque"]: the attack of the player.
+  - ["defense"]: the defense of the player.
+  - ["attaque_speciale"]: the special attack of the player.
+  - ["defense_speciale"]: the special defense of the player.
+  - ["element"]: the element of the player.
+  - ["competence"]: the competence of the player.
+  - ["path"]: the path of the player.
+  - ["your_turn"]: indicates if it's the player's turn.
+  - ["money"]: the money of the player.
 *)
 let pokemon_to_yojson (player: pokemon) =
   `Assoc [
@@ -383,6 +436,13 @@ let pokemon_to_yojson (player: pokemon) =
     ("money", `Int player.money);
   ]
 
+(**
+  [pokemons_to_yojson pokemons] convertit une liste de Pokémon en une représentation JSON.
+
+  @param pokemons La liste de Pokémon à convertir.
+
+  @return Une valeur JSON de type [`List] représentant la liste de Pokémon.
+*)
 let pokemons_to_yojson (pokemons: pokemon list) =
   `List (List.map pokemon_to_yojson pokemons)
 
@@ -415,9 +475,23 @@ let loot_to_json (loot: loot) =
     ("usable", `Bool loot.usable);
   ]
 
+(**
+  [loots_to_json loots] convertit une liste de butins en une représentation JSON.
+
+  @param loots La liste de butins à convertir.
+
+  @return Une valeur JSON de type [`List] représentant la liste de butins.
+*)
 let loots_to_json (loots: loot list) =
   `List (List.map loot_to_json loots)
 
+(**
+  [trap_ground_to_int trap_and_ground] convertit un piège ou un sol en un entier.
+
+  @param trap_and_ground Le piège ou le sol à convertir.
+
+  @return Un entier représentant le piège ou le sol.
+*)
 let trap_and_ground_to_json (trap_and_ground: trap_and_ground) =
   `Assoc [
     ("nature", `Int (trap_and_ground.nature |> trap_ground_to_int));
@@ -426,16 +500,25 @@ let trap_and_ground_to_json (trap_and_ground: trap_and_ground) =
     ("visibility", `Bool trap_and_ground.visibility);
   ]
 
+(**
+  [traps_and_grounds_to_json traps_and_grounds] convertit une liste de pièges et de sols en une représentation JSON.
+
+  @param traps_and_grounds La liste de pièges et de sols à convertir.
+
+  @return Une valeur JSON de type [`List] représentant la liste de pièges et de sols.
+*)
 let traps_and_grounds_to_json (trap_and_ground: trap_and_ground list) =
   `List (List.map trap_and_ground_to_json trap_and_ground)
 
 (**
   [map_player_to_json map player enemy items traps_and_grounds] converts a map, a player, enemies, items, and traps/grounds to a JSON representation.
+
   @param map The map to convert.
   @param player The player to convert.
   @param enemy The enemy to convert.
   @param items The items to convert.
   @param traps_and_grounds The traps and grounds to convert.
+
   @return A JSON value of type [`Assoc] representing the map, player, enemies, items, and traps/grounds.
 *)
 let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items: loot list) (traps_and_grounds: trap_and_ground list) =
@@ -447,24 +530,25 @@ let map_player_to_json (map: map) (player: pokemon) (enemy: pokemon list) (items
     ("trap_and_ground", traps_and_grounds_to_json traps_and_grounds)
   ]
 
-
 (** 
   [write_json_to_file] écrit le JSON [json] dans un fichier nommé [filename].
   
   @param filename Le nom du fichier dans lequel écrire le JSON.
   @param json Le JSON à écrire dans le fichier.
 *)
-let write_json_to_file filename json =
+let write_json_to_file (filename : string) (json : t) : unit =
   let oc = open_out_gen [Open_creat; Open_trunc; Open_wronly] 0o666 filename in
   Yojson.Basic.pretty_to_channel oc json;
   close_out oc
 
 (**
   [read_json_files_in_directory dir_path] lit tous les noms de fichiers .json dans un dossier.
+
   @param dir_path Le chemin du dossier.
+
   @return Une liste de noms de fichiers .json.
 *)
-let read_json_files_in_directory dir_path =
+let read_json_files_in_directory (dir_path : string) : string list =
   let files = Sys.readdir dir_path in
   Array.to_list files
   |> List.filter (fun file -> Filename.check_suffix file ".json")

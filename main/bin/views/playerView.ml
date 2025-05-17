@@ -7,7 +7,7 @@ open Models.EntityModel
   @param player The player to draw.
   @param player_textures The list of player textures.
 *)
-let draw_player player player_textures =
+let draw_player (player : pokemon) (player_textures : Texture2D.t list) : unit =
   let texture = List.nth player_textures (player.number * 40 + player.entity_textures_id) in
   let (screen_x, screen_y) = get_entity_screen player in
   draw_texture texture screen_x screen_y Color.white
@@ -16,7 +16,7 @@ let draw_player player player_textures =
   [draw_player_stats player] draws the player's stats on the screen.
   @param player The player whose stats to draw.
 *)
-let draw_player_stats (player: pokemon) =
+let draw_player_stats (player: pokemon) : unit =
   let stats_text = "Level: " ^ string_of_int player.level ^ "     HP: " ^ string_of_int player.current_hp ^ "/" ^ string_of_int player.max_hp in
   let font = get_font_default () in
   let text_position = Vector2.create 10.0 10.0 in

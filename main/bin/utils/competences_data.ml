@@ -135,36 +135,111 @@ let eclat_glace () : competence =
     element = Glace;
   }
 
-let potion player =
+(**
+  [potion player] restaure 5 pv au joueur.
+
+  @param player Le joueur.
+
+  @return Le joueur avec les points de vie augmentés.
+*)
+let potion (player : pokemon) : pokemon =
   if player.current_hp + 5 > player.max_hp then
     {player with current_hp = player.max_hp}
   else
     {player with current_hp = player.current_hp + 5}
 
-let super_potion player =
+(**
+  [super_potion player] restaure 15 pv au joueur.
+
+  @param player Le joueur.
+
+  @return Le joueur avec les points de vie augmentés.
+*)
+let super_potion (player : pokemon) : pokemon =
   if player.current_hp + 15 > player.max_hp then
     {player with current_hp = player.max_hp}
   else
     {player with current_hp = player.current_hp + 15}
 
-let hyper_potion player =
+(**
+  [hyper_potion player] restaure 30 pv au joueur.
+
+  @param player Le joueur.
+
+  @return Le joueur avec les points de vie augmentés.
+*)
+let hyper_potion (player : pokemon) : pokemon =
   if player.current_hp + 30 > player.max_hp then
     {player with current_hp = player.max_hp}
   else
     {player with current_hp = player.current_hp + 30}
 
-let super_bonbon player =
+(**
+  [super_bonbon player] augmente le niveau du joueur.
+
+  @param player Le joueur.
+
+  @return Le joueur avec le maximum d'xp pour son niveau actuel.
+*)
+let super_bonbon (player : pokemon) : pokemon =
   { player with current_xp = player.max_xp }
 
-let money_pokemon5 player =
+(**
+  [money_pokemon5 player] augmente la monnaie du joueur de 5.
+
+  @param player Le joueur.
+
+  @return Le joueur avec la monnaie augmentée.
+*)
+let money_pokemon5 (player : pokemon) : pokemon =
   { player with money = player.money + 5 }
-let money_pokemon10 player =
+
+(**
+  [money_pokemon10 player] augmente la monnaie du joueur de 10.
+
+  @param player Le joueur.
+
+  @return Le joueur avec la monnaie augmentée.
+*)
+let money_pokemon10 (player : pokemon) : pokemon =
   { player with money = player.money + 10 }
-let money_pokemon20 player =
+
+(**
+  [money_pokemon20 player] augmente la monnaie du joueur de 20.
+
+  @param player Le joueur.
+
+  @return Le joueur avec la monnaie augmentée.
+*)
+let money_pokemon20 (player : pokemon) : pokemon =
   { player with money = player.money + 20 }
-let money_pokemon50 player =
+
+(**
+  [money_pokemon50 player] augmente la monnaie du joueur de 50.
+
+  @param player Le joueur.
+
+  @return Le joueur avec la monnaie augmentée.
+*)
+let money_pokemon50 (player : pokemon) : pokemon =
   { player with money = player.money + 50 }
-let money_pokemon100 player =
+
+(**
+  [money_pokemon100 player] augmente la monnaie du joueur de 100.
+
+  @param player Le joueur.
+
+  @return Le joueur avec la monnaie augmentée.
+*)
+let money_pokemon100 (player : pokemon) : pokemon =
   { player with money = player.money + 100 }
-let money_pokemon200 player =
+
+(**
+  [money_pokemon200 player] augmente la monnaie du joueur de 200.
+
+  @param player Le joueur.
+
+  @return Le joueur avec la monnaie augmentée.
+*)
+let money_pokemon200 (player : pokemon) : pokemon =
   { player with money = player.money + 200 }  

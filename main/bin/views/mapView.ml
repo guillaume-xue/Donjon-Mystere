@@ -8,12 +8,13 @@ open Models.EntityModel
   [init_map_textures ()] initializes the textures for the map.
   @return The textures of the map.
 *)
-let init_map_textures () =
+let init_map_textures () : Texture2D.t list =
   let image_paths = Sys.readdir "resources/images/map/biome/" |> Array.to_list |> List.filter (fun file -> Filename.check_suffix file ".png") in
   let map_textures = [] in
   let images = List.map (fun file -> load_image (Printf.sprintf "resources/images/map/biome/%s" file)) image_paths in
   let map_textures = 
-    let rec load_textures acc = function
+    let rec load_textures (acc : Texture2D.t list) (images : Image.t list) : Texture2D.t list =
+      match images with
       | [] -> List.rev acc
       | img::rest ->
         let texture = init_textures 0 2 img acc in
@@ -29,8 +30,8 @@ let init_map_textures () =
   @param player The player.
   @param textures The textures of the map.
 *)
-let draw_map (map: map) (player: pokemon) textures =
-  let rec draw_textures (tiles: tile list) (x: float) (y: float) =
+let draw_map (map: map) (player: pokemon) (textures : Texture2D.t list) : unit =
+  let rec draw_textures (tiles: tile list) (x: float) (y: float) : unit =
     match tiles with
     | [] -> ()
     | tile :: rest ->
@@ -48,5 +49,9 @@ let draw_map (map: map) (player: pokemon) textures =
   let (pos_x, pos_y) = get_entity_position player in
   draw_textures map.tiles (pos_x *. tile_texture_size) (pos_y *. tile_texture_size)
 
-let draw_floor_intro map =
+(**
+  [draw_map_intro map] draws the map intro.
+  @param map The map to draw.
+*)
+let draw_floor_intro (map : map) : unit =
   draw_text ("Floor: " ^ string_of_int (map.floor + 1)) (screen_width / 2 - 50) (screen_height / 2 - 50) 20 Color.white

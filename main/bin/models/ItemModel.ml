@@ -1,6 +1,12 @@
 open Utils.Types
 
-let set_item_usable (item: loot) (usable: bool) =
+(**
+  [set_item_usable item usable] sets the usable property of an item.
+  @param item The item to update.
+  @param usable The new usable value.
+  @return A new item with the updated usable property.
+*)
+let set_item_usable (item: loot) (usable: bool) : loot =
   { 
     item_id = item.item_id;
     item_skin_id = item.item_skin_id;
@@ -13,7 +19,13 @@ let set_item_usable (item: loot) (usable: bool) =
     usable = usable;
   }
 
-let remove_item_in_list (loot: loot) (items: loot list) =
+(**
+  [set_item_quantity item quantity] sets the quantity of an item.
+  @param item The item to update.
+  @param quantity The new quantity.
+  @return A new item with the updated quantity.
+*)
+let remove_item_in_list (loot: loot) (items: loot list)  : loot list =
   let rec aux acc lst =
     match lst with
     | [] -> List.rev acc
@@ -25,7 +37,12 @@ let remove_item_in_list (loot: loot) (items: loot list) =
   in
   aux [] items
 
-let use_item_print (item: loot) (entity: pokemon) =
-  let msg = Printf.sprintf "%s a utilisé l'item %s" entity.nom item.description
-  in 
-  msg 
+(**
+  [use_item_print item entity] returns a string indicating that the item has been used.
+  @param item The item that has been used.
+  @param entity The entity that used the item.
+  @return A string indicating that the item has been used.
+*)
+let use_item_print (item: loot) (entity: pokemon) : string =
+  let msg = Printf.sprintf "%s a utilisé l'item %s" entity.nom item.description in 
+    msg 

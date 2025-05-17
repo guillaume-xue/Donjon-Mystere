@@ -8,7 +8,7 @@ open Models.EntityModel
   [init_trap_ground_textures ()] initializes the textures trap and ground.
   @return The textures of the trap and ground.
 *)
-let init_trap_ground_textures () =
+let init_trap_ground_textures () : Texture2D.t list=
   let image_stairs = load_image ("resources/images/trap_ground/stairs.jpg") in
   let image_traps = load_image ("resources/images/trap_ground/traps.jpg") in
   if is_image_ready image_stairs && is_image_ready image_traps then
@@ -28,7 +28,7 @@ let init_trap_ground_textures () =
   @param player The player.
   @param loots_textures The textures of the items.
 *)
-let draw_trap_ground (traps_and_grounds : trap_and_ground list) (player : pokemon) traps_grounds_textures =
+let draw_trap_ground (traps_and_grounds : trap_and_ground list) (player : pokemon) (traps_grounds_textures : Texture2D.t list) : unit =
   List.iter (fun trap_and_ground ->
     if trap_and_ground.visibility = false then
       ()

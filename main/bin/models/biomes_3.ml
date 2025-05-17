@@ -27,7 +27,6 @@ let random_biome_center (zones : zone list) : tile list =
 *)
 let generate_biomes (tiles : tile list) (zones : zone list) () : tile list =
   let all_spawn_points = random_biome_center zones in
-
   let rec aux (tiles : tile list) (spawn_points : tile list) (biomes : tile list) : tile list =
     match tiles with
     | [] -> List.rev biomes

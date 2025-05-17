@@ -1,14 +1,23 @@
 open Raylib
 open Utils.Settings_map
 
-let init_attack_msg_textures () =
+(**
+  [init_attack_msg_textures ()] initializes the attack message textures.
+  @return The attack message textures.
+*)
+let init_attack_msg_textures () : Texture2D.t option =
   (* Load the bag texture and resize it to fit the screen *)
   let msg_image_path = "resources/images/attack/msg.png" in
   let msg_image = load_image msg_image_path in
   image_resize (addr msg_image) screen_width screen_height;
   Some (load_texture_from_image msg_image)
 
-let draw_attack_msg msgs msg_textures =
+(**
+  [draw_attack_msg msgs msg_textures] draws the attack messages on the screen.
+  @param msgs The list of attack messages.
+  @param msg_textures The textures of the attack messages.
+*)
+let draw_attack_msg (msgs : string list) (msg_textures : Texture2D.t option) : unit =
   match msg_textures with
   | None -> ()
   | Some texture ->
@@ -17,7 +26,7 @@ let draw_attack_msg msgs msg_textures =
     match msgs with
     | [] -> ()
     | _ ->
-      let rec take_last n lst =
+      let rec take_last (n : int) (lst : string list) : string list =
         let len = List.length lst in
         if len <= n then lst else take_last n (List.tl lst)
       in

@@ -14,6 +14,7 @@ let player_texture_size = 21.0 (* Taille de textures pour le joueur *)
 let tile_texture_size = 30.0 (* Taille de textures pour les tiles *)
 let loot_texture_size = 16.0 (* Taille de textures pour les loots *)
 let map_marge = 10 (* Marge de la carte *)
+let range_a_star_enemy = 8 (* Portée de l'ennemi pour le A* *)
 
 let loaded_map = None (* Variable pour stocker la carte chargée *)
 

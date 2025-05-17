@@ -8,10 +8,9 @@ open Models.EntityModel
   [init_items_textures ()] initializes the textures for the items.
   @return The textures of the items.
 *)
-let init_items_textures () =
+let init_items_textures () : Texture2D.t list =
   let image = load_image ("resources/images/loot/throw_items.png") in
   init_textures 0 10 image [] |> List.rev
-
 
 (**
   [draw_items loots player loots_textures] draws the items on the map.
@@ -19,7 +18,7 @@ let init_items_textures () =
   @param player The player.
   @param loots_textures The textures of the items.
 *)
-let draw_items (loots : loot list) (player : pokemon) loots_textures =
+let draw_items (loots : loot list) (player : pokemon) (loots_textures : Texture2D.t list) : unit =
   List.iter (fun loot ->
     let texture = List.nth loots_textures loot.item_skin_id in
     let (screen_x, screen_y) = get_entity_screen player in
@@ -30,5 +29,10 @@ let draw_items (loots : loot list) (player : pokemon) loots_textures =
       Color.white
   ) loots
 
-let pick_up_item_print (item: loot) =
+(**
+  [pick_up_item_print item] returns a string indicating that the item has been picked up.
+  @param item The item that has been picked up.
+  @return A string indicating that the item has been picked up.
+*)
+let pick_up_item_print (item: loot) : string =
   "Vous avez ramassé un " ^ item.description ^ " !"

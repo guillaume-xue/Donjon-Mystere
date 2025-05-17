@@ -4,9 +4,10 @@ open Utils.Settings_map
 
 (**
   [init_bag_textures ()] initializes the textures for the bag.
+  @param items_textures The textures of the items.
   @return The textures of the bag.
 *)
-let init_bag_textures items_textures =
+let init_bag_textures (items_textures : Texture2D.t list) : Texture2D.t option * Texture2D.t option  * Texture2D.t list =
   (* Load the bag texture and resize it to fit the screen *)
   let bag_image_path = "resources/images/bag/bag_tex.png" in
   let bag_image = load_image bag_image_path in
@@ -21,7 +22,7 @@ let init_bag_textures items_textures =
   unload_image square_image;
   (* Load the item textures and resize them to fit the screen *)
   let items_tex = 
-    let rec modif_items items_textures acc =
+    let rec modif_items (items_textures : Texture2D.t list) (acc : Texture2D.t list) : Texture2D.t list =
       match items_textures with
       | [] -> acc
       | item_texture :: rest ->
@@ -39,8 +40,10 @@ let init_bag_textures items_textures =
 (**
   [draw_bag player items_textures] draws the player's bag.
   @param player The player.
+  @param bag_textures The textures of the bag.
+  @param select The index of the selected item.
 *)
-let draw_bag player bag_textures select =
+let draw_bag (player : pokemon) (bag_textures : bag_textures) (select : int) : unit =
   match bag_textures.bag_background_tex with
   | None -> ()
   | Some texture ->
@@ -60,7 +63,7 @@ let draw_bag player bag_textures select =
         
       ) player.bag.items;
       let description_lines = 
-        let rec split_text text acc =
+        let rec split_text (text : string) (acc : string list) : string list =
           if String.length text <= 35 then
             List.rev (text :: acc)
           else

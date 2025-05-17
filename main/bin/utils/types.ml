@@ -171,6 +171,7 @@ type zone = {
   @param tiles La liste des tuiles de la carte.
   @param regions La liste des zones distinctes de la carte.
   @param floor L'étage actuel de la carte.
+  @param music La musique de fond de la carte.
 *)
 type map = {
   width: int;
@@ -270,6 +271,7 @@ type competence = {
 
   @param items Liste des objets dans le sac.
   @param max_size Taille maximum du sac.
+  @param selected_item Indice de l'objet sélectionné.
 *)
 type bag = {
   items: loot list;
@@ -325,6 +327,7 @@ type position = {
   @param competence Liste des compétences du pokemon.
   @param path Chemin du pokemon.
   @param your_turn Booléen indiquant si c'est le tour du pokemon.
+  @param money Montant d'argent du pokemon.
 *)
 type pokemon = {
   nom: string;
@@ -366,6 +369,16 @@ type entity =
   | Player of pokemon
   | Enemy of pokemon
 
+(**
+  Type [game_state] représentant l'état du jeu.
+
+  @param map_state État de la carte.
+  @param player_state État du joueur.
+  @param enemies_state Liste des ennemis.
+  @param loots_state Liste des objets.
+  @param traps_and_grounds_state Liste des pièges et du sol.
+  @param msgs_state Liste des messages.
+*)
 type game_state = {
   map_state: map;
   player_state: pokemon;
@@ -387,12 +400,12 @@ module PriorityQueue = struct
 
   (** [add] ajoute une valeur avec la priorité donnée à la file de priorité [pq]. 
       La file est maintenue triée par priorité, avec la plus petite priorité en premier. *)
-  let add pq priority value =
+  let add (pq : ('a * 'b) list ref) (priority : 'b) (value : 'a) : unit =
     pq := List.merge (fun (_, p1) (_, p2) -> compare p1 p2) !pq [(value, priority)]
 
   (** [pop] enlève et retourne la valeur avec la plus petite priorité de la file de priorité [pq].
       Lève [Failure "PriorityQueue is empty"] si la file est vide. *)
-  let pop pq =
+  let pop (pq : ('a * 'b) list ref) : 'b * 'a =
     match !pq with
     | [] -> failwith "PriorityQueue is empty"
     | (value, priority) :: rest ->
@@ -400,20 +413,5 @@ module PriorityQueue = struct
       (priority, value)
 
   (** [is_empty] retourne [true] si la file de priorité [pq] est vide, et [false] sinon. *)
-  let is_empty pq = !pq = []
+  let is_empty (pq : 'a list ref) : bool = !pq = []
 end
-
-(** [print_direction dir] affiche une direction sous forme de chaîne de caractères. *)
-let print_direction dir =
-  let direction_to_string = function
-    | Up -> "Up"
-    | Down -> "Down"
-    | Left -> "Left"
-    | Right -> "Right"
-    | DiagonalUpLeft -> "DiagonalUpLeft"
-    | DiagonalUpRight -> "DiagonalUpRight"
-    | DiagonalDownLeft -> "DiagonalDownLeft"
-    | DiagonalDownRight -> "DiagonalDownRight"
-    | No_move -> "No_move"
-  in
-  print_endline (direction_to_string dir)

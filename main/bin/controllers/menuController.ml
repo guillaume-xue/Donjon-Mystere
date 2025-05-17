@@ -9,7 +9,7 @@ open Utils.Audio
   [init_menu_controller ()] initializes the menu controller.
   @return The menu controller stats.
 *)
-let init_menu_controller () =
+let init_menu_controller () : (int * int * int * int) * (Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t list * int * int * int * int) =
   play_music "resources/audio/music/intro.mp3";
   let index_select_x = 0 in (* Variable of cursor x *)
   let index_select_y = 0 in (* Variable of cursor y *)
@@ -25,14 +25,14 @@ let init_menu_controller () =
   @param index_select_y The index of the selected map.
   @return The selected map.
 *)
-let get_map_selected list_of_maps index_select_y =
+let get_map_selected (list_of_maps : string list) (index_select_y : int) : string =
   List.nth list_of_maps index_select_y
 
 (**
   [check_intro_screen_click ()] checks if the screen is clicked.
   @return [Select] if the screen is clicked within the window bounds, [Intro] otherwise.
 *)
-let check_intro_screen_click () =
+let check_intro_screen_click () : screenState=
   if is_mouse_button_pressed MouseButton.Left then begin
     play_sound "resources/audio/sound/click.mp3";
     let mouse_x = get_mouse_x () in
@@ -48,16 +48,16 @@ let check_intro_screen_click () =
     Intro
 
 (**
-    [check_select_screen_selected screenState list_of_maps index_select_x index_select_y last_key_press_time map_name] checks and updates the selected screen based on key presses.
-    @param screenState The current screen state.
-    @param list_of_maps The list of maps.
-    @param index_select_x The index of the selected x.
-    @param index_select_y The index of the selected y.
-    @param last_key_press_time The last time a key was pressed.
-    @param map_name The name of the map.
-    @return The new screen state based on the player's input.
+  [check_select_screen_selected screenState list_of_maps index_select_x index_select_y last_key_press_time map_name] checks and updates the selected screen based on key presses.
+  @param screenState The current screen state.
+  @param list_of_maps The list of maps.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @param last_key_press_time The last time a key was pressed.
+  @param map_name The name of the map.
+  @return The new screen state based on the player's input.
 *)
-let check_select_screen_selected screenState list_of_maps index_select_x index_select_y last_key_press_time map_name =
+let check_select_screen_selected (screenState : screenState) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (last_key_press_time : float) (map_name : string) : screenState * int * int * float * string =
   let current_time = get_time () in
   if current_time -. last_key_press_time > 0.1 then begin
     match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right with
@@ -112,7 +112,7 @@ let check_select_screen_selected screenState list_of_maps index_select_x index_s
   [is_any_key_pressed ()] checks if any key is pressed.
   @return True if any key is pressed, false otherwise.
 *)
-let is_any_key_pressed () =
+let is_any_key_pressed () : bool =
   List.exists is_key_down [Key.A; Key.B; Key.C; Key.D; Key.E; Key.F; Key.G; Key.H; Key.I; Key.J; Key.K; Key.L; Key.M; Key.N; Key.O; Key.P; Key.Q; Key.R; Key.S; Key.T; Key.U; Key.V; Key.W; Key.X; Key.Y; Key.Z]
 
 (**
@@ -120,7 +120,7 @@ let is_any_key_pressed () =
   @param key The key to convert.
   @return The character corresponding to the key.
 *)
-let key_pressed_to_char key =
+let key_pressed_to_char key : char =
   match key with
   | Key.A -> 'a'
   | Key.B -> 'b'
@@ -156,7 +156,7 @@ let key_pressed_to_char key =
   @param list_of_maps The list of maps.
   @return The new screen state and the new map name.
 *)
-let check_new_map_name (map_name: string) list_of_maps =
+let check_new_map_name (map_name: string) (list_of_maps : string list) : screenState * string =
   if is_any_key_pressed () then
     if map_name = "map " then (Select_New, "")
     else if String.length map_name < 16 then begin (* Maximum length of map name *)
@@ -177,8 +177,14 @@ let check_new_map_name (map_name: string) list_of_maps =
   end else
     (Select_New, map_name)
 
-
-let check_choose_pokemon map_name index_select_x index_select_y  =
+(**
+  [check_choose_pokemon map_name index_select_x index_select_y] checks the choose pokemon screen.
+  @param map_name The name of the map.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @return The new screen state and the new map name.
+*)
+let check_choose_pokemon (map_name : string) (index_select_x : int) (index_select_y : int) : screenState * (int * int) =
   if is_key_pressed Key.Up then begin
     play_sound "resources/audio/sound/select.mp3";
     if (index_select_y - 1) >= 0 then
@@ -207,7 +213,7 @@ let check_choose_pokemon map_name index_select_x index_select_y  =
   @param text_pos_x The text position x.
   @param text_pos_y The text position y.
 *)
-let update_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y =
+let update_intro (title_texture : Texture2D.t option) (background_texture : Texture2D.t option) (title_pos_x : int) (title_pos_y : int) (text_pos_x : int) (text_pos_y : int) : unit =
   draw_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y
 
 (**
@@ -218,7 +224,7 @@ let update_intro title_texture background_texture title_pos_x title_pos_y text_p
   @param index_select_y The index of the selected y.
   @return The text to display.
 *)
-let get_text_talk map_name list_of_maps index_select_x index_select_y =
+let get_text_talk (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) : string =
   if index_select_x = 0 && index_select_y = 0 then (* New game *)
     if List.length list_of_maps >= 6 then (* Maximum number of maps *)
       "Il n'y a plus de place pour une nouvelle partie."
@@ -240,7 +246,7 @@ let get_text_talk map_name list_of_maps index_select_x index_select_y =
   @param index_select_y The index of the selected y.
   @return The updated arrow position.
 *)
-let update_arrow index_select_x index_select_y =
+let update_arrow (index_select_x : int) (index_select_y : int) : int * int =
   let arrow_pos_x = set_arrow_x index_select_x in
   let arrow_pos_y = set_arrow_y index_select_y in
   (arrow_pos_x, arrow_pos_y)
@@ -257,7 +263,7 @@ let update_arrow index_select_x index_select_y =
   @param arrow_pos_x The arrow position x.
   @param arrow_pos_y The arrow position y.
 *)
-let update_select map_name list_of_maps index_select_x index_select_y background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y =
+let update_select (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (background_texture : Texture2D.t option) (select_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) (arrow_pos_x : int) (arrow_pos_y : int) : unit =
   draw_select (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y
 
 (**
@@ -270,7 +276,7 @@ let update_select map_name list_of_maps index_select_x index_select_y background
   @param select_new_texture The select new texture.
   @param arrow_texture The arrow texture.
 *)
-let update_select_new map_name list_of_maps index_select_x index_select_y background_texture select_new_texture arrow_texture =
+let update_select_new (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (background_texture : Texture2D.t option) (select_new_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) =
   draw_select_new map_name (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_new_texture arrow_texture
 
 (**
@@ -285,7 +291,7 @@ let update_select_new map_name list_of_maps index_select_x index_select_y backgr
   @param arrow_pos_x The arrow position x.
   @param arrow_pos_y The arrow position y.
 *)
-let update_select_other map_name list_of_maps index_select_x index_select_y background_texture select_other_texture arrow_texture arrow_pos_x arrow_pos_y =
+let update_select_other (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (background_texture : Texture2D.t option) (select_other_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) (arrow_pos_x : int) (arrow_pos_y : int) : unit =
   draw_select_other (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_other_texture list_of_maps arrow_texture arrow_pos_x arrow_pos_y
 
 (**
@@ -298,7 +304,7 @@ let update_select_other map_name list_of_maps index_select_x index_select_y back
   @param last_time The last time.
   @return The updated screen state, map name, menu item info, and last time.
 *)
-let check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time =
+let check_screen_state (screen_state : screenState) (map_name : string) (menu_item_info : int * int * int * int) (menu_stats : Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t list * int * int * int * int) (list_of_maps : string list) (last_time : float list) : screenState * string * (int * int * int * int) * float list =
   let (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y) = menu_item_info in
   let (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, choose_pokemon_texture, pokemon_icon_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y) = menu_stats in
   match screen_state with
