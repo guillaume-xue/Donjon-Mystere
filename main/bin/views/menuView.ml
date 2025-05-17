@@ -92,7 +92,7 @@ let draw_intro title_texture background_texture title_pos_x title_pos_y text_pos
   | None -> ());
 
   if blink then
-    draw_text "Appuie pour jouer" text_pos_x text_pos_y 20 Color.white;
+    draw_text_bold "Appuie pour jouer" text_pos_x text_pos_y 21 Color.yellow;
   end_drawing ()
 
 (**

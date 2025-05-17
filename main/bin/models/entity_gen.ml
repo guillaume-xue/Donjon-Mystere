@@ -201,7 +201,14 @@ let spawn_list_of_loot map =
             spawn_multiple_loot boucle cpt acc memory region
           else
             let skin_id = Random.int 10 in
-            let loot = { item_id = cpt; item_skin_id = skin_id; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = item_nom skin_id; usable = true} in
+            let texture_id = match skin_id with
+              | 0 -> 7
+              | 1 -> 8
+              | 2 -> 9
+              | 3 -> 6
+              | _ -> 0
+            in
+            let loot = { item_id = cpt; item_skin_id = texture_id; quantity = 1; pos_x = float_of_int tile.x; pos_y = float_of_int tile.y; screen_x = 0; screen_y = 0; description = item_nom skin_id; usable = true} in
             spawn_multiple_loot (boucle - 1) (cpt + 1) (loot :: acc) (tile :: memory) region
         in
       let nb_loot = Random.int 5 in

@@ -159,19 +159,19 @@ let check_key_pressed_bag player select =
   let len = (List.length player.bag.items) - 1 in
   if (player.action = OpenBag)  && player.your_turn then begin
     if is_key_pressed Key.Up && select - 7 >= 0 then begin
-      play_sound "resources/audio/select.mp3";
+      play_sound "resources/audio/sound/select.mp3";
       (false, select - 7)
     end else if is_key_pressed Key.Down && (select + 7 <= len && select + 7 <= 27) then begin
-      play_sound "resources/audio/select.mp3";
+      play_sound "resources/audio/sound/select.mp3";
       (false, select + 7)
     end else if is_key_pressed Key.Left && select - 1 >= 0 then begin
-      play_sound "resources/audio/select.mp3";
+      play_sound "resources/audio/sound/select.mp3";
       (false, select - 1)
     end else if is_key_pressed Key.Right && (select + 1 <= len && select + 1 <= 27) then begin
-      play_sound "resources/audio/select.mp3";
+      play_sound "resources/audio/sound/select.mp3";
       (false, select + 1)
     end else if is_key_pressed Key.Enter then begin
-      play_sound "resources/audio/select.mp3";
+      play_sound "resources/audio/sound/select.mp3";
       (true, select)
     end else
       (false, select)

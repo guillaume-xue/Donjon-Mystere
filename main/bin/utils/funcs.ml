@@ -44,6 +44,14 @@ let rec init_textures_size x max image textures size =
   else
     textures
 
+let draw_text_bold text x y size color =
+  (* Dessine le texte plusieurs fois autour pour simuler le gras *)
+  draw_text text (x-1) y size Color.black;
+  draw_text text (x+1) y size Color.black;
+  draw_text text x (y-1) size Color.black;
+  draw_text text x (y+1) size Color.black;
+  draw_text text x y size color
+
 let trap_ground_to_int trap_ground =
   match trap_ground with 
   | Stairs_Up -> 0
