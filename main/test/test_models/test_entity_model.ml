@@ -101,7 +101,7 @@ let test_set_entity_target _ =
   assert_equal 0.0 target_x;
   assert_equal 0.0 target_y;
 
-  Printf.printf "set_entity_target test passed\n"
+  Printf.printf "set_entity_target test passed\n\n"
 
 let test_set_i_competence_puissance _ =
   Printf.printf "Testing set_i_competence_puissance :\n";
@@ -134,7 +134,7 @@ let test_set_i_competence_puissance _ =
   Printf.printf "- Testing size competence\n";
   assert_equal 4 (List.length new_entity.competence);
 
-  Printf.printf "set_i_competence_puissance test passed\n"
+  Printf.printf "set_i_competence_puissance test passed\n\n"
 
 let test_set_unable_item_bag _ =
   Printf.printf "Testing set_usable_item_bag :\n";
@@ -162,7 +162,7 @@ let test_set_unable_item_bag _ =
   Printf.printf "- Testing set i usable item different\n";
   assert_bool "- Testing set usable item\n" (not (true = (List.nth new_entity.bag.items 0).usable));
 
-  Printf.printf "set_usable_item_bag test passed\n"
+  Printf.printf "set_usable_item_bag test passed\n\n"
 
 let test_remove_item_bag _ =
   Printf.printf "Testing remove_item_bag :\n";
@@ -203,7 +203,7 @@ let test_remove_item_bag _ =
   let updated_entity, _ = remove_item_bag 0 updated_entity in
   assert_equal 0 (List.length updated_entity.bag.items);
 
-  Printf.printf "remove_item_bag test passed\n"
+  Printf.printf "remove_item_bag test passed\n\n"
 
 let test_is_enemy_at_target _ =
   Printf.printf "Testing is_enemy_at_target :\n";
@@ -227,7 +227,7 @@ let test_is_enemy_at_target _ =
   Printf.printf "- Testing enemy at another position\n";
   assert_bool "Expected enemy at (2, 2)" (is_enemy_at_target 2 2 enemys);
 
-  Printf.printf "is_enemy_at_target test passed\n"
+  Printf.printf "is_enemy_at_target test passed\n\n"
 
 let test_is_wall_at_target _ =
   Printf.printf "Testing is_wall_at_target :\n";
@@ -251,7 +251,7 @@ let test_is_wall_at_target _ =
   Printf.printf "- Testing out-of-bounds position\n";
   assert_bool "Expected wall at (3, 3)" (is_wall_at_target 3 3 tiles);
 
-  Printf.printf "is_wall_at_target test passed\n"
+  Printf.printf "is_wall_at_target test passed\n\n"
 
 let test_is_targeted_by_enemy _ =
   Printf.printf "Testing is_targeted_by_enemy :\n";
@@ -276,7 +276,7 @@ let test_is_targeted_by_enemy _ =
   Printf.printf "- Testing position targeted by another enemy\n";
   assert_bool "Expected position (3, 3) to be targeted" (is_targeted_by_enemy 3 3 enemys);
 
-  Printf.printf "is_targeted_by_enemy test passed\n"
+  Printf.printf "is_targeted_by_enemy test passed\n\n"
 
 let test_move _ =
   Printf.printf "Testing move :\n";
@@ -312,7 +312,7 @@ let test_move _ =
   assert_bool "Expected entity not to be moving" (not no_turn_action.moving);
   assert_equal Nothing no_turn_action.action;
 
-  Printf.printf "move test passed\n"
+  Printf.printf "move test passed\n\n"
 
 let test_action_player _ =
   Printf.printf "Testing action_player :\n";
@@ -352,7 +352,7 @@ let test_action_player _ =
   let no_key_entity = action_player Attack entity false in
   assert_equal Nothing no_key_entity.action;
 
-  Printf.printf "action_player test passed\n"
+  Printf.printf "action_player test passed\n\n"
 
 let test_is_end_moving _ =
   Printf.printf "Testing is_end_moving :\n";
@@ -375,7 +375,7 @@ let test_is_end_moving _ =
   assert_bool "Expected entity to keep moving" updated_entity.moving;
   assert_bool "Expected entity not to have reached target" (not has_reached);
 
-  Printf.printf "is_end_moving test passed\n"
+  Printf.printf "is_end_moving test passed\n\n"
 
 let test_update_entity_texture_id _ =
   Printf.printf "Testing update_entity_texture_id :\n";
@@ -408,7 +408,7 @@ let test_update_entity_texture_id _ =
   Printf.printf "Expected: 41, Got: %d\n" updated_overflow_entity.entity_textures_id;
   assert_equal 41 updated_overflow_entity.entity_textures_id;
 
-  Printf.printf "update_entity_texture_id test passed\n"
+  Printf.printf "update_entity_texture_id test passed\n\n"
 
 let test_player_get_target _ =
   Printf.printf "Testing player_get_target :\n";
@@ -482,7 +482,7 @@ let test_player_get_target _ =
   assert_equal 5.0 target_x;
   assert_equal 5.0 target_y;
 
-  Printf.printf "player_get_target test passed\n"
+  Printf.printf "player_get_target test passed\n\n"
 
 (* Test suite *)
 

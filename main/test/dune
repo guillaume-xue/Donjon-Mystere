@@ -11,4 +11,6 @@
   test_trap_ground
   test_bag_model
   test_a_star
-  test_shadowcaster))
+  test_shadowcaster
+  test_automate
+  test_prim))

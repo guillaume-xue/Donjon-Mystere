@@ -54,7 +54,7 @@ let test_set_usable_item_bag _ =
   assert_equal false updated_item2.usable;
   assert_equal "Antidote" updated_item2.description;
 
-  Printf.printf "set_usable_item_bag test passed\n"
+  Printf.printf "set_usable_item_bag test passed\n\n"
 
 (* Test suite *)
 let suite =

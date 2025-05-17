@@ -3,15 +3,20 @@ open Models.Map_model
 open Utils.Types
 
 let test_is_in_map _ =
+  Printf.printf "Testing is_in_map :\n";
   let map = { width = 5; height = 5; tiles = []; regions = []; floor = 1 ; music = Some ("")} in
   assert_equal true (is_in_map 0 0 map);
   assert_equal true (is_in_map 4 4 map);
   assert_equal false (is_in_map 5 5 map);
   assert_equal false (is_in_map (-1) 0 map);
   assert_equal false (is_in_map 0 (-1) map);
-  assert_equal false (is_in_map 6 2 map)
+  assert_equal false (is_in_map 6 2 map);
+
+  Printf.printf "is_in_map test passed\n\n"
 
 let test_is_wall _ =
+  Printf.printf "Testing is_wall :\n";
+  
   let map = {
     width = 5;
     height = 5;
@@ -29,7 +34,9 @@ let test_is_wall _ =
   assert_equal true (is_wall 2 2 map);
   assert_equal false (is_wall 3 3 map);
   assert_equal false (is_wall (-1) 0 map);
-  assert_equal false (is_wall 0 (-1) map)
+  assert_equal false (is_wall 0 (-1) map);
+
+  Printf.printf "is_wall test passed\n\n"
 
 (* Export the suite *)
 let suite = "MapModel Tests" >::: [
