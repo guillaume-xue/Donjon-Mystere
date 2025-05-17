@@ -51,14 +51,14 @@ let print_grid (tiles : tile list) (x : int) (y : int) : unit =
   @param y La coordonnée y de la tuile de départ.
   @return Une liste de tuiles représentant la zone connectée.
 *)
-let get_zone (tiles : tile list) (visited : (int * int) list ref) (x : int) (y : int) : tile list =
+let get_zone (tiles : tile list) (visited : (int * int) list) (x : int) (y : int) : tile list * (int * int) list =
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1)] in
-  let rec dfs (stack : (int * int) list) (zone : tile list) : tile list =
+  let rec dfs (stack : (int * int) list) (zone : tile list) (visited : (int * int) list) : tile list * (int * int) list =
     match stack with
-    | [] -> zone
+    | [] -> (zone, visited)
     | (cx, cy) :: rest ->
-      if not (List.exists (fun (vx, vy) -> vx = cx && vy = cy) !visited) then (
-        visited := (cx, cy) :: !visited;
+      if not (List.exists (fun (vx, vy) -> vx = cx && vy = cy) visited) then
+        let visited = (cx, cy) :: visited in
         let new_zone = List.filter (fun tile -> tile.x = cx && tile.y = cy) tiles @ zone in
         let new_stack = List.fold_left (fun acc (dx, dy) ->
           let nx, ny = (cx + dx, cy + dy) in
@@ -67,11 +67,11 @@ let get_zone (tiles : tile list) (visited : (int * int) list ref) (x : int) (y :
           else
             acc
         ) rest directions in
-        dfs new_stack new_zone
-      ) else
-        dfs rest zone
+        dfs new_stack new_zone visited
+      else
+        dfs rest zone visited
   in
-  dfs [(x, y)] []
+  dfs [(x, y)] [] visited
 
 (** 
   [get_all_zones] récupère toutes les zones distinctes de tuiles ayant une texture_id différente de 0.
@@ -79,19 +79,18 @@ let get_zone (tiles : tile list) (visited : (int * int) list ref) (x : int) (y :
   @param tiles La liste des tuiles à explorer.
   @return Une liste de zones.
 *)
-let get_all_zones (tiles : tile list) : zone list=
-  let visited = ref [] in
-  let rec aux (tiles : tile list) (zones : zone list) : zone list =
+let get_all_zones (tiles : tile list) : zone list =
+  let rec aux (tiles : tile list) (zones : zone list) (visited : (int * int) list) : zone list =
     match tiles with
     | [] -> zones
     | tile :: rest ->
-      if tile.texture_id <> 0 && not (List.exists (fun (vx, vy) -> vx = tile.x && vy = tile.y) !visited) then
-        let zone_tiles = get_zone tiles visited tile.x tile.y in
-        aux rest ({ id = List.length zones; size = List.length zone_tiles; tiles = zone_tiles } :: zones)
+      if tile.texture_id <> 0 && not (List.exists (fun (vx, vy) -> vx = tile.x && vy = tile.y) visited) then
+        let (zone_tiles, visited') = get_zone tiles visited tile.x tile.y in
+        aux rest ({ id = List.length zones; size = List.length zone_tiles; tiles = zone_tiles } :: zones) visited'
       else
-        aux rest zones
+        aux rest zones visited
   in
-  aux tiles []
+  aux tiles [] []
 
 (** 
   [copy_map_add_marge tiles] crée une nouvelle carte en ajoutant une marge autour de la carte existante.

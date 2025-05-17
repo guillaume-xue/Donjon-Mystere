@@ -76,8 +76,7 @@ let auto_cell _ =
 let flood_fill_test _ =
   Printf.printf "Testing flood_fill :\n";
 
-  let visited = ref [] in
-  let size = flood_fill tiles2 visited 0 0 in
+  let (size, _) = flood_fill tiles2 [] 0 0 in
   Printf.printf "Taille de la zone remplie : %d\n" size;
   assert_equal 5 size;
   Printf.printf "flood_fill test passed\n\n"
