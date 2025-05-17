@@ -276,7 +276,7 @@ let update_player (game_states : game_state) (last_time : float list) : game_sta
   @return The updated enemy, player, last time and message.
 *)
 let update_enemy (enemy : pokemon) (player : pokemon) (other : pokemon list) (map : map) (last_time : float list) : pokemon * pokemon * float list * string =
-  let enemy = set_entity_path enemy map player in
+  let enemy = set_entity_path enemy map player other in
   let (enemy_target, in_range) = update_target_enemy enemy player in
   let enemy = move enemy_target enemy true in_range in
   let (enemy, players, _action1, msg) = player_attack enemy [player] in
@@ -317,3 +317,11 @@ let update_shadow_cast (player : pokemon) (map : map) : float array array =
 let save_game (filename : string) (game_states : game_state) : unit =
   let json = map_player_to_json game_states.map_state game_states.player_state game_states.enemies_state game_states.loots_state game_states.traps_and_grounds_state in
   write_json_to_file (map_dir ^ filename ^ ".json") json
+
+(**
+  [delete_save filename] deletes the save file.
+  @param filename The name of the save file.
+*)
+let delete_save (filename : string) : unit =
+  Sys.remove (map_dir ^ filename ^ ".json")
+

@@ -60,8 +60,8 @@ let check_intro_screen_click () : screenState=
 let check_select_screen_selected (screenState : screenState) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (last_key_press_time : float) (map_name : string) : screenState * int * int * float * string =
   let current_time = get_time () in
   if current_time -. last_key_press_time > 0.1 then begin
-    match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right with
-    | true, _, _, _, _ -> (* Enter *)
+    match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right, is_key_down Key.R with
+    | true, _, _, _, _, _ -> (* Enter *)
       play_sound "resources/audio/sound/select.mp3";
       if index_select_x = 0 && index_select_y = 0 && (List.length list_of_maps <= 6) then begin (* New game *)
         (Select_New, 3, index_select_y, current_time, map_name)
@@ -69,7 +69,7 @@ let check_select_screen_selected (screenState : screenState) (list_of_maps : str
         (Game, index_select_x, index_select_y, current_time, get_map_selected list_of_maps index_select_y)
       end else
         (screenState, index_select_x, index_select_y, current_time, map_name)
-    | _, true, _, _, _ -> (* Down *)
+    | _, true, _, _, _, _ -> (* Down *)
       play_sound "resources/audio/sound/select.mp3";
       if (index_select_y = 1 && index_select_x = 0) || 
          (index_select_y = (List.length list_of_maps) - 1 && index_select_x = 1) then
@@ -77,7 +77,7 @@ let check_select_screen_selected (screenState : screenState) (list_of_maps : str
       else begin
         (Select_Other, index_select_x, index_select_y + 1, current_time, map_name)
       end
-    | _, _, true, _, _ -> (* Up *)
+    | _, _, true, _, _, _ -> (* Up *)
       play_sound "resources/audio/sound/select.mp3";
       if index_select_x = 0 && index_select_y = 0 then begin
         (Select, index_select_x, index_select_y, current_time, map_name)
@@ -88,14 +88,14 @@ let check_select_screen_selected (screenState : screenState) (list_of_maps : str
       else begin
         (screenState, index_select_x, index_select_y - 1, current_time, map_name)
       end
-    | _, _, _, true, _ -> (* Left *)
+    | _, _, _, true, _, _ -> (* Left *)
       play_sound "resources/audio/sound/select.mp3";
       if index_select_x = 0 then
         (Select, index_select_x, index_select_y, current_time, map_name)
       else begin
         (Select, 0, 0, current_time, map_name)
       end
-    | _, _, _, _, true -> (* Right *)
+    | _, _, _, _, true, _ -> (* Right *)
       play_sound "resources/audio/sound/select.mp3";
       if List.length list_of_maps = 0 then
         (Select_Other, index_select_x, index_select_y, current_time, map_name)
@@ -104,6 +104,8 @@ let check_select_screen_selected (screenState : screenState) (list_of_maps : str
       else begin
         (Select_Other, 1, 0, current_time, map_name)
       end
+    | _, _, _, _, _, true -> (* R *)
+      (Intro, 0, 0, current_time, map_name)
     | _ -> (screenState, index_select_x, index_select_y, current_time, map_name)
   end else
     (screenState, index_select_x, index_select_y, last_key_press_time, map_name)
@@ -348,3 +350,9 @@ let check_screen_state (screen_state : screenState) (map_name : string) (menu_it
       (Game, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
     end
   | _ -> (screen_state, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
+
+(**
+  [draw_die_end ()] fonction intermédiaire, renvoie vers celui du menuView.
+*)
+let draw_die_end () : unit =
+  draw_die_end ()

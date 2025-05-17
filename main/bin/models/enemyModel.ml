@@ -48,10 +48,13 @@ let update_target_enemy (enemy: pokemon) (player: pokemon) : direction * bool =
   if enemy.your_turn && not(enemy.moving) then
       let (e_pos_x, e_pos_y) = get_entity_position enemy in
       let (p_pos_x, p_pos_y) = get_entity_position player in
-      if List.length enemy.path <= 1 && manhattan_distance ((int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)), (int_of_float (floor p_pos_x), int_of_float (floor p_pos_y))) <= 1  then
+      if List.length enemy.path <= 1 && manhattan_distance ((int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)), (int_of_float (floor p_pos_x), int_of_float (floor p_pos_y))) <= 1 then begin
         auto_target (int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)) (int_of_float (floor p_pos_x), int_of_float (floor p_pos_y)), true
-      else
-        let (x,y) = List.hd enemy.path in
+      end else
+        let (x,y) = if List.length enemy.path > 0 then begin
+          List.hd enemy.path
+        end else
+          (int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)) in
         auto_target (int_of_float (floor e_pos_x), int_of_float (floor e_pos_y)) (x,y), false
   else
       enemy.direction, false
@@ -62,9 +65,10 @@ let update_target_enemy (enemy: pokemon) (player: pokemon) : direction * bool =
   @param pos_x Position x de l'ennemi.
   @param pos_y Position y de l'ennemi.
   @param player Le joueur servant de référence pour le niveau.
+  @param game_state L'état du jeu.
   @return pokemon * pokemon - L'ennemi créé et le joueur avec last_id mis à jour.
 *)
-let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) : pokemon * pokemon =
+let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) (game_state : game_state) : pokemon * pokemon =
   let lvl = randLvl player in
   let (cur_hp, att, def, att_sp, def_sp) = finalGen (float_of_int lvl) in
   let (p_pos_x, p_pos_y) = get_entity_position player in
@@ -101,7 +105,7 @@ let create_enemy (pos_x : float) (pos_y : float) (player : pokemon) : pokemon * 
     defense_speciale = def_sp;
     element = List.nth element_types (random-3);
     competence = [attaque_charge(); List.nth competences (element_to_index (List.nth element_types (random-3)))];
-    path = a_star [] (int_of_float pos_x, int_of_float pos_y) (int_of_float p_pos_x, int_of_float p_pos_y);
+    path = a_star [] (int_of_float pos_x, int_of_float pos_y) (int_of_float p_pos_x, int_of_float p_pos_y) (List.map (fun e -> let (x, y) = get_entity_position e in (int_of_float x, int_of_float y)) game_state.enemies_state);
     your_turn = false;
     money = 0;
   }, {player with last_id = player.last_id + 1}

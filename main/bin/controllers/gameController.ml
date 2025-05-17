@@ -39,7 +39,7 @@ let run () : unit =
         in
         let game_states = set_game_state_player player game_states in
         let (game_states, last_time) = update_player game_states last_time in
-
+        (* Update enemies *)
         let rec aux (player : pokemon) (enemy : pokemon list) (other: pokemon list) (map : map) (last_time : float list) (game_states : game_state) : pokemon list * float list * game_state =
           match enemy with
           | [] -> (other, last_time, game_states)
@@ -54,15 +54,26 @@ let run () : unit =
             end 
         in
         let (enemy, last_time, game_states) = aux game_states.player_state game_states.enemies_state [] game_states.map_state last_time game_states in
-        let game_states = set_game_state_enemy enemy game_states in
-        let grid_shadow_cast = update_shadow_cast game_states.player_state game_states.map_state in
-        draw_game game_states game_textures grid_shadow_cast;
-        game_loop (game_textures, game_states) last_time name msgs
+        if game_states.player_state.current_hp <= 0 then begin
+          stop_music ();
+          begin_drawing ();
+          clear_background Color.black;
+          draw_die_end ();
+          end_drawing ();
+          Unix.sleep 2;
+          delete_save name;
+          menu_loop Intro map_name menu_item_info (List.init 5 (fun _ -> 0.0)) (read_json_files_in_directory map_dir);
+        end else begin
+          let game_states = set_game_state_enemy enemy game_states in
+          let grid_shadow_cast = update_shadow_cast game_states.player_state game_states.map_state in
+          draw_game game_states game_textures grid_shadow_cast;
+          game_loop (game_textures, game_states) last_time name msgs
+        end
       end
-  in
+  and
 
   (* Menu loop *)
-  let rec menu_loop (screen_state : screenState) (map_name : string) (menu_item_info : int * int * int * int) (last_time_menu : float list) : unit =
+  menu_loop (screen_state : screenState) (map_name : string) (menu_item_info : int * int * int * int) (last_time_menu : float list) (list_of_maps : string list) : unit =
     if window_should_close () then
       begin
         stop_music ();
@@ -88,7 +99,7 @@ let run () : unit =
       else
         begin
           let (screen_state, map_name, menu_item_info, last_time_menu) = check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time_menu in
-          menu_loop screen_state map_name menu_item_info last_time_menu;
+          menu_loop screen_state map_name menu_item_info last_time_menu list_of_maps;
         end
   in
-  menu_loop screen_state map_name menu_item_info (List.init 5 (fun _ -> 0.0))
+  menu_loop screen_state map_name menu_item_info (List.init 5 (fun _ -> 0.0)) list_of_maps

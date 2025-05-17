@@ -286,7 +286,7 @@ let update_trap_and_ground (game_states : game_state) (last_time : float list) :
           let random_x = p_pos_x +. float_of_int (Random.int 11 - 5) in
           let random_y = p_pos_y +. float_of_int (Random.int 11 - 5) in
           if not(is_wall (int_of_float random_x) (int_of_float random_y) map) then
-            let new_enemy, player = create_enemy random_x random_y player in
+            let new_enemy, player = create_enemy random_x random_y player game_states in
             new_enemy :: enemys, player
           else
             add_random_enemy player map enemys

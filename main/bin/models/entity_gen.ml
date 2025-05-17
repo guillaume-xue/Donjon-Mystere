@@ -208,7 +208,7 @@ let spawn_list_of_enemys (map: map) (player: pokemon) : pokemon list * int =
           defense_speciale = def_sp;
           element = List.nth element_types (rand-3);
           competence = [attaque_charge(); List.nth competences (element_to_index (List.nth element_types (rand-3)))];
-          path = a_star map.tiles (tile.x, tile.y) (int_of_float pos_x, int_of_float pos_y);
+          path = a_star map.tiles (tile.x, tile.y) (int_of_float pos_x, int_of_float pos_y) (List.map (fun e -> let (x, y) = get_entity_position e in (int_of_float x, int_of_float y)) acc);
           your_turn = false;
           money = 0;
         } in
