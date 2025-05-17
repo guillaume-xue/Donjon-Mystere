@@ -3,6 +3,9 @@ open Utils.Types
 open Models.ItemModel
 
 let test_remove_item_in_list _ =
+  Printf.printf "Testing remove_item_in_list :\n";
+
+  (* Create a list of items *)
   let item1 = { item_id = 1; item_skin_id = 101; quantity = 1; pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; description = "Item 1"; usable = true } in
   let item2 = { item_id = 2; item_skin_id = 102; quantity = 1; pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; description = "Item 2"; usable = true } in
   let item3 = { item_id = 3; item_skin_id = 103; quantity = 1; pos_x = 0.0; pos_y = 0.0; screen_x = 0; screen_y = 0; description = "Item 3"; usable = true } in
@@ -19,7 +22,11 @@ let test_remove_item_in_list _ =
 
   (* Test removing the only item in the list *)
   let result = remove_item_in_list item1 [item1] in
-  assert_equal [] result
+  assert_equal [] result;
+
+  Printf.printf "remove_item_in_list test passed\n\n"
 
 (* Export the suite *)
-let suite = "ItemModel Tests" >::: ["test_remove_item_in_list" >:: test_remove_item_in_list]
+let suite = "ItemModel Tests" >::: [
+  "test_remove_item_in_list" >:: test_remove_item_in_list
+  ]

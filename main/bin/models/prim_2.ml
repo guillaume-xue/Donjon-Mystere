@@ -124,6 +124,13 @@ let create_path ((x1, y1) : int * int) ((x2, y2) : int * int) : tile list =
   in
   bresenham x1 y1 x2 y2
 
+let update_tiles (tiles : tile list) (path : tile list) : tile list =
+  List.map (fun t ->
+    match List.find_opt (fun p -> p.x = t.x && p.y = t.y) path with
+    | Some new_tile -> new_tile
+    | None -> t
+  ) tiles
+
 (**
   [connect_zones] connecte les zones entre elles en utilisant l'algorithme de Prim
   et ajoute des chemins supplémentaires avec une probabilité donnée.
@@ -144,5 +151,5 @@ let connect_zones (tiles : tile list) (zones : zone list) : tile list =
   (* Ajouter les chemins du MST aux tuiles *)
   List.fold_left (fun acc arete ->
     let path = create_path arete.coord1 arete.coord2 in
-    acc @ path
+    update_tiles acc path
   ) tiles (mst @ filtered_aretes)

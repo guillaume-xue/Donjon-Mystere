@@ -44,7 +44,7 @@ let test_set_trap_ground_visibility _ =
   assert_equal 1 updated_trap.tag_pos_x;
   assert_equal 2 updated_trap.tag_pos_y;
 
-  Printf.printf "set_trap_ground_visibility test passed\n"
+  Printf.printf "set_trap_ground_visibility test passed\n\n"
 
 let test_set_trap_ground_pos_visibility _ =
   Printf.printf "Testing set_trap_ground_pos_visibility :\n";
@@ -60,7 +60,7 @@ let test_set_trap_ground_pos_visibility _ =
   assert_equal true first_trap.visibility;
   assert_equal Stairs_Up first_trap.nature;
 
-  Printf.printf "set_trap_ground_pos_visibility test passed\n"
+  Printf.printf "set_trap_ground_pos_visibility test passed\n\n"
 
 let test_is_stairs _ =
   Printf.printf "Testing is_stairs :\n";
@@ -77,7 +77,7 @@ let test_is_stairs _ =
   let player_not_on_stairs = { player with position = { world_x = 5.0; world_y = 5.0; screen_x = 0; screen_y = 0; target_x = 0.0; target_y = 0.0} } in
   assert_bool "Expected player not to be on stairs" (not (is_stairs traps player_not_on_stairs));
 
-  Printf.printf "is_stairs test passed\n"
+  Printf.printf "is_stairs test passed\n\n"
 
 let test_is_trap_ground _ =
   Printf.printf "Testing is_trap_ground :\n";
@@ -90,7 +90,7 @@ let test_is_trap_ground _ =
   assert_bool "Expected trap at (1, 2)" (is_trap_ground traps 1 2);
   assert_bool "Expected no trap at (5, 5)" (not (is_trap_ground traps 5 5));
 
-  Printf.printf "is_trap_ground test passed\n"
+  Printf.printf "is_trap_ground test passed\n\n"
 
 let test_get_trap_ground _ =
   Printf.printf "Testing get_trap_ground :\n";
@@ -111,7 +111,7 @@ let test_get_trap_ground _ =
   | Some _ -> assert_failure "Expected no trap at (5, 5)"
   | None -> ());
 
-  Printf.printf "get_trap_ground test passed\n"
+  Printf.printf "get_trap_ground test passed\n\n"
 
 (* Test suite *)
 let suite =

@@ -69,7 +69,7 @@ let test_compute_fov _ =
   assert_bool "Expected tile (1, 0) to be blocked" (visibility.(1).(0) > 0.0);
   assert_bool "Expected tile (1, 1) to be visible" (visibility.(1).(1) = 0.0);
 
-  Printf.printf "compute_fov test passed\n"
+  Printf.printf "compute_fov test passed\n\n"
 
 (* Test suite *)
 let suite =

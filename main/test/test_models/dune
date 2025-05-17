@@ -32,3 +32,13 @@
  (name test_shadowcaster)
  (modules test_shadowcaster)
  (libraries ounit2 models utils))
+
+(library
+ (name test_automate)
+ (modules test_automate)
+ (libraries ounit2 models utils))
+
+(library
+ (name test_prim)
+ (modules test_prim)
+ (libraries ounit2 models utils))
