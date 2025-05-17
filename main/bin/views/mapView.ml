@@ -49,4 +49,4 @@ let draw_map (map: map) (player: pokemon) textures =
   draw_textures map.tiles (pos_x *. tile_texture_size) (pos_y *. tile_texture_size)
 
 let draw_floor_intro map =
-  draw_text ("Floor: " ^ string_of_int map.floor) (screen_width / 2 - 50) (screen_height / 2 - 50) 20 Color.white
+  draw_text ("Floor: " ^ string_of_int (map.floor + 1)) (screen_width / 2 - 50) (screen_height / 2 - 50) 20 Color.white

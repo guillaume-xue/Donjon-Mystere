@@ -1,4 +1,5 @@
 open Utils.Types
+open Utils.Audio
 open Models.EntityModel
 open Models.EnemyModel
 open Models.Trap_ground
@@ -20,6 +21,7 @@ let update_trap_and_ground game_states last_time =
   let pos_x = int_of_float pos_x in
   let pos_y = int_of_float pos_y in
   if is_trap_ground game_states.traps_and_grounds_state pos_x pos_y && game_states.player_state.your_turn then begin
+    play_sound "resources/audio/sound/trap.mp3";
     match get_trap_ground game_states.traps_and_grounds_state pos_x pos_y with
     | None -> (game_states, last_time)
     | Some trap_and_ground ->

@@ -63,12 +63,12 @@ let check_select_screen_selected screenState list_of_maps index_select_x index_s
     match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right with
     | true, _, _, _, _ -> (* Enter *)
       play_sound "resources/audio/sound/select.mp3";
-      if index_select_x = 0 && index_select_y = 0 then begin (* New game *)
+      if index_select_x = 0 && index_select_y = 0 && (List.length list_of_maps <= 6) then begin (* New game *)
         (Select_New, 3, index_select_y, current_time, map_name)
       end else if index_select_x = 1 then begin (* Continue *)
         (Game, index_select_x, index_select_y, current_time, get_map_selected list_of_maps index_select_y)
       end else
-        (Select_Other, index_select_x, index_select_y, current_time, map_name)
+        (screenState, index_select_x, index_select_y, current_time, map_name)
     | _, true, _, _, _ -> (* Down *)
       play_sound "resources/audio/sound/select.mp3";
       if (index_select_y = 1 && index_select_x = 0) || 
@@ -220,7 +220,7 @@ let update_intro title_texture background_texture title_pos_x title_pos_y text_p
 *)
 let get_text_talk map_name list_of_maps index_select_x index_select_y =
   if index_select_x = 0 && index_select_y = 0 then (* New game *)
-    if List.length list_of_maps = 6 then (* Maximum number of maps *)
+    if List.length list_of_maps >= 6 then (* Maximum number of maps *)
       "Il n'y a plus de place pour une nouvelle partie."
     else
       "Voulez-vous creer une nouvelle partie ?"

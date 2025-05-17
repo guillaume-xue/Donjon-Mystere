@@ -249,7 +249,7 @@ let spawn_list_of_trap_and_ground map zone =
     find_trap 0.0 filtered_traps
   in
   let rec gen_trap i res =
-    if i < map.floor then
+    if i < map.floor + 5 then
       begin
         let zone_rand = Random.int (List.length map.regions) in
         let case_rand = Random.int (List.length (List.nth map.regions zone_rand).tiles) in
