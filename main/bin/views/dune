@@ -1,5 +1,15 @@
 (library
  (name views)
  (public_name main.views)
- (libraries raylib ctypes main.utils)
- (modules menuView mapView playerView))
+ (libraries raylib ctypes main.utils main.models)
+ (modules
+  menuView
+  mapView
+  playerView
+  enemyView
+  entityView
+  itemView
+  bagView
+  shadowCastView
+  trapGroundView
+  attackView))

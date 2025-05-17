@@ -9,7 +9,7 @@ open Utils.Settings_map
   @param y la coordonnée y de la cellule pour laquelle on veut compter les voisins vivants.
   @return le nombre de voisins vivants autour de la cellule située aux coordonnées (x, y). Le nombre de voisins vivants est déterminé en additionnant les [texture_id] des tuiles voisines.
 *)
-let nb_voisins_vivant tiles x y =
+let nb_voisins_vivant (tiles: tile list) (x: int) (y: int) : int=
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1); (1, 1); (-1, -1); (1, -1); (-1, 1)] in
   List.fold_left (fun acc tile ->
     if List.exists (fun (dx, dy) -> tile.x = x + dx && tile.y = y + dy) directions then
@@ -30,7 +30,7 @@ let nb_voisins_vivant tiles x y =
   @param n Le nombre d'itérations à appliquer.
   @return La liste des tuiles après l'application des règles de l'automate cellulaire.
 *)
-let rec regles_auto_cell tiles n =
+let rec regles_auto_cell (tiles: tile list) (n: int) : tile list =
   if n = 0 then tiles
   else
     let new_tiles = List.map (fun tile ->
@@ -59,14 +59,14 @@ let rec regles_auto_cell tiles n =
   @param y la coordonnée y de la position de départ.
   @return la taille de la zone remplie par diffusion, c'est-à-dire le nombre de tuiles connectées ayant la même texture_id.
 *)
-let flood_fill tiles visited x y =
+let flood_fill (tiles: tile list) (visited: (int * int) list) (x: int) (y: int) : int * (int * int) list =
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1)] in
-  let rec dfs stack zone_size =
+  let rec dfs (stack : (int * int) list) (zone_size : int) (visited: (int * int) list) : int * (int * int) list =
     match stack with
-    | [] -> zone_size
+    | [] -> (zone_size, visited)
     | (cx, cy) :: rest ->
-      if not (List.exists (fun (vx, vy) -> vx = cx && vy = cy) !visited) then (
-        visited := (cx, cy) :: !visited;
+      if not (List.exists (fun (vx, vy) -> vx = cx && vy = cy) visited) then
+        let visited = (cx, cy) :: visited in
         let new_stack = List.fold_left (fun acc (dx, dy) ->
           let nx, ny = (cx + dx, cy + dy) in
           if List.exists (fun tile -> tile.x = nx && tile.y = ny && tile.texture_id = 1) tiles then
@@ -74,11 +74,11 @@ let flood_fill tiles visited x y =
           else
             acc
         ) rest directions in
-        dfs new_stack (zone_size + 1)
-      ) else
-        dfs rest zone_size
+        dfs new_stack (zone_size + 1) visited
+      else
+        dfs rest zone_size visited
   in
-  dfs [(x, y)] 0
+  dfs [(x, y)] 0 visited
 
 (** 
   [remove_zone] supprime une zone de tuiles connectées à partir de la position (x, y) 
@@ -91,9 +91,9 @@ let flood_fill tiles visited x y =
   @param y La coordonnée y de la tuile de départ.
   @return Une nouvelle liste de tuiles avec la zone connectée mise à jour.
 *)
-let remove_zone tiles x y =
+let remove_zone (tiles: tile list) (x: int) (y: int) : tile list =
   let directions = [(1, 0); (-1, 0); (0, 1); (0, -1)] in
-  let rec dfs stack updated_tiles =
+  let rec dfs (stack: (int * int) list) (updated_tiles: tile list) : tile list =
     match stack with
     | [] -> updated_tiles
     | (cx, cy) :: rest ->
@@ -125,18 +125,18 @@ let remove_zone tiles x y =
   @param visited Une référence à une liste de coordonnées des tuiles déjà visitées.
   @return La liste des tuiles après suppression des petites zones.
 *)
-let remove_small_zones tiles =
-  let rec remove_small_zones_aux tiles visited =
+let remove_small_zones (tiles: tile list) : tile list =
+  let rec remove_small_zones_aux (tiles: tile list) (visited: (int * int) list) : tile list =
     match tiles with
     | [] -> []
     | tile :: rest ->
-      if tile.texture_id = 1 && not (List.exists (fun (vx, vy) -> vx = tile.x && vy = tile.y) !visited) then
-        let zone_size = flood_fill tiles visited tile.x tile.y in
+      if tile.texture_id = 1 && not (List.exists (fun (vx, vy) -> vx = tile.x && vy = tile.y) visited) then
+        let (zone_size, visited2) = flood_fill tiles visited tile.x tile.y in
         if zone_size < map_min_size then
-          remove_small_zones_aux (remove_zone tiles tile.x tile.y) visited
+          remove_small_zones_aux (remove_zone tiles tile.x tile.y) visited2
         else
-          tile :: remove_small_zones_aux rest (ref ((tile.x, tile.y) :: !visited))
+          tile :: remove_small_zones_aux rest ((tile.x, tile.y) :: visited2)
       else
         tile :: remove_small_zones_aux rest visited
   in
-  remove_small_zones_aux tiles (ref [])
+  remove_small_zones_aux tiles []

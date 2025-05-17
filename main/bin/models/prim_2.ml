@@ -8,8 +8,8 @@ open Utils.Settings_map
   @param zones La liste des zones.
   @return Une liste d'arêtes.
 *)
-let calcul_arete zones =
-  let find_closest_arete zone1 zone2 =
+let calcul_arete (zones : zone list) : arete list =
+  let find_closest_arete (zone1 : zone) (zone2 : zone) : arete option =
     let min_arete = ref None in
     (* Ici on test toute les combinaisons entre les tuiles de deux zones *)
     List.iter (fun tile1 ->
@@ -24,7 +24,7 @@ let calcul_arete zones =
     !min_arete
   in
   (* Et ici toute les combinaisons de zones par pair *)
-  let rec aux zones aretes =
+  let rec aux (zones : zone list) (aretes : arete list) : arete list =
     match zones with
     | [] -> aretes
     | zone :: rest ->
@@ -52,7 +52,7 @@ let calcul_arete zones =
   @return Une liste d'arêtes représentant le MST.
 *)
 
-let prim zones aretes =
+let prim (zones: zone list) (aretes : arete list) : arete list =
   let visited = Hashtbl.create (List.length zones) in
   let pq = PriorityQueue.create () in
 
@@ -66,7 +66,7 @@ let prim zones aretes =
       PriorityQueue.add pq arete.distance arete
   ) aretes;
 
-  let rec aux mst =
+  let rec aux (mst : arete list) : arete list =
     if PriorityQueue.is_empty pq then mst
     else
       (* L'arete avec la plus faible distance *)
@@ -98,15 +98,15 @@ let prim zones aretes =
   @param coord2 Les coordonnées d'arrivée.
   @return Une liste de tuiles représentant le chemin.
 *)
-let create_path (x1, y1) (x2, y2) =
-  let bresenham x0 y0 x1 y1 =
+let create_path ((x1, y1) : int * int) ((x2, y2) : int * int) : tile list =
+  let bresenham (x0 : int) (y0 : int) (x1 : int) (y1 : int) : tile list =
     (* Différence absolue *)
     let dx = abs (x1 - x0) in
     let dy = abs (y1 - y0) in 
     (* Direction à prendre (pente de la courbe) *)
     let sx = if x0 < x1 then 1 else -1 in
     let sy = if y0 < y1 then 1 else -1 in
-    let rec loop x y err acc =
+    let rec loop (x : int) (y : int) (err : int) (acc : tile list) : tile list =
       (* Si dernière tuile, la rajouter *)
       if x = x1 && y = y1 then { x; y; texture_id = 1; biome_id = 0 } :: acc
       else
@@ -124,8 +124,29 @@ let create_path (x1, y1) (x2, y2) =
   in
   bresenham x1 y1 x2 y2
 
-(* Fonction pour connecter les zones en utilisant l'algorithme de Prim *)
-let connect_zones tiles zones =
+(**
+  [update_tiles] met à jour les tuiles en fonction du chemin créé.
+
+  @param tiles La liste de tuiles.
+  @param path Le chemin à mettre à jour.
+  @return Une liste de tuiles mises à jour.
+*)
+let update_tiles (tiles : tile list) (path : tile list) : tile list =
+  List.map (fun t ->
+    match List.find_opt (fun p -> p.x = t.x && p.y = t.y) path with
+    | Some new_tile -> new_tile
+    | None -> t
+  ) tiles
+
+(**
+  [connect_zones] connecte les zones entre elles en utilisant l'algorithme de Prim
+  et ajoute des chemins supplémentaires avec une probabilité donnée.
+
+  @param tiles La liste de tuiles.
+  @param zones La liste de zones.
+  @return Une liste de tuiles avec les chemins ajoutés.
+*)
+let connect_zones (tiles : tile list) (zones : zone list) : tile list =
   let aretes = calcul_arete zones in
   let mst = prim zones aretes in
 
@@ -137,5 +158,5 @@ let connect_zones tiles zones =
   (* Ajouter les chemins du MST aux tuiles *)
   List.fold_left (fun acc arete ->
     let path = create_path arete.coord1 arete.coord2 in
-    acc @ path
+    update_tiles acc path
   ) tiles (mst @ filtered_aretes)

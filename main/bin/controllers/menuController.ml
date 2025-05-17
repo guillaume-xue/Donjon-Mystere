@@ -1,37 +1,40 @@
 open Views.MenuView
 open Models.Generation_map
 open Utils.Types
-open Utils.Settings_map
-open Utils.Json_conversions
-open MapController
+open Utils.Funcs
 open Raylib
-
-let list_of_maps = ref [] (* List of maps name *)
-let index_select_x = ref 0 (* Variable of cursor x *)
-let index_select_y = ref 0 (* Variable of cursor y *)
-let last_key_press_time = ref 0.0  (* Variable to store the time of the last key press *)
-let map_name = ref "map " (* new map name *)
+open Utils.Audio
 
 (**
   [init_menu_controller ()] initializes the menu controller.
+  @return The menu controller stats.
 *)
-let init_menu_controller () =
-  list_of_maps := read_json_files_in_directory map_dir;
-  init_menu !list_of_maps
+let init_menu_controller () : (int * int * int * int) * (Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t list * int * int * int * int) =
+  play_music "resources/audio/music/intro.mp3";
+  let index_select_x = 0 in (* Variable of cursor x *)
+  let index_select_y = 0 in (* Variable of cursor y *)
+  let arrow_pos_x = 70 in
+  let arrow_pos_y = 58 in
+  let menu_item_info = (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y) in
+  let menu_stats = (init_menu_textures ()) in
+  (menu_item_info, menu_stats)
 
 (**
-  [get_map_selected ()] returns the currently selected map.
+  [get_map_selected list_of_maps index_select_y] gets the selected map.
+  @param list_of_maps The list of maps.
+  @param index_select_y The index of the selected map.
   @return The selected map.
 *)
-let get_map_selected () =
-  List.nth !list_of_maps !index_select_y
+let get_map_selected (list_of_maps : string list) (index_select_y : int) : string =
+  List.nth list_of_maps index_select_y
 
 (**
   [check_intro_screen_click ()] checks if the screen is clicked.
   @return [Select] if the screen is clicked within the window bounds, [Intro] otherwise.
 *)
-let check_intro_screen_click () =
-  if is_mouse_button_pressed MouseButton.Left then
+let check_intro_screen_click () : screenState=
+  if is_mouse_button_pressed MouseButton.Left then begin
+    play_sound "resources/audio/sound/click.mp3";
     let mouse_x = get_mouse_x () in
     let mouse_y = get_mouse_y () in
     if mouse_x >= 0 && mouse_x <= 800 then (* Largeur de la fenêtre *)
@@ -41,76 +44,77 @@ let check_intro_screen_click () =
         Intro
     else
       Intro
-  else
+  end else
     Intro
 
 (**
-    [check_select_screen_selected screenState] checks if player selected an option.
-    @param screenState The current screen state.
-    @return The new screen state based on the player's selection.
+  [check_select_screen_selected screenState list_of_maps index_select_x index_select_y last_key_press_time map_name] checks and updates the selected screen based on key presses.
+  @param screenState The current screen state.
+  @param list_of_maps The list of maps.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @param last_key_press_time The last time a key was pressed.
+  @param map_name The name of the map.
+  @return The new screen state based on the player's input.
 *)
-let check_select_screen_selected (screenState : screenState) =
+let check_select_screen_selected (screenState : screenState) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (last_key_press_time : float) (map_name : string) : screenState * int * int * float * string =
   let current_time = get_time () in
-  if current_time -. !last_key_press_time > 0.1 then begin
-    last_key_press_time := current_time;
-    match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right with
-    | true, _, _, _, _ -> (* Enter *)
-      if !index_select_x = 0 && !index_select_y = 0 then begin (* New game *)
-        index_select_x := 3;
-        Select_New
-      end else if !index_select_x = 1 then begin (* Continue *)
-        init_map_controller screen_width screen_height (get_map_selected ());
-        Game
+  if current_time -. last_key_press_time > 0.1 then begin
+    match is_key_down Key.Enter, is_key_down Key.Down, is_key_down Key.Up, is_key_down Key.Left, is_key_down Key.Right, is_key_down Key.R with
+    | true, _, _, _, _, _ -> (* Enter *)
+      play_sound "resources/audio/sound/select.mp3";
+      if index_select_x = 0 && index_select_y = 0 && (List.length list_of_maps <= 6) then begin (* New game *)
+        (Select_New, 3, index_select_y, current_time, map_name)
+      end else if index_select_x = 1 then begin (* Continue *)
+        (Game, index_select_x, index_select_y, current_time, get_map_selected list_of_maps index_select_y)
       end else
-        Select_Other
-    | _, true, _, _, _ -> (* Down *)
-      if (!index_select_y = 1 && !index_select_x = 0) || 
-         (!index_select_y = (List.length !list_of_maps) - 1 && !index_select_x = 1) then
-        screenState
+        (screenState, index_select_x, index_select_y, current_time, map_name)
+    | _, true, _, _, _, _ -> (* Down *)
+      play_sound "resources/audio/sound/select.mp3";
+      if (index_select_y = 1 && index_select_x = 0) || 
+         (index_select_y = (List.length list_of_maps) - 1 && index_select_x = 1) then
+        (screenState, index_select_x, index_select_y, current_time, map_name)
       else begin
-        index_select_y := !index_select_y + 1;
-        Select_Other
+        (Select_Other, index_select_x, index_select_y + 1, current_time, map_name)
       end
-    | _, _, true, _, _ -> (* Up *)
-      if !index_select_x = 0 && !index_select_y = 0 then begin
-        Select
-      end else if !index_select_x = 0 && !index_select_y = 1 then begin
-        index_select_y := !index_select_y - 1;
-        Select
-      end else if !index_select_x = 1 && !index_select_y = 0 then
-        Select_Other
+    | _, _, true, _, _, _ -> (* Up *)
+      play_sound "resources/audio/sound/select.mp3";
+      if index_select_x = 0 && index_select_y = 0 then begin
+        (Select, index_select_x, index_select_y, current_time, map_name)
+      end else if index_select_x = 0 && index_select_y = 1 then begin
+        (Select, index_select_x, index_select_y - 1, current_time, map_name)
+      end else if index_select_x = 1 && index_select_y = 0 then
+        (Select_Other, index_select_x, index_select_y, current_time, map_name)
       else begin
-        index_select_y := !index_select_y - 1;
-        screenState
+        (screenState, index_select_x, index_select_y - 1, current_time, map_name)
       end
-    | _, _, _, true, _ -> (* Left *)
-      if !index_select_x = 0 then
-        screenState
+    | _, _, _, true, _, _ -> (* Left *)
+      play_sound "resources/audio/sound/select.mp3";
+      if index_select_x = 0 then
+        (Select, index_select_x, index_select_y, current_time, map_name)
       else begin
-        index_select_x := 0;
-        index_select_y := 0;
-        Select
+        (Select, 0, 0, current_time, map_name)
       end
-
-    | _, _, _, _, true -> (* Right *)
-      if List.length !list_of_maps = 0 then
-        Select_Other
-      else if !index_select_x = 0 && !index_select_y = 0 then
-        Select
+    | _, _, _, _, true, _ -> (* Right *)
+      play_sound "resources/audio/sound/select.mp3";
+      if List.length list_of_maps = 0 then
+        (Select_Other, index_select_x, index_select_y, current_time, map_name)
+      else if index_select_x = 0 && index_select_y = 0 then
+        (Select, index_select_x, index_select_y, current_time, map_name)
       else begin
-        index_select_x := 1;
-        index_select_y := 0;
-        Select_Other
+        (Select_Other, 1, 0, current_time, map_name)
       end
-    | _ -> screenState
+    | _, _, _, _, _, true -> (* R *)
+      (Intro, 0, 0, current_time, map_name)
+    | _ -> (screenState, index_select_x, index_select_y, current_time, map_name)
   end else
-    screenState
+    (screenState, index_select_x, index_select_y, last_key_press_time, map_name)
 
 (**
   [is_any_key_pressed ()] checks if any key is pressed.
   @return True if any key is pressed, false otherwise.
 *)
-let is_any_key_pressed () =
+let is_any_key_pressed () : bool =
   List.exists is_key_down [Key.A; Key.B; Key.C; Key.D; Key.E; Key.F; Key.G; Key.H; Key.I; Key.J; Key.K; Key.L; Key.M; Key.N; Key.O; Key.P; Key.Q; Key.R; Key.S; Key.T; Key.U; Key.V; Key.W; Key.X; Key.Y; Key.Z]
 
 (**
@@ -118,7 +122,7 @@ let is_any_key_pressed () =
   @param key The key to convert.
   @return The character corresponding to the key.
 *)
-let key_pressed_to_char key =
+let key_pressed_to_char key : char =
   match key with
   | Key.A -> 'a'
   | Key.B -> 'b'
@@ -149,54 +153,92 @@ let key_pressed_to_char key =
   | _ -> ' '
 
 (**
-  [check_new_map_name ()] checks and updates the new map name based on key presses.
-  @return The new screen state based on the player's input.
+  [check_new_map_name map_name list_of_maps] checks the new map name.
+  @param map_name The name of the map.
+  @param list_of_maps The list of maps.
+  @return The new screen state and the new map name.
 *)
-let check_new_map_name () =
-  if is_any_key_pressed () then begin
-    if !map_name = "map " then
-      map_name := "";
-    if String.length !map_name < 16 then begin (* Maximum length of map name *)
+let check_new_map_name (map_name: string) (list_of_maps : string list) : screenState * string =
+  if is_any_key_pressed () then
+    if map_name = "map " then
       let char = Char.escaped (key_pressed_to_char (get_key_pressed ())) in
-      if char <> " " then
-        map_name := !map_name ^ char;
-    end;
-    Select_New
-  end else if is_key_pressed Key.Backspace then begin (* Backspace *)
-    if String.length !map_name > 0 then (* Minimum length of map name *)
-      map_name := String.sub !map_name 0 (String.length !map_name - 1);
-    Select_New
-  end else if is_key_pressed Key.Enter then begin (* Enter *)
-    if not (List.exists (fun map -> map = !map_name) !list_of_maps) && (* new map name not exist *)
-            !map_name <> "map " then begin
-      generation_map !map_name;
-      init_map_controller screen_width screen_height !map_name;
-      Game
+      if char <> " " then (Select_New, "" ^ char)
+      else (Select_New, "")
+    else if String.length map_name < 16 then begin (* Maximum length of map name *)
+      let char = Char.escaped (key_pressed_to_char (get_key_pressed ())) in
+      if char <> " " then (Select_New, map_name ^ char)
+      else (Select_New, map_name)
     end else
-      Select_New
+      (Select_New, map_name)
+  else if is_key_pressed Key.Backspace then begin (* Backspace *)
+    if String.length map_name > 0 then (Select_New, String.sub map_name 0 (String.length map_name - 1))
+    else (Select_New, map_name)
+  end else if is_key_pressed Key.Enter then begin (* Enter *)
+    play_sound "resources/audio/sound/select.mp3";
+    if not (List.exists (fun map -> map = map_name) list_of_maps) && map_name <> "map " && map_name <> "" then begin
+      (ChoosePokemon, map_name)
+    end else
+      (Select_New, map_name)
   end else
-    Select_New
+    (Select_New, map_name)
 
 (**
-  [update_intro ()] updates the intro screen.
+  [check_choose_pokemon map_name index_select_x index_select_y] checks the choose pokemon screen.
+  @param map_name The name of the map.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @return The new screen state and the new map name.
 *)
-let update_intro () =
-  draw_intro ()
+let check_choose_pokemon (map_name : string) (index_select_x : int) (index_select_y : int) : screenState * (int * int) =
+  if is_key_pressed Key.Up then begin
+    play_sound "resources/audio/sound/select.mp3";
+    if (index_select_y - 1) >= 0 then
+      (ChoosePokemon, (index_select_x, index_select_y - 1))
+    else
+      (ChoosePokemon, (index_select_x, index_select_y))
+  end else if is_key_pressed Key.Down then begin
+    play_sound "resources/audio/sound/select.mp3";
+    if (index_select_y + 1) < 3 then
+      (ChoosePokemon, (index_select_x, index_select_y + 1))
+    else
+      (ChoosePokemon, (index_select_x, index_select_y))
+  end else if is_key_pressed Key.Enter then begin
+    play_sound "resources/audio/sound/select.mp3";
+    create_map_json map_name index_select_y;
+    (Game, (index_select_x, index_select_y))
+  end else
+    (ChoosePokemon, (index_select_x, index_select_y))
 
 (**
-  [get_text_talk ()] gets the text to display.
+  [update_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y] updates the intro screen.
+  @param title_texture The title texture.
+  @param background_texture The background texture.
+  @param title_pos_x The title position x.
+  @param title_pos_y The title position y.
+  @param text_pos_x The text position x.
+  @param text_pos_y The text position y.
+*)
+let update_intro (title_texture : Texture2D.t option) (background_texture : Texture2D.t option) (title_pos_x : int) (title_pos_y : int) (text_pos_x : int) (text_pos_y : int) : unit =
+  draw_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y
+
+(**
+  [get_text_talk map_name list_of_maps index_select_x index_select_y] gets the text to display.
+  @param map_name The name of the map.
+  @param list_of_maps The list of maps.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
   @return The text to display.
 *)
-let get_text_talk () =
-  if !index_select_x = 0 && !index_select_y = 0 then (* New game *)
-    if List.length !list_of_maps = 6 then (* Maximum number of maps *)
+let get_text_talk (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) : string =
+  if index_select_x = 0 && index_select_y = 0 then (* New game *)
+    if List.length list_of_maps >= 6 then (* Maximum number of maps *)
       "Il n'y a plus de place pour une nouvelle partie."
     else
       "Voulez-vous creer une nouvelle partie ?"
-  else if !index_select_x = 1 then
+  else if index_select_x = 1 then
     "Voulez-vous continuer la partie en cours ?"
-  else if !index_select_x = 3 then
-    if List.exists (fun map -> map = !map_name) !list_of_maps then
+  else if index_select_x = 3 then
+    if List.exists (fun map -> map = map_name) list_of_maps then
       "La carte existe deja."
     else
       "Entrez le nom de la nouvelle carte."
@@ -204,36 +246,116 @@ let get_text_talk () =
     "Choisissez une carte."
 
 (**
-  [update_arrow ()] updates the arrow position.
+  [update_arrow index_select_x index_select_y] updates the arrow position.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @return The updated arrow position.
 *)
-let update_arrow () =
-  set_arrow_x !index_select_x;
-  set_arrow_y !index_select_y
+let update_arrow (index_select_x : int) (index_select_y : int) : int * int =
+  let arrow_pos_x = set_arrow_x index_select_x in
+  let arrow_pos_y = set_arrow_y index_select_y in
+  (arrow_pos_x, arrow_pos_y)
 
 (**
-  [update_select ()] updates the select screen.
+  [update_select map_name list_of_maps index_select_x index_select_y background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y] updates the select screen.
+  @param map_name The name of the map.
+  @param list_of_maps The list of maps.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @param background_texture The background texture.
+  @param select_texture The select texture.
+  @param arrow_texture The arrow texture.
+  @param arrow_pos_x The arrow position x.
+  @param arrow_pos_y The arrow position y.
 *)
-let update_select () =
-  draw_select (get_text_talk ());
-  update_arrow ()
+let update_select (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (background_texture : Texture2D.t option) (select_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) (arrow_pos_x : int) (arrow_pos_y : int) : unit =
+  draw_select (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y
 
 (**
-  [update_select_new ()] updates the new map selection screen.
+  [update_select_new map_name list_of_maps index_select_x index_select_y background_texture select_new_texture arrow_texture] updates the new selection screen.
+  @param map_name The name of the map.
+  @param list_of_maps The list of maps.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @param background_texture The background texture.
+  @param select_new_texture The select new texture.
+  @param arrow_texture The arrow texture.
 *)
-let update_select_new () =
-  draw_select_new !map_name (get_text_talk ())
+let update_select_new (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (background_texture : Texture2D.t option) (select_new_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) =
+  draw_select_new map_name (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_new_texture arrow_texture
 
 (**
-  [update_select_other ()] updates the other selection screen.
+  [update_select_other map_name list_of_maps index_select_x index_select_y background_texture select_other_texture arrow_texture arrow_pos_x arrow_pos_y] updates the other selection screen.
+  @param map_name The name of the map.
+  @param list_of_maps The list of maps.
+  @param index_select_x The index of the selected x.
+  @param index_select_y The index of the selected y.
+  @param background_texture The background texture.
+  @param select_other_texture The select other texture.
+  @param arrow_texture The arrow texture.
+  @param arrow_pos_x The arrow position x.
+  @param arrow_pos_y The arrow position y.
 *)
-let update_select_other () =
-  draw_select_other (get_text_talk ());
-  update_arrow ()
+let update_select_other (map_name : string) (list_of_maps : string list) (index_select_x : int) (index_select_y : int) (background_texture : Texture2D.t option) (select_other_texture : Texture2D.t option) (arrow_texture : Texture2D.t option) (arrow_pos_x : int) (arrow_pos_y : int) : unit =
+  draw_select_other (get_text_talk map_name list_of_maps index_select_x index_select_y) background_texture select_other_texture list_of_maps arrow_texture arrow_pos_x arrow_pos_y
 
 (**
-  [save ()] saves the game with the current map name.
+  [check_screen_state screen_state map_name menu_item_info menu_stats list_of_maps last_time] checks the screen state.
+  @param screen_state The current screen state.
+  @param map_name The name of the map.
+  @param menu_item_info The menu item info.
+  @param menu_stats The menu stats.
+  @param list_of_maps The list of maps.
+  @param last_time The last time.
+  @return The updated screen state, map name, menu item info, and last time.
 *)
-let save () =
-  if !map_name <> "map " && !index_select_x <> 3 then
-    save_game !map_name
+let check_screen_state (screen_state : screenState) (map_name : string) (menu_item_info : int * int * int * int) (menu_stats : Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t option * Texture2D.t list * int * int * int * int) (list_of_maps : string list) (last_time : float list) : screenState * string * (int * int * int * int) * float list =
+  let (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y) = menu_item_info in
+  let (title_texture, background_texture, select_texture, select_other_texture, select_new_texture, arrow_texture, choose_pokemon_texture, pokemon_icon_texture, title_pos_x, title_pos_y, text_pos_x, text_pos_y) = menu_stats in
+  match screen_state with
+  | Intro ->
+    begin
+      let state = check_intro_screen_click () in 
+      update_intro title_texture background_texture title_pos_x title_pos_y text_pos_x text_pos_y;
+      (state, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | Select ->
+    begin
+      let (state, x, y, time, new_map_name) = check_select_screen_selected screen_state list_of_maps index_select_x index_select_y (List.nth last_time 0) map_name in
+      let last_time = replace_nth last_time 0 time in
+      let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
+      update_select new_map_name list_of_maps index_select_x index_select_y background_texture select_texture arrow_texture arrow_pos_x arrow_pos_y;
+      (state, new_map_name, (x, y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | Select_New ->
+    begin
+      let (state, new_map_name) = check_new_map_name map_name list_of_maps in
+      update_select_new new_map_name list_of_maps index_select_x index_select_y background_texture select_new_texture arrow_texture;
+      (state, new_map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | Select_Other ->
+    begin
+      let (state, x, y, time, new_map_name) = check_select_screen_selected screen_state list_of_maps index_select_x index_select_y (List.nth last_time 0) map_name in
+      let last_time = replace_nth last_time 0 time in
+      let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
+      update_select_other new_map_name list_of_maps index_select_x index_select_y background_texture select_other_texture arrow_texture arrow_pos_x arrow_pos_y;
+      (state, new_map_name , (x, y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | ChoosePokemon ->
+    begin
+      let (state, (x, y)) = check_choose_pokemon map_name index_select_x index_select_y in
+      let (arrow_pos_x, arrow_pos_y) = update_arrow x y in
+      draw_pokemon_chooser background_texture choose_pokemon_texture arrow_texture pokemon_icon_texture arrow_pos_y y;
+      (state, map_name , (x, y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | Game ->
+    begin
+      (Game, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
+    end
+  | _ -> (screen_state, map_name, (index_select_x, index_select_y, arrow_pos_x, arrow_pos_y), last_time)
 
+(**
+  [draw_die_end ()] fonction intermédiaire, renvoie vers celui du menuView.
+*)
+let draw_die_end () : unit =
+  draw_die_end ()

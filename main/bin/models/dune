@@ -2,4 +2,20 @@
  (name models)
  (public_name main.models)
  (libraries raylib ctypes main.utils)
- (modules automate_1 prim_2 biomes_3 generation_map playerModel))
+ (modules
+  automate_1
+  prim_2
+  biomes_3
+  generation_map
+  enemyModel
+  entityModel
+  itemModel
+  entity_gen
+  shadowcaster
+  combat
+  a_star
+  trap_ground
+  map_model
+  position
+  bag_model
+  game_state))

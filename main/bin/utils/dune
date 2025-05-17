@@ -1,5 +1,5 @@
 (library
  (name utils)
  (public_name main.utils)
- (libraries yojson unix)
- (modules types settings_map json_conversions))
+ (libraries yojson unix raylib tsdl tsdl-mixer)
+ (modules types settings_map json_conversions funcs competences_data audio))
