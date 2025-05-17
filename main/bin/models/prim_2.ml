@@ -124,6 +124,13 @@ let create_path ((x1, y1) : int * int) ((x2, y2) : int * int) : tile list =
   in
   bresenham x1 y1 x2 y2
 
+(**
+  [update_tiles] met à jour les tuiles en fonction du chemin créé.
+
+  @param tiles La liste de tuiles.
+  @param path Le chemin à mettre à jour.
+  @return Une liste de tuiles mises à jour.
+*)
 let update_tiles (tiles : tile list) (path : tile list) : tile list =
   List.map (fun t ->
     match List.find_opt (fun p -> p.x = t.x && p.y = t.y) path with
