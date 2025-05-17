@@ -4,7 +4,8 @@ let init_audio () =
   match Mixer.init Mixer.Init.mp3 with
   | Ok _ ->
     begin match Mixer.open_audio 44100 Mixer.default_format 2 2048 with
-    | Ok () -> ()
+    | Ok () ->
+        ignore (Mixer.allocate_channels 32);  (* Increase to 32 channels *)
     | Error (`Msg e) -> failwith ("Failed to open audio: " ^ e)
     end
   | Error (`Msg e) -> failwith ("Failed to initialize SDL2_mixer: " ^ e)

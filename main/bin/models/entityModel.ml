@@ -588,7 +588,6 @@ let player_get_target (player: pokemon) =
   
 let player_attack (player: pokemon) (enemy: pokemon list) =
   if player.action = Attack && player.your_turn && not(player.moving) then begin
-    play_sound "resources/audio/sound/attack.mp3";
     let target_x, target_y = player_get_target player in
     let rec aux player enemy acc msg =
       match enemy with
@@ -597,6 +596,7 @@ let player_attack (player: pokemon) (enemy: pokemon list) =
         let (e_pos_x, e_pos_y) = get_entity_position e in
         let choose_competence = List.nth player.competence (Random.int (List.length player.competence)) in
         if int_of_float e_pos_x = int_of_float target_x && int_of_float e_pos_y = int_of_float target_y then begin
+          play_sound "resources/audio/sound/attack.mp3";
           let degat = calcul_degats player e choose_competence in
           let msg = Printf.sprintf "%s utilise %s inflige %d dégâts à %s !\n%!" player.nom choose_competence.name degat e.nom in
           let new_enemy = {e with current_hp = e.current_hp - degat} in

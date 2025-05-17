@@ -21,7 +21,6 @@ let update_trap_and_ground game_states last_time =
   let pos_x = int_of_float pos_x in
   let pos_y = int_of_float pos_y in
   if is_trap_ground game_states.traps_and_grounds_state pos_x pos_y && game_states.player_state.your_turn then begin
-    play_sound "resources/audio/sound/trap.mp3";
     match get_trap_ground game_states.traps_and_grounds_state pos_x pos_y with
     | None -> (game_states, last_time)
     | Some trap_and_ground ->
@@ -32,6 +31,7 @@ let update_trap_and_ground game_states last_time =
       in
       match trap_and_ground.nature, trap_and_ground.visibility with
       | Stairs_Up, true -> 
+        play_sound "resources/audio/sound/trap.mp3";
         Unix.sleep 1;
         let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = create_new_floor game_states.map_state.floor game_states.player_state in
         let id_max =
@@ -53,6 +53,7 @@ let update_trap_and_ground game_states last_time =
         in
         (game_states, list_of_last_time)
       | Stairs_Down, true ->
+        play_sound "resources/audio/sound/trap.mp3";
         Unix.sleep 1;
         let (new_map, new_player, new_trap_and_ground, new_enemys, new_items) = create_new_floor game_states.map_state.floor game_states.player_state in
         let id_max =
@@ -81,6 +82,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Chestnut_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 10) game_states.player_state in
@@ -90,9 +92,11 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Drop_Hole, false ->
         (* FIXME *)
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Explosion_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 20) game_states.player_state in
@@ -102,6 +106,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Fan_Switch, false ->
         let random_x = Random.int 4 in
@@ -134,6 +139,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)    
       | Glue_Switch, false ->
         let length = List.length game_states.player_state.bag.items in
@@ -151,6 +157,7 @@ let update_trap_and_ground game_states last_time =
             |> set_game_state_player player
             |> add_game_state_msg msg
           in
+          play_sound "resources/audio/sound/trap.mp3";
           (game_states, last_time)
         else
           let rand = Random.int length in
@@ -165,6 +172,7 @@ let update_trap_and_ground game_states last_time =
             |> set_game_state_player player
             |> add_game_state_msg msg
           in
+          play_sound "resources/audio/sound/trap.mp3";
           (game_states, last_time)
       | Grimer_Switch, false ->
         (* FIXME *)
@@ -173,6 +181,7 @@ let update_trap_and_ground game_states last_time =
           game_states
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Imprison_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 1) game_states.player_state in
@@ -182,6 +191,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Mud_Switch, false ->
         let random_x = Random.int 2 in
@@ -194,12 +204,14 @@ let update_trap_and_ground game_states last_time =
               set_i_competence_puissance 0 ((List.nth game_states.player_state.competence 0).puissance - 1) game_states.player_state
             with _ -> game_states.player_state
         in
+        play_sound "resources/audio/sound/trap.mp3";
         let msg = "You are stuck in mud" in
         let game_states = 
           game_states
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Poison_Sting_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 1) game_states.player_state in
@@ -209,6 +221,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Pokemon_Switch, false ->
         (* FIXME *)
@@ -217,6 +230,7 @@ let update_trap_and_ground game_states last_time =
           game_states
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Self_Destruct_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 20) game_states.player_state in
@@ -228,6 +242,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Skill_Drop_Switch, false ->
         let player = 
@@ -241,6 +256,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Slowpoke_Switch, false ->
         let player = set_entity_speed 0.5 game_states.player_state in
@@ -250,6 +266,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Spin_Swith, false ->
         let player = set_entity_step_cpt 3 game_states.player_state in
@@ -259,6 +276,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Summon_Switch, false ->
         let rec add_random_enemy player map enemys =
@@ -280,6 +298,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Warp_Trap, false ->
         let rec find_random_position () =
@@ -302,6 +321,7 @@ let update_trap_and_ground game_states last_time =
           |> set_game_state_player player
           |> add_game_state_msg msg
         in
+        play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | _ ->
         (game_states, last_time)

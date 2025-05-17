@@ -1,1 +1,2 @@
 https://bulbapedia.bulbagarden.net/wiki/Grass_Continent : pourcentage des generations des pieges, objets et pokemons
+https://jordansavant.com/book/algorithms/shadowcasting.md : shadowcasting
