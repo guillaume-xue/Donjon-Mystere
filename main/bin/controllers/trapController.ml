@@ -76,7 +76,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, list_of_last_time)
       | Bug_Switch, false ->
         let player = set_entity_step_cpt 3 game_states.player_state in
-        let msg = "You are stuck in a web" in
+        let msg = "Vous êtes coincé dans une toile" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -86,7 +86,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Chestnut_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 10) game_states.player_state in
-        let msg = "You are stuck in a chestnut" in
+        let msg = "Vous êtes coincé dans une bogue de châtaigne" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -96,11 +96,16 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Drop_Hole, false ->
         (* FIXME *)
+        let msg = "Vous êtes tombé dans un trou" in
+        let game_states = 
+          game_states
+          |> add_game_state_msg msg
+        in
         play_sound "resources/audio/sound/trap.mp3";
         (game_states, last_time)
       | Explosion_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 20) game_states.player_state in
-        let msg = "You are exploded" in
+        let msg = "Explosion !!!" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -133,7 +138,7 @@ let update_trap_and_ground game_states last_time =
                 |> set_entity_target x y
               | None -> game_states.player_state
         in
-        let msg = "You are blown away" in
+        let msg = "Vous êtes emporté par le vent" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -151,7 +156,7 @@ let update_trap_and_ground game_states last_time =
               set_usable_item_bag 0 false game_states.player_state 
             with _ -> game_states.player_state
           in
-          let msg = "You are stuck in glue" in
+          let msg = "Vous êtes collé dans la glue" in
           let game_states = 
             game_states
             |> set_game_state_player player
@@ -166,7 +171,7 @@ let update_trap_and_ground game_states last_time =
               set_usable_item_bag rand false game_states.player_state 
             with _ -> game_states.player_state
           in
-          let msg = "You are stuck in glue" in
+          let msg = "Vous êtes collé dans la glue" in
           let game_states = 
             game_states
             |> set_game_state_player player
@@ -176,7 +181,7 @@ let update_trap_and_ground game_states last_time =
           (game_states, last_time)
       | Grimer_Switch, false ->
         (* FIXME *)
-        let msg = "You are stuck in grimer" in
+        let msg = "Vous êtes englué dans la bou" in
         let game_states = 
           game_states
           |> add_game_state_msg msg
@@ -185,7 +190,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Imprison_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 1) game_states.player_state in
-        let msg = "You are imprisoned" in
+        let msg = "Vous êtes emprisonné" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -205,7 +210,7 @@ let update_trap_and_ground game_states last_time =
             with _ -> game_states.player_state
         in
         play_sound "resources/audio/sound/trap.mp3";
-        let msg = "You are stuck in mud" in
+        let msg = "Vous êtes coincé dans la boue" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -215,7 +220,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Poison_Sting_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 1) game_states.player_state in
-        let msg = "You are poisoned" in
+        let msg = "Vous êtes empoisonné" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -225,7 +230,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Pokemon_Switch, false ->
         (* FIXME *)
-        let msg = "You are transformed" in
+        let msg = "Vous êtes transformé" in
         let game_states = 
           game_states
           |> add_game_state_msg msg
@@ -235,7 +240,7 @@ let update_trap_and_ground game_states last_time =
       | Self_Destruct_Switch, false ->
         let player = set_entity_current_hp (game_states.player_state.current_hp - 20) game_states.player_state in
         let map = set_map_exploded pos_x pos_y game_states.map_state in
-        let msg = "You are exploded" in
+        let msg = "Boooom !!!" in
         let game_states = 
           game_states
           |> set_game_state_map map
@@ -250,7 +255,7 @@ let update_trap_and_ground game_states last_time =
             set_i_competence_puissance 0 0 game_states.player_state
           with _ -> game_states.player_state
         in
-        let msg = "You are confused" in
+        let msg = "Vous êtes confus" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -260,7 +265,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Slowpoke_Switch, false ->
         let player = set_entity_speed 0.5 game_states.player_state in
-        let msg = "You are slowed down" in
+        let msg =  "Vous êtes ralenti" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -270,7 +275,7 @@ let update_trap_and_ground game_states last_time =
         (game_states, last_time)
       | Spin_Swith, false ->
         let player = set_entity_step_cpt 3 game_states.player_state in
-        let msg = "You are dizzy" in
+        let msg = "Vous êtes étourdi" in
         let game_states = 
           game_states
           |> set_game_state_player player
@@ -291,7 +296,7 @@ let update_trap_and_ground game_states last_time =
         in
         let last_time = last_time @ [0.0; 0.0] in
         let enemys, player = add_random_enemy game_states.player_state game_states.map_state game_states.enemies_state in
-        let msg = "You are summoned" in
+        let msg = "Un ennemi apparaît" in
         let game_states = 
           game_states
           |> set_game_state_enemy enemys
@@ -315,7 +320,7 @@ let update_trap_and_ground game_states last_time =
           |> set_entity_position new_x new_y
           |> set_entity_target new_x new_y
         in
-        let msg = "You are teleported" in
+        let msg = "Vous êtes téléporté" in
         let game_states = 
           game_states
           |> set_game_state_player player
