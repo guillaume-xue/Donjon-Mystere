@@ -29,3 +29,6 @@ let draw_items (loots : loot list) (player : pokemon) loots_textures =
       (int_of_float (float_of_int screen_y +. loot.pos_y *. tile_texture_size -. pos_y *. tile_texture_size)) 
       Color.white
   ) loots
+
+let pick_up_item_print (item: loot) =
+  "Vous avez ramassé un " ^ item.description ^ " !"

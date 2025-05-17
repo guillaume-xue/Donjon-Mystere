@@ -172,12 +172,15 @@ let check_key_pressed_bag player select =
   end else
     (false, 0)
 
-let check_pickup_item (player: pokemon) (items: loot list) =
+let check_pickup_item game_states =
+  let player = game_states.player_state in
+  let items = game_states.loots_state in
   if player.action = PickUp && player.your_turn then begin
     let rec aux x y (list: loot list) =
       match list with
-      | [] -> let player = set_entity_action Nothing player in
-        (player, items)
+      | [] -> 
+        let player = set_entity_action Nothing player in
+        game_states |> set_game_state_player player
       | item :: rest ->
         if x = item.pos_x && y = item.pos_y then
           let new_player = 
@@ -187,24 +190,17 @@ let check_pickup_item (player: pokemon) (items: loot list) =
           in
 
           let new_list = remove_item_in_list item items in
-          (new_player, new_list)
+          game_states
+          |> set_game_state_loots new_list
+          |> add_game_state_msg (pick_up_item_print item)
+          |> set_game_state_player new_player;
         else
           aux x y rest
     in
     let (pos_x, pos_y) = get_entity_position player in
-    (* match player.direction with
-    | Up -> 
-        aux pos_x (pos_y -. 1.0) items
-    | Down -> 
-        aux pos_x (pos_y +. 1.0) items
-    | Left -> 
-        aux (pos_x -. 1.0) pos_y items
-    | Right -> 
-        aux (pos_x +. 1.0) pos_y items
-    | _ -> (player, items) *)
     aux pos_x pos_y items
   end else
-    (player, items)
+    game_states
   
 (**
   [update_player player enemy map last_time] updates the player.
@@ -219,8 +215,13 @@ let update_player game_states last_time =
   let (action , key_pressed) = check_key_pressed_action game_states.player_state in
   let player = action_player action game_states.player_state key_pressed in
   let (player, enemy, _action1, msg) = player_attack player game_states.enemies_state in
-  let game_states = add_game_state_msg msg game_states in
-  let (player, items) = check_pickup_item player game_states.loots_state in
+  let game_states = 
+    game_states 
+    |> set_game_state_player player
+    |> add_game_state_msg msg
+  in
+  let game_states = check_pickup_item game_states in
+  let player = game_states.player_state in
   let (direction, key_pressed) = check_key_pressed player in
   let player = move direction player key_pressed false in
   
@@ -252,7 +253,6 @@ let update_player game_states last_time =
     game_states
     |> set_game_state_player player
     |> set_game_state_enemy enemy
-    |> set_game_state_loots items
   in
   (game_states, last_time)
 
