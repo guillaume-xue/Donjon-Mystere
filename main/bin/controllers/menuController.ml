@@ -158,7 +158,10 @@ let key_pressed_to_char key : char =
 *)
 let check_new_map_name (map_name: string) (list_of_maps : string list) : screenState * string =
   if is_any_key_pressed () then
-    if map_name = "map " then (Select_New, "")
+    if map_name = "map " then
+      let char = Char.escaped (key_pressed_to_char (get_key_pressed ())) in
+      if char <> " " then (Select_New, "" ^ char)
+      else (Select_New, "")
     else if String.length map_name < 16 then begin (* Maximum length of map name *)
       let char = Char.escaped (key_pressed_to_char (get_key_pressed ())) in
       if char <> " " then (Select_New, map_name ^ char)
