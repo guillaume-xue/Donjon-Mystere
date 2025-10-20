@@ -1,3 +1,0 @@
-https://bulbapedia.bulbagarden.net/wiki/Grass_Continent : pourcentage des generations des pieges, objets et pokemons
-https://jordansavant.com/book/algorithms/shadowcasting.md : shadowcasting
-https://www.roguebasin.com/index.php/Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels : ratio recommandé pour les automates cellulaires
